@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -9,16 +10,17 @@ import RemotionHero from '@/components/RemotionHero';
 import { supabase } from '@/lib/supabase';
 
 const CATEGORIES = [
-  { id: 'smart', label: '스마트조명시스템', icon: '☁️', desc: 'IoT 기반 무선 자동제어 솔루션' },
-  { id: 'indoor', label: '실내조명', icon: '🏢', desc: '고효율 사무/상업용 LED 평판조명' },
-  { id: 'commercial', label: '상업조명', icon: '🏪', desc: '쇼핑몰, 매장용 프리미엄 라인업' },
-  { id: 'outdoor', label: '산업/실외조명', icon: '🏭', desc: '공장등, 가로등 등 내구성 특화' },
-  { id: 'landscape', label: '경관조명', icon: '🌉', desc: '건축물 및 랜드마크 특화 조명' },
-  { id: 'special', label: '특수조명', icon: '🔬', desc: '의료/클린룸 방폭 살균등' },
+  { id: 'smart', labelKey: 'smart', icon: '☁️', descKey: 'desc_smart' },
+  { id: 'indoor', labelKey: 'indoor', icon: '🏢', descKey: 'desc_indoor' },
+  { id: 'commercial', labelKey: 'commercial', icon: '🏪', descKey: 'desc_commercial' },
+  { id: 'outdoor', labelKey: 'outdoor', icon: '🏭', descKey: 'desc_outdoor' },
+  { id: 'landscape', labelKey: 'landscape', icon: '🌉', descKey: 'desc_landscape' },
+  { id: 'special', labelKey: 'special', icon: '🔬', descKey: 'desc_special' },
 ];
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
+  const { t } = useI18n();
   
   useEffect(() => {
     async function fetchFeatured() {
@@ -62,10 +64,10 @@ export default function Home() {
       <section style={{ padding: '80px 24px', background: 'var(--white)', borderBottom: '1px solid var(--gray-100)', position: 'relative', zIndex: 5 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, textAlign: 'center' }}>
           {[
-            { value: 100, suffix: '+', label: '글로벌 제조 파트너' },
-            { value: 98, suffix: '%', label: '글로벌 인증 합격률' },
-            { value: 5000, suffix: '+', label: '수출/수입 진행 건수' },
-            { value: 24, suffix: '/7', label: '실시간 물류 추적' },
+            { value: 100, suffix: '+', label: t('stat_partners') },
+            { value: 98, suffix: '%', label: t('stat_cert') },
+            { value: 5000, suffix: '+', label: t('stat_export') },
+            { value: 24, suffix: '/7', label: t('stat_tracking') },
           ].map((stat) => (
             <ScrollReveal key={stat.label}>
               <div>
@@ -85,7 +87,7 @@ export default function Home() {
           <ScrollReveal>
             <div style={{ textAlign: 'center', marginBottom: 64 }}>
               <p className="section-label" style={{ marginBottom: 16 }}>PRODUCT CATEGORIES</p>
-              <h2 className="section-title">산업별 맞춤 조명 솔루션</h2>
+              <h2 className="section-title">{t('home_solutions_title')}</h2>
             </div>
           </ScrollReveal>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
@@ -102,8 +104,8 @@ export default function Home() {
                   onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'none'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 10px 30px rgba(0,0,0,0.03)'; }}
                   >
                     <div style={{ fontSize: 48, marginBottom: 20 }}>{cat.icon}</div>
-                    <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 12, color: 'var(--gray-900)' }}>{cat.label}</div>
-                    <div style={{ fontSize: 14, color: 'var(--gray-500)', lineHeight: 1.5 }}>{cat.desc}</div>
+                    <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 12, color: 'var(--gray-900)' }}>{t(cat.labelKey)}</div>
+                    <div style={{ fontSize: 14, color: 'var(--gray-500)', lineHeight: 1.5 }}>{t(cat.descKey)}</div>
                   </div>
                 </Link>
               </ScrollReveal>
@@ -119,9 +121,9 @@ export default function Home() {
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 48, flexWrap: 'wrap', gap: 16 }}>
               <div>
                 <p className="section-label" style={{ marginBottom: 16 }}>FEATURED</p>
-                <h2 className="section-title">주요 취급 품목</h2>
+                <h2 className="section-title">{t('featured')}</h2>
               </div>
-              <Link href="/shop" className="btn-secondary">전체 품목 보기 →</Link>
+              <Link href="/shop" className="btn-secondary">{t('viewMore')} →</Link>
             </div>
           </ScrollReveal>
           <div className="products-grid">
@@ -144,15 +146,15 @@ export default function Home() {
               
               <div style={{ maxWidth: 640, position: 'relative', zIndex: 2 }}>
                 <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--primary-light)', letterSpacing: 2, marginBottom: 16 }}>COMPLIANCE & LOGISTICS</p>
-                <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 800, marginBottom: 24, lineHeight: 1.2 }}>
-                  복잡한 무역 인증과 물류,<br />저희가 모두 관리합니다.
+                <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 800, marginBottom: 24, lineHeight: 1.2, whiteSpace: 'pre-line' }}>
+                  {t('home_trade_title')}
                 </h2>
                 <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.7)', lineHeight: 1.7, marginBottom: 32 }}>
-                  KC, CE, RoHS 등 필수 인증 절차 지원부터 중국-인천항 물류 트래킹까지. B2B 고객사들이 오직 비즈니스에만 집중할 수 있도록 종합 무역 솔루션을 제공합니다.
+                  {t('home_trade_desc')}
                 </p>
                 <div style={{ display: 'flex', gap: 16 }}>
-                  <Link href="/trade-info" className="btn-primary">인증 안내서 스터디</Link>
-                  <Link href="/tracking" style={{ color: 'var(--white)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600 }}>항만/물류 상황 조회 →</Link>
+                  <Link href="/trade-info" className="btn-primary">{t('home_trade_btn1')}</Link>
+                  <Link href="/tracking" style={{ color: 'var(--white)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600 }}>{t('home_trade_btn2')}</Link>
                 </div>
               </div>
 

@@ -1,9 +1,11 @@
 'use client';
 import Link from 'next/link';
 import { useSiteSettings } from '@/lib/useSiteSettings';
+import { useI18n } from '@/lib/i18n';
 
 export default function Footer() {
   const settings = useSiteSettings();
+  const { t } = useI18n();
   
   // Default values if settings haven't loaded yet
   const c = settings?.company || {
@@ -31,16 +33,16 @@ export default function Footer() {
               {c.about_text}
             </p>
             <div style={{ fontSize: 14, color: '#475569', lineHeight: 1.6 }}>
-              <strong>주소:</strong> {c.address} <br />
-              <strong>Tel:</strong> {c.tel} | <strong>Fax:</strong> {c.fax}<br />
-              <strong>Email:</strong> {c.email}
+              <strong>{t('address')}:</strong> {c.address} <br />
+              <strong>{t('tel')}:</strong> {c.tel} | <strong>{t('fax')}:</strong> {c.fax}<br />
+              <strong>{t('email')}:</strong> {c.email}
             </div>
           </div>
 
           {[
-            { title: '제품 및 인증 조회', links: [{ label: '스마트조명', href: '/shop' }, { label: '실내조명', href: '/shop' }, { label: '산업/실외조명', href: '/shop' }] },
-            { title: '무역 파트너스', links: [{ label: '수입/수출 절차 안내', href: '/trade-info' }, { label: '필수 인증서 정보', href: '/trade-info' }, { label: '운송/물류 트래킹', href: '/tracking' }] },
-            { title: '고객지원', links: [{ label: '회사 소개 및 오시는 길', href: '/about' }, { label: '게시판', href: '/board' }, { label: '블로그', href: '/blog' }] },
+            { title: t('footer_products'), links: [{ label: t('smart'), href: '/shop' }, { label: t('indoor'), href: '/shop' }, { label: t('outdoor'), href: '/shop' }] },
+            { title: t('footer_trade'), links: [{ label: t('trade'), href: '/trade-info' }, { label: t('specs'), href: '/trade-info' }, { label: t('logistics'), href: '/tracking' }] },
+            { title: t('footer_support'), links: [{ label: t('company'), href: '/about' }, { label: t('board'), href: '/board' }, { label: t('blog'), href: '/blog' }] },
           ].map((col) => (
             <div key={col.title}>
               <h4 style={{ fontSize: 15, fontWeight: 800, marginBottom: 20, color: '#0f172a' }}>{col.title}</h4>
@@ -55,7 +57,7 @@ export default function Footer() {
         
         <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
           <p style={{ fontSize: 14, color: '#94a3b8', fontWeight: 500 }}>© 2026 {c.name}. All rights reserved.</p>
-          <p style={{ fontSize: 14, color: '#94a3b8', fontWeight: 500 }}>사업자등록번호: {c.business_id}</p>
+          <p style={{ fontSize: 14, color: '#94a3b8', fontWeight: 500 }}>{t('bizNum')}: {c.business_id}</p>
         </div>
       </div>
     </footer>

@@ -3,35 +3,33 @@ import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useShopStore, useAdminStore } from '@/lib/store';
 import { useSiteSettings } from '@/lib/useSiteSettings';
+import { useI18n, FLAG_ICONS, Language } from '@/lib/i18n';
 
 const PRODUCT_CATEGORIES = [
-  { href: '/shop?cat=smart', label: '스마트조명시스템', icon: '☁️', desc: 'IoT 기반 무선 자동제어' },
-  { href: '/shop?cat=indoor', label: '실내조명', icon: '🏢', desc: '사무·상업용 고효율 LED' },
-  { href: '/shop?cat=commercial', label: '상업조명', icon: '🏪', desc: '쇼핑몰·매장 프리미엄 라인' },
-  { href: '/shop?cat=outdoor', label: '산업/실외조명', icon: '🏭', desc: '공장등·가로등 내구성 특화' },
-  { href: '/shop?cat=landscape', label: '경관조명', icon: '🌉', desc: '건축물·랜드마크 특화' },
-  { href: '/shop?cat=special', label: '특수조명', icon: '🔬', desc: '의료·클린룸·방폭·살균' },
+  { href: '/shop?cat=smart', labelKey: 'smart', icon: '☁️', descKey: 'desc_smart' },
+  { href: '/shop?cat=indoor', labelKey: 'indoor', icon: '🏢', descKey: 'desc_indoor' },
+  { href: '/shop?cat=commercial', labelKey: 'commercial', icon: '🏪', descKey: 'desc_commercial' },
+  { href: '/shop?cat=outdoor', labelKey: 'outdoor', icon: '🏭', descKey: 'desc_outdoor' },
+  { href: '/shop?cat=landscape', labelKey: 'landscape', icon: '🌉', descKey: 'desc_landscape' },
+  { href: '/shop?cat=special', labelKey: 'special', icon: '🔬', descKey: 'desc_special' },
 ];
-
-const EXTRA_LINKS = [
-  { href: '/board', label: '제품 게시판' },
-  { href: '/blog', label: '블로그' },
-];
-
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const [productMenuOpen, setProductMenuOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
   const productMenuRef = useRef<HTMLDivElement>(null);
   const cartCount = useShopStore((s) => s.cartCount());
-  const cart = useShopStore((s) => s.cart);
-  const removeFromCart = useShopStore((s) => s.removeFromCart);
-  const isAdmin = useAdminStore((s) => s.isLoggedIn);
   const settings = useSiteSettings();
+  const { lang, setLang, t } = useI18n();
 
   const getMenuLabel = (href: string, defaultLabel: string) => {
+    if (href === '/about') return t('company');
+    if (href === '/trade-info') return t('trade');
+    if (href === '/tracking') return t('logistics');
+    if (href === '/board') return t('board');
+    if (href === '/blog') return t('blog');
     return settings?.menus.find(m => m.href === href)?.label || defaultLabel;
   };
 
@@ -83,7 +81,6 @@ export default function Navbar() {
       }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           
-          {/* Logo Section */}
           <Link href="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
             <div style={{
               width: 44, height: 44, borderRadius: '12px',
@@ -104,89 +101,107 @@ export default function Navbar() {
               }}>
                 <span style={{ color: scrolled ? '#0284c7' : '#38bdf8' }}>{companyName}</span>
               </span>
-
               <span style={{ fontSize: 9, fontWeight: 800, color: scrolled ? '#64748b' : 'rgba(255,255,255,0.6)', letterSpacing: 1.5, marginTop: 4 }}>GLOBAL LED TRADING</span>
             </div>
           </Link>
 
-          {/* Desktop Navigation Pill */}
           <div className="desktop-nav" style={{ 
             display: 'flex', alignItems: 'center', gap: 6, 
             background: scrolled ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.05)',
             padding: '6px', borderRadius: '50px',
             border: scrolled ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(255,255,255,0.1)',
           }}>
-            <Link href="/about" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/about', '회사소개')}</Link>
+            <Link href="/about" style={navItemStyle()}>{getMenuLabel('/about', '회사소개')}</Link>
             
             <div ref={productMenuRef} style={{ position: 'relative' }}>
-              <button 
-                onClick={() => setProductMenuOpen(!productMenuOpen)}
-                style={navItemStyle(productMenuOpen)}
-                onMouseEnter={e => { if(!productMenuOpen) (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}
-              >
+              <button onClick={() => setProductMenuOpen(!productMenuOpen)} style={navItemStyle(productMenuOpen)}>
                 {getMenuLabel('/shop', '제품소개')}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ transform: productMenuOpen ? 'rotate(180deg)' : '0', transition: '0.3s' }}>
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
               </button>
 
-              {/* Mega Dropdown */}
               {productMenuOpen && (
                 <div style={{
                   position: 'absolute', top: 'calc(100% + 16px)', left: '50%', transform: 'translateX(-50%)',
                   background: '#ffffff', borderRadius: '24px', border: '1px solid #e2e8f0',
                   boxShadow: '0 30px 90px rgba(0,0,0,0.15)', padding: '24px', width: 560, zIndex: 2000,
-                  animation: 'dropdownIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     {PRODUCT_CATEGORIES.map((cat) => (
-                      <Link key={cat.href} href={cat.href} onClick={() => setProductMenuOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 16, padding: '16px', borderRadius: '18px', transition: '0.2s' }}
-                        onMouseEnter={e => { (e.currentTarget as any).style.background = '#f8fafc'; (e.currentTarget as any).style.transform = 'translateY(-2px)'; }}
-                        onMouseLeave={e => { (e.currentTarget as any).style.background = 'transparent'; (e.currentTarget as any).style.transform = 'none'; }}
-                      >
+                      <Link key={cat.href} href={cat.href} onClick={() => setProductMenuOpen(false)} style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 16, padding: '16px', borderRadius: '18px', transition: '0.2s' }}>
                         <div style={{ fontSize: 28, width: 52, height: 52, borderRadius: '14px', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{cat.icon}</div>
                         <div>
-                          <div style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', marginBottom: 2 }}>{cat.label}</div>
-                          <div style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>{cat.desc}</div>
+                          <div style={{ fontSize: 15, fontWeight: 800, color: '#0f172a', marginBottom: 2 }}>{t(cat.labelKey)}</div>
+                          <div style={{ fontSize: 12, color: '#64748b', fontWeight: 500 }}>{t(cat.descKey)}</div>
                         </div>
                       </Link>
                     ))}
                   </div>
                   <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
-                    <Link href="/shop" style={{ fontSize: 14, fontWeight: 800, color: '#0284c7', textDecoration: 'none' }}>전체 라인업 카탈로그 보기 →</Link>
+                    <Link href="/shop" style={{ fontSize: 14, fontWeight: 800, color: '#0284c7', textDecoration: 'none' }}>{t('shop-all')}</Link>
                   </div>
                 </div>
               )}
             </div>
 
-            <Link href="/trade-info" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/trade-info', '무역/인증')}</Link>
-            <Link href="/tracking" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/tracking', '물류조회')}</Link>
-            <Link href="/board" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/board', '게시판')}</Link>
-            <Link href="/blog" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/blog', '블로그')}</Link>
-
+            <Link href="/trade-info" style={navItemStyle()}>{t('trade')}</Link>
+            <Link href="/tracking" style={navItemStyle()}>{t('logistics')}</Link>
+            <Link href="/board" style={navItemStyle()}>{t('board')}</Link>
+            <Link href="/blog" style={navItemStyle()}>{t('blog')}</Link>
           </div>
 
-          {/* Icon Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <button onClick={() => setCartOpen(true)} style={{ 
+            <div style={{ position: 'relative' }}>
+              <button 
+                onClick={() => setLangMenuOpen(!langMenuOpen)}
+                style={{
+                  background: scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)',
+                  border: 'none', cursor: 'pointer', height: 44, padding: '0 12px', borderRadius: '22px',
+                  color: scrolled ? '#334155' : '#ffffff', display: 'flex', alignItems: 'center', gap: 6, transition: '0.3s'
+                }}
+              >
+                <span style={{ fontSize: 20 }}>{FLAG_ICONS[lang]}</span>
+                <span style={{ fontSize: 12, fontWeight: 800 }}>{lang.toUpperCase()}</span>
+              </button>
+              
+              {langMenuOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: 10,
+                  background: '#ffffff', border: '1px solid #f1f5f9', borderRadius: 16,
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.1)', overflow: 'hidden', zIndex: 100,
+                  minWidth: 120
+                }}>
+                  {(Object.keys(FLAG_ICONS) as Language[]).map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => { setLang(l); setLangMenuOpen(false); }}
+                      style={{
+                        width: '100%', padding: '12px 16px', border: 'none', background: lang === l ? '#f8fafc' : 'none',
+                        cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: '0.2s',
+                        textAlign: 'left'
+                      }}
+                    >
+                      <span style={{ fontSize: 18 }}>{FLAG_ICONS[l]}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#334155' }}>
+                        {l === 'ko' ? '한국어' : l === 'en' ? 'English' : l === 'zh' ? '中文' : '日本語'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <Link href="/cart" style={{ 
               background: scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)', 
               border: 'none', cursor: 'pointer', width: 44, height: 44, borderRadius: '50%',
-              color: scrolled ? '#334155' : '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', transition: '0.3s'
+              color: scrolled ? '#334155' : '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', transition: '0.3s',
+              textDecoration: 'none'
             }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
               </svg>
               {cartCount > 0 && <span style={{ position: 'absolute', top: -4, right: -4, background: '#ef4444', color: 'white', fontSize: 10, fontWeight: 900, width: 18, height: 18, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white' }}>{cartCount}</span>}
-            </button>
-            
-            <Link href="/admin/login" style={{ textDecoration: 'none' }}>
-              <div style={{ 
-                background: scrolled ? '#0f172a' : '#ffffff', 
-                color: scrolled ? '#ffffff' : '#0f172a',
-                padding: '10px 22px', borderRadius: '50px', fontSize: 14, fontWeight: 800, transition: '0.3s', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-              }}>
-                B2B 로그인
-              </div>
             </Link>
 
             <button onClick={() => setMenuOpen(!menuOpen)} className="mobile-menu-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: scrolled ? '#0f172a' : '#ffffff', display: 'none' }}>
@@ -197,25 +212,19 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {menuOpen && (
           <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#ffffff', padding: '24px', borderTop: '1px solid #f1f5f9', boxShadow: '0 20px 40px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', gap: 10 }}>
-             <Link href="/about" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>회사소개</Link>
-             <Link href="/shop" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>제품소개</Link>
-             <Link href="/trade-info" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>무역/인증 안내</Link>
-             <Link href="/tracking" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>물류조회</Link>
-             <Link href="/board" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>게시판</Link>
-             <Link href="/blog" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>블로그</Link>
-
+             <Link href="/about" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>{t('company')}</Link>
+             <Link href="/shop" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>{t('products')}</Link>
+             <Link href="/trade-info" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>{t('trade')}</Link>
+             <Link href="/tracking" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>{t('logistics')}</Link>
+             <Link href="/board" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>{t('board')}</Link>
+             <Link href="/blog" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>{t('blog')}</Link>
           </div>
         )}
       </nav>
 
       <style jsx>{`
-        @keyframes dropdownIn {
-          from { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.98); }
-          to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-        }
         @media (max-width: 1024px) {
           .desktop-nav { display: none !important; }
           .mobile-menu-btn { display: block !important; }
