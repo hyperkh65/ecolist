@@ -16,8 +16,12 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const wishlist = useShopStore((s) => s.wishlist);
   const isWished = wishlist.includes(product.id);
 
-  const discount = product.originalPrice
-    ? Math.round((1 - product.price / product.originalPrice) * 100)
+  const price = product.price || 0;
+  const originalPrice = product.original_price || (product as any).originalPrice;
+  const image = (product as any).image || (product.images && product.images[0]);
+
+  const discount = originalPrice
+    ? Math.round((1 - price / originalPrice) * 100)
     : null;
 
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -48,7 +52,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
         {/* Image */}
         <div style={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden', background: '#0a0a0a' }}>
           <img
-            src={product.images[0]}
+            src={image}
             alt={product.name}
             style={{
               width: '100%', height: '100%', objectFit: 'cover',
@@ -127,12 +131,12 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              {product.originalPrice && (
+              {originalPrice && (
                 <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through', marginRight: 6 }}>
-                  {product.originalPrice.toLocaleString()}원
+                  {originalPrice.toLocaleString()}원
                 </span>
               )}
-              <span style={{ fontSize: 18, fontWeight: 700 }}>{product.price.toLocaleString()}원</span>
+              <span style={{ fontSize: 18, fontWeight: 700 }}>{price.toLocaleString()}원</span>
             </div>
             <span style={{ fontSize: 11, color: product.stock > 10 ? 'rgba(255,255,255,0.3)' : '#ff8080' }}>
               {product.stock > 10 ? '재고있음' : `${product.stock}개 남음`}

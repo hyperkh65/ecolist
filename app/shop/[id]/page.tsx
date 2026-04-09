@@ -4,17 +4,34 @@ import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import { useAdminStore, useShopStore } from '@/lib/store';
 import { ScrollReveal } from '@/components/LuminaAnimation';
+import { supabase } from '@/lib/supabase';
+import { useEffect } from 'react';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const products = useAdminStore((s) => s.products);
-  const product = products.find((p) => p.id === id);
+  const [product, setProduct] = useState<any>(null);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   const addToCart = useShopStore((s) => s.addToCart);
   const toggleWishlist = useShopStore((s) => s.toggleWishlist);
   const wishlist = useShopStore((s) => s.wishlist);
+
+  useEffect(() => {
+    async function fetchData() {
+        const { data: prod } = await supabase.from('products').select('*').eq('id', id).single();
+        const { data: all } = await supabase.from('products').select('*').limit(10);
+        if (prod) setProduct(prod);
+        if (all) setProducts(all);
+        setLoading(false);
+    }
+    fetchData();
+  }, [id]);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const isWished = product ? wishlist.includes(product.id) : false;
+ 
+  if (loading) return <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>데이터 로딩 중...</div>;
 
   if (!product) return (
     <main style={{ background: '#f9fafb', minHeight: '100vh', color: '#111827', paddingTop: 64, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -33,8 +50,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     setTimeout(() => setAdded(false), 2500);
   };
 
-  const discount = product.originalPrice
-    ? Math.round((1 - product.price / product.originalPrice) * 100)
+  const originalPrice = product.original_price || product.originalPrice;
+  const image = product.image || (product.images && product.images[0]);
+
+  const discount = originalPrice
+    ? Math.round((1 - product.price / originalPrice) * 100)
     : null;
 
   return (
@@ -59,7 +79,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         <ScrollReveal direction="left">
           <div style={{ position: 'sticky', top: 84 }}>
             <div style={{ borderRadius: 24, overflow: 'hidden', background: '#fff', aspectRatio: '1', position: 'relative', border: '1px solid #e5e7eb' }}>
-              <img src={product.images[0]} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <img src={image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               {product.badge && (
                 <div style={{ position: 'absolute', top: 20, left: 20, padding: '6px 14px', borderRadius: 8, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', border: '1px solid #e5e7eb', fontSize: 12, fontWeight: 700, letterSpacing: 1, color: '#0369a1' }}>
                   {product.badge}
@@ -91,13 +111,13 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
             {/* Price */}
             <div style={{ marginBottom: 36, padding: '24px', background: '#fff', borderRadius: 16, border: '1px solid #e5e7eb', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
-              {product.originalPrice && (
+              {originalPrice && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                  <span style={{ fontSize: 16, color: '#9ca3af', textDecoration: 'line-through' }}>{product.originalPrice.toLocaleString()}원</span>
+                  <span style={{ fontSize: 16, color: '#9ca3af', textDecoration: 'line-through' }}>{originalPrice.toLocaleString()}원</span>
                   {discount && <span style={{ fontSize: 13, fontWeight: 700, color: '#0369a1', background: '#e0f2fe', padding: '2px 8px', borderRadius: 4 }}>-{discount}% B2B 할인가</span>}
                 </div>
               )}
-              <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', color: '#111827' }}>{product.price.toLocaleString()}원</div>
+              <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: '-0.02em', color: '#111827' }}>{(product.price || 0).toLocaleString()}원</div>
               <div style={{ fontSize: 14, color: '#6b7280', marginTop: 8, fontWeight: 600 }}>재고: {product.stock}개</div>
             </div>
 
@@ -105,7 +125,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
             <div style={{ marginBottom: 36 }}>
               <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#4b5563', marginBottom: 16 }}>스펙</h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                {Object.entries(product.specs).map(([key, val]) => (
+                {Object.entries((product.specs as Record<string, string>) || {}).map(([key, val]) => (
                   <div key={key} style={{ padding: '12px 14px', background: '#fff', borderRadius: 10, border: '1px solid #e5e7eb' }}>
                     <div style={{ fontSize: 12, color: '#6b7280', marginBottom: 4, fontWeight: 600 }}>{key}</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#111827' }}>{val}</div>
@@ -119,7 +139,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <div style={{ marginBottom: 36 }}>
                 <h3 style={{ fontSize: 14, fontWeight: 700, letterSpacing: 1, textTransform: 'uppercase', color: '#4b5563', marginBottom: 16 }}>인증서 및 문서</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  {product.certificates.map((certUrl, index) => {
+                  {product.certificates.map((certUrl: string, index: number) => {
                     const certName = certUrl.split('/').pop() || `문서 ${index + 1}`;
                     return (
                       <a key={index} href={certUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', background: '#fff', borderRadius: 10, border: '1px solid #e5e7eb', textDecoration: 'none', color: '#111827', transition: 'all 0.2s' }} onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = '#f3f4f6'; }} onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = '#fff'; }}>
@@ -168,19 +188,22 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <h2 style={{ fontSize: 32, fontWeight: 700, marginBottom: 40, letterSpacing: '-0.02em' }}>함께 보면 좋아요</h2>
           <div className="products-grid">
-            {products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 3).map((p, i) => (
+            {products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 3).map((p, i) => {
+              const pImage = p.image || (p.images && p.images[0]);
+              return (
               <ScrollReveal key={p.id} delay={i * 100}>
                 <Link href={`/shop/${p.id}`} style={{ display: 'block', textDecoration: 'none', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, overflow: 'hidden', transition: 'all 0.3s', color: '#fff' }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'translateY(-4px)'; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.03)'; (e.currentTarget as HTMLAnchorElement).style.transform = 'none'; }}>
-                  <img src={p.images[0]} alt={p.name} style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover' }} />
+                  <img src={pImage} alt={p.name} style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover' }} />
                   <div style={{ padding: 20 }}>
                     <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{p.name}</div>
-                    <div style={{ fontSize: 18, fontWeight: 700 }}>{p.price.toLocaleString()}원</div>
+                    <div style={{ fontSize: 18, fontWeight: 700 }}>{(p.price || 0).toLocaleString()}원</div>
                   </div>
                 </Link>
               </ScrollReveal>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

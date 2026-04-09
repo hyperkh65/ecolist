@@ -7,9 +7,11 @@ export interface Product {
   category: string;
   price: number;
   originalPrice?: number;
+  original_price?: number;
   description: string;
   specs: Record<string, string>;
   images: string[];
+  image?: string;
   certificates?: string[];
   badge?: string;
   stock: number;
@@ -17,6 +19,7 @@ export interface Product {
   reviews: number;
   featured: boolean;
   createdAt: string;
+  created_at?: string;
 }
 
 export interface CartItem {
@@ -46,107 +49,8 @@ export interface ShopState {
   cartCount: () => number;
 }
 
-// Demo products
-const DEMO_PRODUCTS: Product[] = [
-  {
-    id: '1', name: 'SmartMesh 게이트웨이 Pro', category: 'smart',
-    price: 350000,
-    description: '공장 및 대형 빌딩을 위한 무선 스마트 조명 제어 허브. 1000개 이상의 노드 동시 제어 가능.',
-    specs: { '통신': 'Zigbee 3.0 / Matter', '최대노드': '1000+', '전원': 'AC 100-240V', '크기': '200x150x45mm' },
-    images: ['/panel-interior.png'],
-    certificates: ['https://example.com/cert-kc.pdf', 'https://example.com/cert-ce.pdf'],
-    badge: 'NEW', stock: 100, rating: 5.0, reviews: 12, featured: true,
-    createdAt: '2025-01-01'
-  },
-  {
-    id: '2', name: 'SmartMesh 모션 센서', category: 'smart',
-    price: 45000, originalPrice: 60000,
-    description: '주차장 및 복도용 고감도 마이크로웨이브 모션 센서. 게이트웨이와 무선 연동.',
-    specs: { '감지범위': '반경 8m', '감지방식': '5.8GHz Microwave', '보호등급': 'IP44', '배터리': 'CR123A (최대 3년)' },
-    images: ['/strip-glow.png'],
-    certificates: ['https://example.com/kc.pdf'],
-    badge: 'BEST', stock: 500, rating: 4.8, reviews: 89, featured: true,
-    createdAt: '2025-01-15'
-  },
-  {
-    id: '3', name: '울트라 씬 엣지 평판 1200x300', category: 'indoor',
-    price: 85000,
-    description: '사무실용 초박형 LED 평판 조명. 플리커프리 및 눈부심 방지 설계. 높은 에너지 효율.',
-    specs: { '크기': '1200x300mm', '전력': '40W', '광효율': '130lm/W', 'CRI': '>90', 'UGR': '<19' },
-    images: ['/panel-interior.png'],
-    certificates: ['https://example.com/ks.pdf', 'https://example.com/energy.pdf'],
-    stock: 300, rating: 4.7, reviews: 64, featured: false,
-    createdAt: '2025-02-01'
-  },
-  {
-    id: '4', name: '하이베이 공장등 150W', category: 'outdoor',
-    price: 185000,
-    description: '대형 공장 및 물류 창고용 고천장등. 다이캐스팅 알루미늄 방열 설계로 긴 수명 보장.',
-    specs: { '전력': '150W', '광속': '21000lm', '광효율': '140lm/W', '방수방진': 'IP65', '수명': '50,000hr' },
-    images: ['/hero-main.png'],
-    certificates: ['https://example.com/iso9001.pdf', 'https://example.com/ce.pdf'],
-    stock: 120, rating: 4.9, reviews: 45, featured: false,
-    createdAt: '2025-02-10'
-  },
-  {
-    id: '5', name: '스마트 LED 가로등 100W', category: 'outdoor',
-    price: 320000, originalPrice: 380000,
-    description: '도로 및 산업단지용 고효율 LED 가로등. NEMA 소켓 적용으로 스마트 제어기 결합 가능.',
-    specs: { '전력': '100W', '광속': '15000lm', 'IP등급': 'IP66', 'IK등급': 'IK08', '스마트': 'NEMA 7Pin' },
-    images: ['/strip-glow.png'],
-    certificates: ['https://example.com/ks.pdf'],
-    badge: 'SALE', stock: 80, rating: 4.8, reviews: 37, featured: true,
-    createdAt: '2025-03-01'
-  },
-  {
-    id: '6', name: '의료/클린룸용 무진등', category: 'special',
-    price: 155000,
-    description: '반도체 공장, 병원, 제약회사용 클린룸 조명. 먼지 쌓임 방지 및 완벽 밀폐형 구조.',
-    specs: { '전력': '50W', '크기': '1200x300mm', '방수방진': 'IP65', '재질': '항균강판/PC', '무게': '3.2kg' },
-    images: ['/panel-interior.png'],
-    certificates: ['https://example.com/haccp.pdf'],
-    stock: 45, rating: 4.6, reviews: 28, featured: false,
-    createdAt: '2025-03-10'
-  },
-  {
-    id: '7', name: '매장용 트랙 스포트라이트 30W', category: 'commercial',
-    price: 68000, originalPrice: 85000,
-    description: '패션 매장·부티크·전시홀용 고연색성 COB 트랙 조명. CRI 95+ 자연광 표현.',
-    specs: { '전력': '30W', '광속': '3300lm', 'CRI': '95+', '빔각도': '25°/36°/60°', '색온도': '2700K~5000K' },
-    images: ['/strip-glow.png'],
-    certificates: ['https://example.com/kc.pdf', 'https://example.com/ce.pdf'],
-    badge: 'BEST', stock: 250, rating: 4.9, reviews: 112, featured: true,
-    createdAt: '2025-03-15'
-  },
-  {
-    id: '8', name: '쇼케이스 진열장 LED 바', category: 'commercial',
-    price: 32000,
-    description: '쇼핑몰·백화점 진열대용 소형 LED 바 조명. 접착식으로 간편 시공 및 조광 기능.',
-    specs: { '전력': '12W/m', '색온도': '3000K', '방수': 'IP20', '길이': '500mm/1000mm/1500mm', '조광': '0-10V' },
-    images: ['/panel-interior.png'],
-    stock: 800, rating: 4.7, reviews: 67, featured: false,
-    createdAt: '2025-03-20'
-  },
-  {
-    id: '9', name: '건물 외벽 워시 라이트 24W', category: 'landscape',
-    price: 145000,
-    description: '호텔·오피스빌딩·문화재 외벽 조명용 고내구성 워시 라이트. RGBW 풀컬러 연출 가능.',
-    specs: { '전력': '24W', '색상': 'RGBW', '방수': 'IP66', '제어': 'DMX512', '수명': '50,000hr+' },
-    images: ['/hero-main.png'],
-    certificates: ['https://example.com/ce.pdf', 'https://example.com/rohs.pdf'],
-    badge: 'NEW', stock: 60, rating: 4.8, reviews: 23, featured: true,
-    createdAt: '2025-04-01'
-  },
-  {
-    id: '10', name: '랜드마크 투광 조명 100W', category: 'landscape',
-    price: 285000,
-    description: '교량·타워·대형 건축물 경관 연출을 위한 고출력 투광기. IP68 방수로 수중 설치도 가능.',
-    specs: { '전력': '100W', '광속': '13000lm', '방수': 'IP68', '제어': 'DMX/자체 시나리오', '재질': '군용급 알루미늄' },
-    images: ['/strip-glow.png'],
-    stock: 30, rating: 5.0, reviews: 8, featured: false,
-    createdAt: '2025-04-05'
-  },
-];
+// Initial products will be fetched from Supabase
+const DEMO_PRODUCTS: Product[] = [];
 
 export const useAdminStore = create<AdminState>()(
   persist(

@@ -1,12 +1,12 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import { AnimatedCounter, ScrollReveal } from '@/components/LuminaAnimation';
 import RemotionHero from '@/components/RemotionHero';
-import { useAdminStore } from '@/lib/store';
+import { supabase } from '@/lib/supabase';
 
 const CATEGORIES = [
   { id: 'smart', label: '스마트조명시스템', icon: '☁️', desc: 'IoT 기반 무선 자동제어 솔루션' },
@@ -18,8 +18,17 @@ const CATEGORIES = [
 ];
 
 export default function Home() {
-  const products = useAdminStore((s) => s.products);
-  const featured = products.filter((p) => p.featured).slice(0, 3);
+  const [products, setProducts] = useState<any[]>([]);
+  
+  useEffect(() => {
+    async function fetchFeatured() {
+      const { data } = await supabase.from('products').select('*').eq('featured', true).limit(8);
+      if (data) setProducts(data);
+    }
+    fetchFeatured();
+  }, []);
+
+  const featured = products;
   const allProducts = products.slice(0, 6);
 
   return (

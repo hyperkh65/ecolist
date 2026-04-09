@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import ProductCard from '@/components/ProductCard';
 import { useAdminStore } from '@/lib/store';
+import { supabase } from '@/lib/supabase';
 
 const CATS = [
   { id: 'all', label: '전체' },
@@ -30,7 +31,15 @@ export default function ShopContent() {
   const [sort, setSort] = useState('featured');
   const [search, setSearch] = useState('');
   const [maxPrice, setMaxPrice] = useState(500000);
-  const products = useAdminStore((s) => s.products);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      if (data) setProducts(data);
+    }
+    fetchProducts();
+  }, []);
 
   useEffect(() => { setCat(searchParams.get('cat') || 'all'); }, [searchParams]);
 
@@ -39,8 +48,8 @@ export default function ShopContent() {
     .sort((a, b) => {
       if (sort === 'price-asc') return a.price - b.price;
       if (sort === 'price-desc') return b.price - a.price;
-      if (sort === 'rating') return b.rating - a.rating;
-      if (sort === 'newest') return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      if (sort === 'rating') return (b.rating || 0) - (a.rating || 0);
+      if (sort === 'newest') return new Date(b.created_at || b.createdAt).getTime() - new Date(a.created_at || a.createdAt).getTime();
       return (b.featured ? 1 : 0) - (a.featured ? 1 : 0);
     });
 
