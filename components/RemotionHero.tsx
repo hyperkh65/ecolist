@@ -28,12 +28,12 @@ const TitleSequence = () => {
   const phase2 = interpolate(frame, [60, 140], [0, 1], { easing: Easing.bezier(0.2, 0.8, 0.4, 1), extrapolateRight: 'clamp' });
   const phase3 = interpolate(frame, [100, 190],[0, 1], { easing: Easing.bezier(0.2, 0.8, 0.4, 1), extrapolateRight: 'clamp' });
 
-  const blur1  = interpolate(phase1, [0, 1], [28, 0]);
-  const blur2  = interpolate(phase2, [0, 1], [28, 0]);
-  const blur3  = interpolate(phase3, [0, 1], [18, 0]);
-  const scale1 = interpolate(phase1, [0, 1], [1.07, 1]);
-  const scale2 = interpolate(phase2, [0, 1], [1.07, 1]);
-  const scale3 = interpolate(phase3, [0, 1], [1.03, 1]);
+  const blur1  = interpolate(phase1, [0, 0.7], [12, 0], { extrapolateRight: 'clamp' });
+  const blur2  = interpolate(phase2, [0, 0.7], [12, 0], { extrapolateRight: 'clamp' });
+  const blur3  = interpolate(phase3, [0, 0.7], [8, 0], { extrapolateRight: 'clamp' });
+  const scale1 = interpolate(phase1, [0, 1], [1.03, 1]);
+  const scale2 = interpolate(phase2, [0, 1], [1.03, 1]);
+  const scale3 = interpolate(phase3, [0, 1], [1.02, 1]);
 
   return (
     <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -55,25 +55,30 @@ const TitleSequence = () => {
 
         {/* 메인 헤드라인 */}
         <h1 style={{
-          fontSize: 'clamp(40px, 5.5vw, 88px)', fontWeight: 900,
-          color: '#ffffff', letterSpacing: '-0.04em', lineHeight: 1.18,
-          textShadow: '0 4px 12px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.4)',
-          opacity: phase2, filter: `blur(${blur2}px)`, transform: `scale(${scale2})`,
+          fontSize: 'clamp(42px, 6vw, 92px)', fontWeight: 900,
+          color: '#ffffff', letterSpacing: '-0.04em', lineHeight: 1.15,
+          textShadow: '0 2px 4px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5)',
+          opacity: phase2, filter: `blur(${blur2}px)`, 
+          transform: `scale(${scale2}) translateZ(0)`,
           marginBottom: 0,
+          WebkitFontSmoothing: 'antialiased',
         }}>
           검증된 제품,<br />
           <span style={{
-            background: 'linear-gradient(90deg, #38bdf8 0%, #818cf8 100%)',
+            background: 'linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            filter: 'drop-shadow(0 0 10px rgba(96,165,250,0.3))',
           }}>신뢰할 수 있는 공급</span>
         </h1>
 
         {/* 서브카피 */}
         <p style={{
-          fontSize: 'clamp(15px, 1.4vw, 20px)', color: '#f1f5f9', fontWeight: 600,
-          maxWidth: 720, margin: '32px auto 0', lineHeight: 1.85,
-          textShadow: '0 2px 8px rgba(0,0,0,0.9)',
-          opacity: phase3, filter: `blur(${blur3}px)`, transform: `scale(${scale3})`,
+          fontSize: 'clamp(16px, 1.5vw, 21px)', color: '#ffffff', fontWeight: 600,
+          maxWidth: 740, margin: '36px auto 0', lineHeight: 1.8,
+          textShadow: '0 2px 4px rgba(0,0,0,0.9)',
+          opacity: phase3, filter: `blur(${blur3}px)`, 
+          transform: `scale(${scale3}) translateZ(0)`,
+          WebkitFontSmoothing: 'antialiased',
         }}>
           글로벌 제조사로부터 직접 소싱한 KC · CE · RoHS 인증 완료 제품.<br />
           까다로운 검수와 안전한 물류로 귀사의 비즈니스를 지원합니다.
@@ -155,10 +160,10 @@ function BackgroundVideo() {
         )}
       </div>
 
-      {/* 코퍼레이트 오버레이 (텍스트 가독성을 위해 중앙부 더 어둡게 처리) */}
+      {/* 코퍼레이트 오버레이 (대비를 높이기 위해 오버레이 수정) */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'radial-gradient(circle at center, rgba(6,13,26,0.5) 0%, rgba(6,13,26,0.92) 80%)',
+        background: 'radial-gradient(circle at center, rgba(6,13,26,0.3) 0%, rgba(6,13,26,0.85) 75%)',
         zIndex: 2,
       }} />
     </div>
