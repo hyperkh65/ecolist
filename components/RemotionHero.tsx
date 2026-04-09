@@ -42,22 +42,22 @@ const TitleSequence = () => {
         {/* 회사 뱃지 */}
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 12,
-          padding: '8px 24px', background: 'rgba(255,255,255,0.07)',
+          padding: '8px 24px', background: 'rgba(255,255,255,0.1)',
           backdropFilter: 'blur(24px)', borderRadius: 40,
-          border: '1px solid rgba(255,255,255,0.13)',
-          marginBottom: 40, boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          border: '1px solid rgba(255,255,255,0.2)',
+          marginBottom: 40, boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
           opacity: phase1, filter: `blur(${blur1}px)`, transform: `scale(${scale1})`,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 800, color: '#38bdf8', letterSpacing: 2 }}>(주)와이앤케이</span>
-          <span style={{ width: 3, height: 3, borderRadius: '50%', background: 'rgba(255,255,255,0.35)' }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#94a3b8', letterSpacing: 1.5 }}>GLOBAL LED TRADE PARTNER</span>
+          <span style={{ fontSize: 13, fontWeight: 900, color: '#0ea5e9', letterSpacing: 2 }}>(주)와이앤케이</span>
+          <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.5)' }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#f8fafc', letterSpacing: 1.5 }}>GLOBAL LED TRADE PARTNER</span>
         </div>
 
         {/* 메인 헤드라인 */}
         <h1 style={{
           fontSize: 'clamp(40px, 5.5vw, 88px)', fontWeight: 900,
           color: '#ffffff', letterSpacing: '-0.04em', lineHeight: 1.18,
-          textShadow: '0 16px 48px rgba(0,0,0,0.6)',
+          textShadow: '0 4px 12px rgba(0,0,0,0.8), 0 0 40px rgba(0,0,0,0.4)',
           opacity: phase2, filter: `blur(${blur2}px)`, transform: `scale(${scale2})`,
           marginBottom: 0,
         }}>
@@ -70,9 +70,9 @@ const TitleSequence = () => {
 
         {/* 서브카피 */}
         <p style={{
-          fontSize: 'clamp(15px, 1.4vw, 20px)', color: '#94a3b8', fontWeight: 400,
-          maxWidth: 680, margin: '32px auto 0', lineHeight: 1.85,
-          textShadow: '0 8px 24px rgba(0,0,0,0.5)',
+          fontSize: 'clamp(15px, 1.4vw, 20px)', color: '#f1f5f9', fontWeight: 600,
+          maxWidth: 720, margin: '32px auto 0', lineHeight: 1.85,
+          textShadow: '0 2px 8px rgba(0,0,0,0.9)',
           opacity: phase3, filter: `blur(${blur3}px)`, transform: `scale(${scale3})`,
         }}>
           글로벌 제조사로부터 직접 소싱한 KC · CE · RoHS 인증 완료 제품.<br />
@@ -117,9 +117,10 @@ function BackgroundVideo() {
       <div style={{
         position: 'absolute',
         inset: 0,
-        opacity: fadeout ? 0 : 0.45,
+        opacity: fadeout ? 0 : 0.35,
         transition: 'opacity 1s ease-in-out',
         zIndex: 1,
+        filter: 'brightness(0.8) contrast(1.2) saturate(1.1)',
       }}>
         {useLocal ? (
           <video
@@ -154,10 +155,10 @@ function BackgroundVideo() {
         )}
       </div>
 
-      {/* 코퍼레이트 오버레이 (영상 위에 덮어씌움) */}
+      {/* 코퍼레이트 오버레이 (텍스트 가독성을 위해 중앙부 더 어둡게 처리) */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'radial-gradient(ellipse at 60% 40%, rgba(2,132,199,0.12) 0%, rgba(6,13,26,0.88) 75%)',
+        background: 'radial-gradient(circle at center, rgba(6,13,26,0.5) 0%, rgba(6,13,26,0.92) 80%)',
         zIndex: 2,
       }} />
     </div>
