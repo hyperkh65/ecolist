@@ -107,8 +107,25 @@ export default function AdminPage() {
   const handleSaveProduct = async () => {
     if (!editProduct) return;
     setLoading(true);
-    const { error } = await supabase.from('products').upsert({
+    
+    // 상세 스펙을 객체로 구조화
+    const productToSave = {
       ...editProduct,
+      specs: {
+        power: editProduct.specs_power,
+        color_temp: editProduct.specs_temp,
+        luminous_flux: editProduct.specs_flux,
+        beam_angle: editProduct.specs_angle,
+        ip_rating: editProduct.specs_ip,
+        size: editProduct.specs_size,
+      }
+    };
+
+    // 불필요한 임시 필드 제거
+    ['specs_power', 'specs_temp', 'specs_flux', 'specs_angle', 'specs_ip', 'specs_size'].forEach(k => delete (productToSave as any)[k]);
+
+    const { error } = await supabase.from('products').upsert({
+      ...productToSave,
       id: editProduct.id || undefined
     });
     if (!error) {
@@ -209,15 +226,17 @@ export default function AdminPage() {
 
              {editProduct ? (
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: 32, borderRadius: 20, border: '1px solid rgba(255,255,255,0.1)' }}>
-                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                       {INPUT('제품명', editProduct.name, (v) => setEditProduct({ ...editProduct, name: v }))}
                       <div style={{ marginBottom: 16 }}>
                         <label style={{ display: 'block', fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>카테고리</label>
                         <select value={editProduct.category} onChange={(e) => setEditProduct({ ...editProduct, category: e.target.value })} className="input-dark">
                            <option value="smart">스마트조명</option>
                            <option value="indoor">실내조명</option>
+                           <option value="home_lighting">홈조명</option>
                            <option value="commercial">상업조명</option>
-                           <option value="outdoor">산업/실외조명</option>
+                           <option value="industrial">산업조명</option>
+                           <option value="outdoor">실외조명</option>
                            <option value="landscape">경관조명</option>
                            <option value="special">특수조명</option>
                         </select>
@@ -229,9 +248,17 @@ export default function AdminPage() {
                             <CloudinaryUpload label="이미지 업로드" folder="led-products" onSuccess={(url) => setEditProduct({ ...editProduct, image: url })} />
                          </div>
                       </div>
-                      <div style={{ gridColumn: '1 / span 2' }}>
-                         {INPUT('주요 사양 (예: 전력, 색온도 등)', editProduct.specs, (v) => setEditProduct({ ...editProduct, specs: v }))}
-                      </div>
+                      <div style={{ gridColumn: '1 / span 2', background: 'rgba(255,255,255,0.02)', padding: 20, borderRadius: 12, border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: 'var(--primary)', marginBottom: 16 }}>제품 상세 스펙 (조명 특성)</label>
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16 }}>
+                             {INPUT('소비전력 (W)', editProduct.specs_power || '', (v) => setEditProduct({ ...editProduct, specs_power: v }))}
+                             {INPUT('색온도 (K)', editProduct.specs_temp || '', (v) => setEditProduct({ ...editProduct, specs_temp: v }))}
+                             {INPUT('광속 (lm)', editProduct.specs_flux || '', (v) => setEditProduct({ ...editProduct, specs_flux: v }))}
+                             {INPUT('배광각도 (°)', editProduct.specs_angle || '', (v) => setEditProduct({ ...editProduct, specs_angle: v }))}
+                             {INPUT('IP 등급', editProduct.specs_ip || '', (v) => setEditProduct({ ...editProduct, specs_ip: v }))}
+                             {INPUT('제품 크기 (mm)', editProduct.specs_size || '', (v) => setEditProduct({ ...editProduct, specs_size: v }))}
+                          </div>
+                       </div>
                       <div style={{ gridColumn: '1 / span 2' }}>
                          <label style={{ display: 'block', fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>제품 설명</label>
                          <textarea value={editProduct.description} onChange={(e) => setEditProduct({ ...editProduct, description: e.target.value })} 
@@ -253,7 +280,18 @@ export default function AdminPage() {
                             <div style={{ fontSize: 12, color: '#3b82f6', marginBottom: 4 }}>{prod.category.toUpperCase()}</div>
                             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 12 }}>{prod.name}</div>
                             <div style={{ display: 'flex', gap: 8 }}>
-                               <button onClick={() => setEditProduct(prod)} className="btn-sm" style={{ flex: 1 }}>수정</button>
+                               <button onClick={() => {
+                                   const specs = prod.specs || {};
+                                   setEditProduct({
+                                      ...prod,
+                                      specs_power: specs.power || '',
+                                      specs_temp: specs.color_temp || '',
+                                      specs_flux: specs.luminous_flux || '',
+                                      specs_angle: specs.beam_angle || '',
+                                      specs_ip: specs.ip_rating || '',
+                                      specs_size: specs.size || '',
+                                   });
+                                }} className="btn-sm" style={{ flex: 1 }}>수정</button>
                                <button onClick={() => handleDeleteProduct(prod.id)} className="btn-sm-red">삭제</button>
                             </div>
                          </div>
