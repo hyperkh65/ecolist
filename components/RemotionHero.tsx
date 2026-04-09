@@ -11,13 +11,19 @@ import React, { useState, useEffect } from 'react';
  * YouTube 영상 변경 방법: YOUTUBE_VIDEO_ID 상수를 바꾸면 됩니다.
  * 추천 검색어: "4K night city timelapse free" YouTube → 영상 ID 복사
  */
-const YOUTUBE_VIDEO_ID = 'g5qZABzOT7A'; // 야경 도시 영상 (변경 가능)
+const YOUTUBE_CLIPS = [
+  'g5qZABzOT7A', // Clip 1: 야경 도시 (Night City)
+  'unq8_ZzK330', // Clip 2: 물류/창고 (Logistics/Warehouse)
+  'Wj_l-M09qQA', // Clip 3: 빌딩/항만 (Building/Port)
+];
 const LOCAL_VIDEO_PATH = '/hero-bg.mp4';  // /public/hero-bg.mp4 파일 넣으면 자동 우선 적용
 
 // ─── 타이틀 시퀀스 (Remotion: 텍스트 애니메이션만 담당) ─────────────────────
 const TitleSequence = () => {
   const frame = useCurrentFrame();
 
+  // 1단계: 0-1200프레임 (0-20초), 2단계: 1200-2400프레임 (20-40초), 3단계...
+  // 텍스트는 계속 유지되거나 서서히 페이드 됨. 여기서는 초기 진입 애니메이션 위주.
   const phase1 = interpolate(frame, [20, 80],  [0, 1], { easing: Easing.bezier(0.2, 0.8, 0.4, 1), extrapolateRight: 'clamp' });
   const phase2 = interpolate(frame, [60, 140], [0, 1], { easing: Easing.bezier(0.2, 0.8, 0.4, 1), extrapolateRight: 'clamp' });
   const phase3 = interpolate(frame, [100, 190],[0, 1], { easing: Easing.bezier(0.2, 0.8, 0.4, 1), extrapolateRight: 'clamp' });
@@ -85,50 +91,58 @@ export const LuminaComposition: React.FC = () => (
 
 // ─── 배경 영상 컴포넌트 ─────────────────────────────────────────────────────────
 function BackgroundVideo() {
-  const [useLocal, setUseLocal] = useState(true); // 먼저 로컬 파일 시도
+  const [useLocal, setUseLocal] = useState(false); // 로컬 파일이 없으면 바로 YouTube로
+  const [clipIndex, setClipIndex] = useState(0);
 
-  // 로컬 영상 로드 실패 시 YouTube로 fallback
+  // 20초마다 클립 전환
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setClipIndex((prev) => (prev + 1) % YOUTUBE_CLIPS.length);
+    }, 20000); // 20초
+    return () => clearInterval(timer);
+  }, []);
+
   const handleVideoError = () => setUseLocal(false);
 
   const overlayStyle: React.CSSProperties = {
     position: 'absolute', inset: 0,
-    background: 'radial-gradient(ellipse at 60% 40%, rgba(2,132,199,0.16) 0%, rgba(6,13,26,0.84) 70%)',
+    background: 'radial-gradient(ellipse at 60% 40%, rgba(2,132,199,0.12) 0%, rgba(6,13,26,0.88) 75%)',
     zIndex: 2,
   };
+
+  const currentYoutubeId = YOUTUBE_CLIPS[clipIndex];
 
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#060d1a' }}>
 
       {useLocal ? (
-        /* 1순위: 로컬 파일 (/public/hero-bg.mp4) */
         <video
           autoPlay muted loop playsInline
           onError={handleVideoError}
           style={{
             position: 'absolute', inset: 0, width: '100%', height: '100%',
             objectFit: 'cover', opacity: 0.5,
-            filter: 'grayscale(0.15) contrast(1.1)',
+            filter: 'grayscale(0.1) contrast(1.1)',
             zIndex: 1,
           }}
         >
           <source src={LOCAL_VIDEO_PATH} type="video/mp4" />
         </video>
       ) : (
-        /* 2순위: YouTube iframe (항상 작동) */
-        <div style={{
+        <div key={currentYoutubeId} style={{
           position: 'absolute',
-          /* YouTube 16:9 → 화면 가득 채우기 */
           top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
-          width: 'max(100%, 177.78vh)',  /* 화면 높이 기준 16:9 너비 */
-          height: 'max(100%, 56.25vw)', /* 화면 너비 기준 16:9 높이 */
+          width: 'max(100%, 177.78vh)',
+          height: 'max(100%, 56.25vw)',
           opacity: 0.45,
           filter: 'grayscale(0.15) contrast(1.1)',
           pointerEvents: 'none',
           zIndex: 1,
+          transition: 'opacity 1s ease-in-out',
         }}>
           <iframe
-            src={`https://www.youtube-nocookie.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&mute=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}&controls=0&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&modestbranding=1`}
+            src={`https://www.youtube-nocookie.com/embed/${currentYoutubeId}?autoplay=1&mute=1&loop=1&playlist=${currentYoutubeId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&disablekb=1&modestbranding=1`}
             style={{ width: '100%', height: '100%', border: 'none' }}
             allow="autoplay; encrypted-media"
             title="background video"
