@@ -28,7 +28,7 @@ export default function Home() {
       {/* HERO SECTION */}
       <section style={{ 
         position: 'relative', height: '100vh', minHeight: 700, 
-        overflow: 'hidden'
+        overflow: 'hidden', background: '#0f172a'
       }}>
         {/* Absolute Remotion Hero */}
         <div style={{ position: 'absolute', inset: 0, zIndex: 0 }}>
@@ -36,22 +36,25 @@ export default function Home() {
         </div>
         
         {/* Overlay Content */}
-        <div style={{ position: 'relative', zIndex: 10, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-          <div style={{ marginTop: 'auto', marginBottom: 120, pointerEvents: 'auto', display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', animation: 'fadeInUp 1s ease 1.5s forwards', opacity: 0 }}>
-            <Link href="/shop" className="btn-primary" style={{ padding: '16px 36px', fontSize: 18, background: '#0284c7', color: '#fff', border: 'none', boxShadow: '0 10px 25px -5px rgba(2, 132, 199, 0.4)' }}>제품 및 인증서 보기 →</Link>
-            <Link href="/trade-info" className="btn-secondary" style={{ padding: '16px 36px', fontSize: 18, background: 'rgba(255,255,255,0.9)', color: '#0369a1', border: 'none', backdropFilter: 'blur(10px)', boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)' }}>무역 절차 안내</Link>
+        <div style={{ position: 'relative', zIndex: 10, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none' }}>
+          <div style={{ marginBottom: 100, pointerEvents: 'auto', display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', animation: 'fadeInUp 1s ease 1.5s forwards', opacity: 0 }}>
+            <Link href="/shop" style={{ padding: '16px 36px', fontSize: 16, fontWeight: 700, background: 'linear-gradient(135deg, #0284c7, #38bdf8)', color: '#fff', border: 'none', borderRadius: 50, boxShadow: '0 10px 30px rgba(2, 132, 199, 0.4)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.2s' }}>제품 및 인증서 보기 →</Link>
+            <Link href="/trade-info" style={{ padding: '16px 36px', fontSize: 16, fontWeight: 700, background: 'rgba(255,255,255,0.1)', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 50, backdropFilter: 'blur(12px)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.2s' }}>무역 절차 안내</Link>
           </div>
         </div>
 
         {/* Scroll indicator */}
-        <div style={{ position: 'absolute', bottom: 40, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 10 }}>
-          <span style={{ fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: '#6b7280', fontWeight: 700 }}>Scroll</span>
-          <div style={{ width: 2, height: 40, background: 'linear-gradient(to bottom, #9ca3af, transparent)', animation: 'float 2s ease-in-out infinite' }} />
+        <div style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 10 }}>
+          <span style={{ fontSize: 10, letterSpacing: 2.5, textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', fontWeight: 700 }}>Scroll</span>
+          <div style={{ width: 1.5, height: 36, background: 'linear-gradient(to bottom, rgba(255,255,255,0.4), transparent)', animation: 'float 2s ease-in-out infinite' }} />
         </div>
+
+        {/* 섹션 전환 페이드 */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 120, background: 'linear-gradient(to top, #ffffff 0%, transparent 100%)', zIndex: 5 }} />
       </section>
 
       {/* STATS SECTION */}
-      <section style={{ padding: '80px 24px', background: 'var(--white)', borderTop: '1px solid var(--gray-100)', borderBottom: '1px solid var(--gray-100)', position: 'relative', zIndex: 5, boxShadow: '0 10px 40px rgba(0,0,0,0.02)' }}>
+      <section style={{ padding: '80px 24px', background: 'var(--white)', borderBottom: '1px solid var(--gray-100)', position: 'relative', zIndex: 5 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 40, textAlign: 'center' }}>
           {[
             { value: 100, suffix: '+', label: '글로벌 제조 파트너' },

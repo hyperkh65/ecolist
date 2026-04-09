@@ -159,10 +159,8 @@ export default function RemotionHero() {
         autoPlay
         loop
       />
-      {/* Sleek bottom gradient to blend seamlessly into content */}
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 250, background: 'linear-gradient(to top, #ffffff, transparent)', zIndex: 20 }} />
-      {/* Top gradient for navbar blending */}
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 160, background: 'linear-gradient(to bottom, #ffffff, transparent)', zIndex: 20 }} />
+      {/* Bottom fade: dark to out, lets scroll indicator show */}
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 180, background: 'linear-gradient(to top, rgba(255,255,255,0.6) 0%, transparent 100%)', zIndex: 20 }} />
     </div>
   );
 }
