@@ -28,12 +28,12 @@ const TitleSequence = () => {
   const phase2 = interpolate(frame, [60, 140], [0, 1], { easing: Easing.bezier(0.2, 0.8, 0.4, 1), extrapolateRight: 'clamp' });
   const phase3 = interpolate(frame, [100, 190],[0, 1], { easing: Easing.bezier(0.2, 0.8, 0.4, 1), extrapolateRight: 'clamp' });
 
-  const blur1  = interpolate(phase1, [0, 0.7], [12, 0], { extrapolateRight: 'clamp' });
-  const blur2  = interpolate(phase2, [0, 0.7], [12, 0], { extrapolateRight: 'clamp' });
-  const blur3  = interpolate(phase3, [0, 0.7], [8, 0], { extrapolateRight: 'clamp' });
-  const scale1 = interpolate(phase1, [0, 1], [1.03, 1]);
-  const scale2 = interpolate(phase2, [0, 1], [1.03, 1]);
-  const scale3 = interpolate(phase3, [0, 1], [1.02, 1]);
+  // 흐릿함의 원인인 블러 처리를 완전히 제거 (0으로 고정)
+  const blurValue = 0;
+  const scale1 = interpolate(phase1, [0, 1], [1.02, 1], { easing: Easing.out(Easing.quad) });
+  const scale2 = interpolate(phase2, [0, 1], [1.02, 1], { easing: Easing.out(Easing.quad) });
+  const scale3 = interpolate(phase3, [0, 1], [1.01, 1], { easing: Easing.out(Easing.quad) });
+  const translateY = (p: number) => interpolate(p, [0, 1], [20, 0]);
 
   return (
     <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -42,42 +42,41 @@ const TitleSequence = () => {
         {/* 회사 뱃지 */}
         <div style={{
           display: 'inline-flex', alignItems: 'center', gap: 12,
-          padding: '8px 24px', background: 'rgba(255,255,255,0.1)',
-          backdropFilter: 'blur(24px)', borderRadius: 40,
-          border: '1px solid rgba(255,255,255,0.2)',
-          marginBottom: 40, boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-          opacity: phase1, filter: `blur(${blur1}px)`, transform: `scale(${scale1})`,
+          padding: '10px 28px', background: 'rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(30px)', borderRadius: 40,
+          border: '1px solid rgba(255,255,255,0.25)',
+          marginBottom: 44, boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+          opacity: phase1, 
+          transform: `translateY(${translateY(phase1)}px) scale(${scale1}) translateZ(0)`,
         }}>
-          <span style={{ fontSize: 13, fontWeight: 900, color: '#0ea5e9', letterSpacing: 2 }}>(주)와이앤케이</span>
-          <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(255,255,255,0.5)' }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: '#f8fafc', letterSpacing: 1.5 }}>GLOBAL LED TRADE PARTNER</span>
+          <span style={{ fontSize: 13, fontWeight: 900, color: '#38bdf8', letterSpacing: 2 }}>(주)와이앤케이</span>
+          <span style={{ width: 4, height: 4, borderRadius: '50%', background: 'rgba(56,189,248,0.6)' }} />
+          <span style={{ fontSize: 12, fontWeight: 800, color: '#ffffff', letterSpacing: 1.5 }}>GLOBAL LED TRADE PARTNER</span>
         </div>
 
-        {/* 메인 헤드라인 */}
         <h1 style={{
-          fontSize: 'clamp(42px, 6vw, 92px)', fontWeight: 900,
-          color: '#ffffff', letterSpacing: '-0.04em', lineHeight: 1.15,
-          textShadow: '0 2px 4px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5)',
-          opacity: phase2, filter: `blur(${blur2}px)`, 
-          transform: `scale(${scale2}) translateZ(0)`,
+          fontSize: 'clamp(44px, 6.5vw, 96px)', fontWeight: 900,
+          color: '#ffffff', letterSpacing: '-0.03em', lineHeight: 1.15,
+          textShadow: '0 4px 12px rgba(0,0,0,1)',
+          opacity: phase2, 
+          transform: `translateY(${translateY(phase2)}px) scale(${scale2}) translateZ(0)`,
           marginBottom: 0,
           WebkitFontSmoothing: 'antialiased',
         }}>
           검증된 제품,<br />
           <span style={{
-            background: 'linear-gradient(90deg, #60a5fa 0%, #a78bfa 100%)',
-            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
-            filter: 'drop-shadow(0 0 10px rgba(96,165,250,0.3))',
+            color: '#7dd3fc', // 훨씬 밝은 하늘색으로 교체하여 대비 극대화
+            textShadow: '0 0 20px rgba(125,211,252,0.3), 0 4px 12px rgba(0,0,0,1)',
           }}>신뢰할 수 있는 공급</span>
         </h1>
 
         {/* 서브카피 */}
         <p style={{
-          fontSize: 'clamp(16px, 1.5vw, 21px)', color: '#ffffff', fontWeight: 600,
-          maxWidth: 740, margin: '36px auto 0', lineHeight: 1.8,
-          textShadow: '0 2px 4px rgba(0,0,0,0.9)',
-          opacity: phase3, filter: `blur(${blur3}px)`, 
-          transform: `scale(${scale3}) translateZ(0)`,
+          fontSize: 'clamp(17px, 1.6vw, 22px)', color: '#f8fafc', fontWeight: 600,
+          maxWidth: 760, margin: '40px auto 0', lineHeight: 1.8,
+          textShadow: '0 2px 8px rgba(0,0,0,1)',
+          opacity: phase3, 
+          transform: `translateY(${translateY(phase3)}px) scale(${scale3}) translateZ(0)`,
           WebkitFontSmoothing: 'antialiased',
         }}>
           글로벌 제조사로부터 직접 소싱한 KC · CE · RoHS 인증 완료 제품.<br />
@@ -122,10 +121,10 @@ function BackgroundVideo() {
       <div style={{
         position: 'absolute',
         inset: 0,
-        opacity: fadeout ? 0 : 0.35,
-        transition: 'opacity 1s ease-in-out',
+        opacity: fadeout ? 0 : 0.22, // 배경을 훨씬 더 어둡게 깔아 텍스트를 확실히 살림
+        transition: 'opacity 1.2s ease-in-out',
         zIndex: 1,
-        filter: 'brightness(0.8) contrast(1.2) saturate(1.1)',
+        filter: 'brightness(0.7) contrast(1.3) saturate(1.1)',
       }}>
         {useLocal ? (
           <video
@@ -160,10 +159,10 @@ function BackgroundVideo() {
         )}
       </div>
 
-      {/* 코퍼레이트 오버레이 (대비를 높이기 위해 오버레이 수정) */}
+      {/* 배경 오버레이 (대비 극대화를 위해 훨씬 어둡게 조정) */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'radial-gradient(circle at center, rgba(6,13,26,0.3) 0%, rgba(6,13,26,0.85) 75%)',
+        background: 'linear-gradient(to bottom, rgba(2,6,23,0.4) 0%, rgba(2,6,23,0.85) 50%, rgba(2,6,23,0.95) 100%)',
         zIndex: 2,
       }} />
     </div>
