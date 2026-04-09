@@ -1,12 +1,13 @@
 'use client';
 import { Player } from '@remotion/player';
 import { AbsoluteFill, useCurrentFrame, interpolate, Sequence, Easing } from 'remotion';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 /**
- * 전용 로컬 영상 베이스 히로 섹션 - 프리미엄 리디자인
- * - KC KS EMC HEE 인증 뱃지 도입
- * - 텍스트 번짐 제거 및 반응형 최적화
+ * 프리미엄 시네마틱 히로 섹션 - 4개 영상 로테이션 버전
+ * - 20초마다 영상 자동 전환
+ * - 각 영상은 6초 지점부터 재생 시작 (로딩 지연 및 초기 불필요 구간 회피)
+ * - Pexels API 기반 고화질 로컬 자원 활용
  */
 
 // ─── 타이틀 시퀀스 (Remotion: 텍스트 애니메이션 담당) ─────────────────────
@@ -26,7 +27,7 @@ const TitleSequence = () => {
 
   return (
     <AbsoluteFill style={{ justifyContent: 'center', alignItems: 'center' }}>
-      <div style={{ textAlign: 'center', padding: '0 5vw', zIndex: 10, maxWidth: 1100, width: '100%' }}>
+      <div style={{ textAlign: 'center', padding: '0 5vw', zIndex: 10, maxWidth: 1100, width: '100%', pointerEvents: 'none' }}>
 
         {/* 최상단 뱃지 섹션 */}
         <div style={{
@@ -59,7 +60,7 @@ const TitleSequence = () => {
               background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
               fontWeight: 900,
-              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))', // 블러 대신 섀도우로 선명도 보강
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.3))',
             }}>신뢰할 수 있는 공급</span>
           </h1>
         </div>
@@ -111,11 +112,56 @@ export const LuminaComposition: React.FC = () => (
   </AbsoluteFill>
 );
 
-// ─── 배경 영상 컴포넌트 ─────────────────────────────────────────────────────────
+// ─── 배경 영상 컴포넌트 (4개 로테이션 & 6초 컷) ───────────────────────
 function BackgroundVideo() {
+  const videoPaths = [
+    '/hero-bg-1.mp4',
+    '/hero-bg-2.mp4',
+    '/hero-bg-3.mp4',
+    '/hero-bg-4.mp4'
+  ];
+  
+  const [index, setIndex] = useState(0);
+  const [fade, setFade] = useState(true);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // 20초마다 다음 영상으로 교체
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFade(false); // 페이드 아웃 시작
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % videoPaths.length);
+        setFade(true); // 페이드 인
+      }, 1000); // 1초간 페이드
+    }, 20000); 
+    return () => clearInterval(interval);
+  }, []);
+
+  // 영상이 로드되거나 인덱스가 바뀔 때 6초 지점으로 점프
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleLoadedMetadata = () => {
+      video.currentTime = 6;
+      video.play().catch(e => console.log('Auto-play blocked or error:', e));
+    };
+
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    // 이미 로드된 경우를 대비해 직접 실행
+    if (video.readyState >= 1) {
+      video.currentTime = 6;
+      video.play().catch(() => {});
+    }
+
+    return () => video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+  }, [index]);
+
   return (
     <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#020617' }}>
       <video
+        ref={videoRef}
+        key={videoPaths[index]} // 키가 바뀌면 새 영상 요소로 교체 및 로드
         autoPlay
         muted
         loop
@@ -126,22 +172,26 @@ function BackgroundVideo() {
           width: '100%',
           height: '100%',
           objectFit: 'cover',
-          opacity: 1,
-          filter: 'contrast(1.05) brightness(0.85)', 
+          opacity: fade ? 1 : 0,
+          transition: 'opacity 1s ease-in-out',
+          filter: 'contrast(1.05) brightness(0.8)', 
         }}
       >
-        <source src="/hero-bg.mp4" type="video/mp4" />
+        <source src={videoPaths[index]} type="video/mp4" />
       </video>
-      {/* 텍스트 가독성을 위한 비네팅 (화이트워싱 없음) */}
+      
+      {/* 텍스트 가독성을 위한 비네팅 */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'radial-gradient(circle at center, transparent 0%, rgba(2,6,23,0.4) 100%)',
+        background: 'radial-gradient(circle at center, transparent 0%, rgba(2,6,23,0.5) 100%)',
         zIndex: 2,
+        pointerEvents: 'none'
       }} />
       <div style={{
         position: 'absolute', inset: 0,
         background: 'linear-gradient(180deg, rgba(2,6,23,0.4) 0%, transparent 15%, transparent 85%, rgba(2,6,23,0.6) 100%)',
         zIndex: 2,
+        pointerEvents: 'none'
       }} />
     </div>
   );
@@ -177,7 +227,7 @@ export default function RemotionHero() {
         loop
       />
 
-      {/* 액션 버튼 그룹 (버튼형 디테일 최적화) */}
+      {/* 액션 버튼 그룹 */}
       <div style={{
         position: 'absolute',
         bottom: '10vh',
