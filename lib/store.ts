@@ -27,7 +27,7 @@ export interface CartItem {
 export interface AdminState {
   isLoggedIn: boolean;
   products: Product[];
-  login: (pw: string) => boolean;
+  login: (id: string, pw: string) => boolean;
   logout: () => void;
   addProduct: (p: Omit<Product, 'id' | 'createdAt'>) => void;
   updateProduct: (id: string, p: Partial<Product>) => void;
@@ -153,8 +153,11 @@ export const useAdminStore = create<AdminState>()(
     (set, get) => ({
       isLoggedIn: false,
       products: DEMO_PRODUCTS,
-      login: (pw) => {
-        if (pw === 'admin1234') { set({ isLoggedIn: true }); return true; }
+      login: (id, pw) => {
+        if (id === 'YNK' && pw === 'aa565577##') { 
+          set({ isLoggedIn: true }); 
+          return true; 
+        }
         return false;
       },
       logout: () => set({ isLoggedIn: false }),

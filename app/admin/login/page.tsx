@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAdminStore } from '@/lib/store';
 
 export default function AdminLoginPage() {
+  const [id, setId] = useState('');
   const [pw, setPw] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -14,10 +15,10 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     await new Promise((r) => setTimeout(r, 600));
-    if (login(pw)) {
+    if (login(id, pw)) {
       router.push('/admin');
     } else {
-      setError('비밀번호가 올바르지 않습니다.');
+      setError('ID 또는 비밀번호가 올바르지 않습니다.');
       setLoading(false);
     }
   };
@@ -37,11 +38,20 @@ export default function AdminLoginPage() {
 
         {/* Form */}
         <form onSubmit={handleLogin} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 24, padding: 36 }}>
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>관리자 ID</label>
+            <input
+              type="text" value={id} onChange={(e) => setId(e.target.value)}
+              placeholder="ID 입력" className="input-dark"
+              style={{ fontSize: 16 }}
+            />
+          </div>
+
           <div style={{ marginBottom: 24 }}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.6)', marginBottom: 8 }}>비밀번호</label>
             <input
               type="password" value={pw} onChange={(e) => { setPw(e.target.value); setError(''); }}
-              placeholder="관리자 비밀번호 입력" className="input-dark" autoFocus
+              placeholder="비밀번호 입력" className="input-dark"
               style={{ fontSize: 16 }}
             />
             {error && <p style={{ marginTop: 8, fontSize: 13, color: '#ff8080' }}>{error}</p>}
@@ -58,7 +68,7 @@ export default function AdminLoginPage() {
           </button>
 
           <p style={{ textAlign: 'center', marginTop: 20, fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>
-            힌트: admin1234
+            Vercel 환경 변수가 구성되었습니다.
           </p>
         </form>
 

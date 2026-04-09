@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useShopStore, useAdminStore } from '@/lib/store';
+import { useSiteSettings } from '@/lib/useSiteSettings';
 
 const PRODUCT_CATEGORIES = [
   { href: '/shop?cat=smart', label: '스마트조명시스템', icon: '☁️', desc: 'IoT 기반 무선 자동제어' },
@@ -28,6 +29,13 @@ export default function Navbar() {
   const cart = useShopStore((s) => s.cart);
   const removeFromCart = useShopStore((s) => s.removeFromCart);
   const isAdmin = useAdminStore((s) => s.isLoggedIn);
+  const settings = useSiteSettings();
+
+  const getMenuLabel = (href: string, defaultLabel: string) => {
+    return settings?.menus.find(m => m.href === href)?.label || defaultLabel;
+  };
+
+  const companyName = settings?.company.name || '(주)와이앤케이';
 
   useEffect(() => {
     const handler = () => {
@@ -94,7 +102,7 @@ export default function Navbar() {
                 color: scrolled ? '#0f172a' : '#ffffff',
                 lineHeight: 1
               }}>
-                <span style={{ color: scrolled ? '#0284c7' : '#38bdf8' }}>(주)와이앤케이</span>
+                <span style={{ color: scrolled ? '#0284c7' : '#38bdf8' }}>{companyName}</span>
               </span>
 
               <span style={{ fontSize: 9, fontWeight: 800, color: scrolled ? '#64748b' : 'rgba(255,255,255,0.6)', letterSpacing: 1.5, marginTop: 4 }}>GLOBAL LED TRADING</span>
@@ -108,7 +116,7 @@ export default function Navbar() {
             padding: '6px', borderRadius: '50px',
             border: scrolled ? '1px solid rgba(0,0,0,0.05)' : '1px solid rgba(255,255,255,0.1)',
           }}>
-            <Link href="/about" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>회사소개</Link>
+            <Link href="/about" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/about', '회사소개')}</Link>
             
             <div ref={productMenuRef} style={{ position: 'relative' }}>
               <button 
@@ -116,7 +124,7 @@ export default function Navbar() {
                 style={navItemStyle(productMenuOpen)}
                 onMouseEnter={e => { if(!productMenuOpen) (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}
               >
-                제품소개
+                {getMenuLabel('/shop', '제품소개')}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" style={{ transform: productMenuOpen ? 'rotate(180deg)' : '0', transition: '0.3s' }}>
                   <path d="M6 9l6 6 6-6"/>
                 </svg>
@@ -151,14 +159,10 @@ export default function Navbar() {
               )}
             </div>
 
-            <Link href="/trade-info" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>무역/인증</Link>
-            <Link href="/tracking" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>물류조회</Link>
-            
-            {EXTRA_LINKS.map(link => (
-              <Link key={link.href} href={link.href} style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>
-                {link.label}
-              </Link>
-            ))}
+            <Link href="/trade-info" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/trade-info', '무역/인증')}</Link>
+            <Link href="/tracking" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/tracking', '물류조회')}</Link>
+            <Link href="/board" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/board', '게시판')}</Link>
+            <Link href="/blog" style={navItemStyle()} onMouseEnter={e => { (e.currentTarget as any).style.background = scrolled ? 'rgba(0,0,0,0.05)' : 'rgba(255,255,255,0.1)'; }}>{getMenuLabel('/blog', '블로그')}</Link>
 
           </div>
 
@@ -200,7 +204,7 @@ export default function Navbar() {
              <Link href="/shop" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>제품소개</Link>
              <Link href="/trade-info" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>무역/인증 안내</Link>
              <Link href="/tracking" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>물류조회</Link>
-             <Link href="/board" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>제품 게시판</Link>
+             <Link href="/board" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>게시판</Link>
              <Link href="/blog" onClick={()=>setMenuOpen(false)} style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', color: '#0f172a', textDecoration: 'none', fontWeight: 700 }}>블로그</Link>
 
           </div>

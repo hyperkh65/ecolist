@@ -1,44 +1,45 @@
--- Supabase Schema for LED Lighting Store
+-- Tables for (주)와이앤케이 LED Platform CMS
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- Products Table
-CREATE TABLE products (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  name TEXT NOT NULL,
-  category TEXT NOT NULL,
-  price INTEGER NOT NULL,
-  original_price INTEGER,
-  description TEXT NOT NULL,
-  specs JSONB NOT NULL DEFAULT '{}'::jsonb,
-  images TEXT[] NOT NULL DEFAULT '{}',
-  certificates TEXT[] NOT NULL DEFAULT '{}',
-  badge TEXT,
-  stock INTEGER NOT NULL DEFAULT 0,
-  rating NUMERIC(3,2) NOT NULL DEFAULT 0,
-  reviews INTEGER NOT NULL DEFAULT 0,
-  featured BOOLEAN NOT NULL DEFAULT false,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- 1. Site Settings (Company info, Menu names, Hero settings)
+CREATE TABLE IF NOT EXISTS site_settings (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    category TEXT NOT NULL, -- 'company', 'menu', 'hero', 'footer'
+    config JSONB NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- RLS (Row Level Security) Policies
-ALTER TABLE products ENABLE ROW LEVEL SECURITY;
+-- 2. Products
+CREATE TABLE IF NOT EXISTS products (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    price BIGINT NOT NULL,
+    original_price BIGINT,
+    description TEXT,
+    specs JSONB DEFAULT '{}',
+    images TEXT[] DEFAULT '{}',
+    certificates TEXT[] DEFAULT '{}',
+    badge TEXT,
+    stock INTEGER DEFAULT 0,
+    rating DECIMAL(3,2) DEFAULT 4.5,
+    reviews INTEGER DEFAULT 0,
+    featured BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
--- Allow public read access to products
-CREATE POLICY "Products are viewable by everyone." 
-  ON products FOR SELECT 
-  USING (true);
+-- 3. Board/Blog Posts
+CREATE TABLE IF NOT EXISTS posts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    type TEXT NOT NULL, -- 'board', 'blog'
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author TEXT DEFAULT 'YNK Admin',
+    attachments JSONB DEFAULT '[]', -- List of {name, url}
+    views INTEGER DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
--- Allow authenticated users (admins) to insert/update/delete products
-CREATE POLICY "Admins can insert products" 
-  ON products FOR INSERT 
-  WITH CHECK (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can update products" 
-  ON products FOR UPDATE 
-  USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can delete products" 
-  ON products FOR DELETE 
-  USING (auth.role() = 'authenticated');
+-- Initial Data
+INSERT INTO site_settings (category, config) VALUES 
+('company', '{"name": "(주)와이앤케이", "address": "인천광역시 남동구 산단로 35 (남촌동)", "tel": "032-862-1350", "fax": "032-863-1351", "email": "contact@ynk2014.com", "business_id": "131-86-67779", "about_text": "와이앤케이는 미래를 밝히는 LED 솔루션 전문 기업입니다."}'),
+('menu', '[{"label": "회사소개", "href": "/about"}, {"label": "제품소개", "href": "/shop"}, {"label": "무역/인증 안내", "href": "/trade-info"}, {"label": "물류조회", "href": "/tracking"}, {"label": "게시판", "href": "/board"}, {"label": "블로그", "href": "/blog"}]');
