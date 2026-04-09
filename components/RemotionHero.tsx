@@ -118,10 +118,10 @@ function BackgroundVideo() {
       <div style={{
         position: 'absolute',
         inset: 0,
-        opacity: fadeout ? 0 : 0.15, // 영상을 아주 연하게 처리
+        opacity: fadeout ? 0 : 0.5, // 영상 선명도 복구
         transition: 'opacity 1.5s ease-in-out',
         zIndex: 1,
-        filter: 'grayscale(0.3) brightness(1.1) contrast(1.1)',
+        filter: 'contrast(1.1) saturate(1.2)', // 본연의 색감을 살림
       }}>
         {useLocal ? (
           <video
@@ -156,10 +156,10 @@ function BackgroundVideo() {
         )}
       </div>
 
-      {/* 배경 오버레이 (화이트 테마에 맞게 밝은 그라데이션으로 교체) */}
+      {/* 배경 오버레이 (영상이 잘 보이면서도 텍스트 가독성을 잃지 않도록 조정) */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.95) 100%)',
+        background: 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.85) 100%)',
         zIndex: 2,
       }} />
     </div>
