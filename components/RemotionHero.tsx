@@ -56,9 +56,8 @@ const TitleSequence = () => {
 
         <h1 style={{
           fontSize: 'clamp(46px, 6.8vw, 100px)', fontWeight: 900,
-          color: '#000000', letterSpacing: '-0.04em', lineHeight: 1.15,
-          // 선명한 영상 위에서도 검정 글씨가 보이도록 화이트 글로우 추가 (날카로운 가독성)
-          textShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,1)',
+          color: '#ffffff', letterSpacing: '-0.04em', lineHeight: 1.15,
+          textShadow: '0 4px 12px rgba(0,0,0,0.8), 0 0 30px rgba(0,0,0,0.4)',
           opacity: phase2, 
           transform: `translateY(${translateY(phase2)}px) scale(${scale2}) translateZ(0)`,
           marginBottom: 0,
@@ -66,15 +65,17 @@ const TitleSequence = () => {
         }}>
           검증된 제품,<br />
           <span style={{
-            color: '#003366', // 더욱 진하고 선명한 딥 블루
+            background: 'linear-gradient(90deg, #38bdf8 0%, #818cf8 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            filter: 'drop-shadow(0 0 15px rgba(56,189,248,0.4))',
           }}>신뢰할 수 있는 공급</span>
         </h1>
 
         {/* 서브카피 */}
         <p style={{
-          fontSize: 'clamp(18px, 1.7vw, 23px)', color: '#000000', fontWeight: 800,
+          fontSize: 'clamp(18px, 1.7vw, 23px)', color: '#e2e8f0', fontWeight: 600,
           maxWidth: 780, margin: '44px auto 0', lineHeight: 1.8,
-          textShadow: '0 0 15px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,1)',
+          textShadow: '0 2px 8px rgba(0,0,0,0.8)',
           opacity: phase3, 
           transform: `translateY(${translateY(phase3)}px) scale(${scale3}) translateZ(0)`,
           WebkitFontSmoothing: 'antialiased',
@@ -116,7 +117,7 @@ function BackgroundVideo() {
   const currentYoutubeId = YOUTUBE_CLIPS[clipIndex];
 
   return (
-    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#ffffff' }}>
+    <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#020617' }}>
       {/* 영상 유닛 (로컬/유튜브 공용) */}
       <div style={{
         position: 'absolute',
@@ -186,7 +187,7 @@ export default function RemotionHero() {
   if (!mounted) return <div style={{ width: '100%', height: '100vh', background: '#060d1a' }} />;
 
   return (
-    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#ffffff' }}>
+    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#020617' }}>
       {/* ① 배경 영상 */}
       <BackgroundVideo />
 
@@ -197,7 +198,7 @@ export default function RemotionHero() {
         compositionWidth={dim.w}
         compositionHeight={dim.h}
         fps={60}
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent' }}
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', background: 'transparent', zIndex: 10 }}
         autoPlay
         loop
       />
