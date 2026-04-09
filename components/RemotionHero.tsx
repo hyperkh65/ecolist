@@ -8,18 +8,18 @@ const ParticleLayer = () => {
   const { fps } = useVideoConfig();
   
   // Clean, elegant glowing orbs instead of chaotic particles
-  const orbs = Array.from({ length: 6 }).map((_, i) => {
+  const orbs = Array.from({ length: 4 }).map((_, i) => {
     const startOffset = i * 20;
     const progress = Math.max(0, frame - startOffset) / fps;
     
     // Slow, gentle floating movement
-    const y = interpolate(Math.sin(progress * 0.5 + i), [-1, 1], [10, 90]);
-    const x = interpolate(Math.cos(progress * 0.4 + i), [-1, 1], [10, 90]);
-    const scale = interpolate(Math.sin(progress * 0.3 + i), [-1, 1], [0.8, 1.2]);
-    const opacity = interpolate(Math.sin(progress * 0.6 + i), [-1, 1], [0.3, 0.7]);
+    const y = interpolate(Math.sin(progress * 0.4 + i), [-1, 1], [10, 90]);
+    const x = interpolate(Math.cos(progress * 0.3 + i), [-1, 1], [10, 90]);
+    const scale = interpolate(Math.sin(progress * 0.2 + i), [-1, 1], [1, 2]);
+    const opacity = interpolate(Math.sin(progress * 0.5 + i), [-1, 1], [0.1, 0.4]);
     
     // Mix of soft blues
-    const colors = ['#e0f2fe', '#bae6fd', '#7dd3fc', '#38bdf8', '#0284c7'];
+    const colors = ['#bae6fd', '#e0f2fe', '#7dd3fc', '#f0f9ff'];
     const color = colors[i % colors.length];
     
     return (
@@ -27,14 +27,14 @@ const ParticleLayer = () => {
         position: 'absolute',
         left: `${x}%`,
         top: `${y}%`,
-        width: 300 + (i * 50),
-        height: 300 + (i * 50),
+        width: 800 + (i * 100),
+        height: 800 + (i * 100),
         backgroundColor: color,
         borderRadius: '50%',
-        opacity: opacity * 0.6,
-        filter: 'blur(80px)',
+        opacity: opacity,
+        filter: 'blur(150px)',
         transform: `scale(${scale}) translate(-50%, -50%)`,
-        mixBlendMode: 'multiply'
+        mixBlendMode: 'normal'
       }} />
     );
   });
@@ -42,20 +42,6 @@ const ParticleLayer = () => {
   return <AbsoluteFill style={{ overflow: 'hidden' }}>{orbs}</AbsoluteFill>;
 };
 
-const ConnectingLines = () => {
-  const frame = useCurrentFrame();
-  
-  // Sleek global trade network lines effect
-  const drawVertical = spring({ frame, fps: 60, config: { damping: 100 } });
-  
-  return (
-    <AbsoluteFill style={{ opacity: 0.15 }}>
-      <div style={{ position: 'absolute', left: '20%', top: 0, bottom: 0, width: 1, background: `linear-gradient(to bottom, transparent, #0284c7 ${drawVertical * 100}%, transparent)` }} />
-      <div style={{ position: 'absolute', right: '20%', top: 0, bottom: 0, width: 1, background: `linear-gradient(to top, transparent, #0284c7 ${drawVertical * 100}%, transparent)` }} />
-      <div style={{ position: 'absolute', left: 0, right: 0, top: '30%', height: 1, background: `linear-gradient(to right, transparent, #0284c7 ${drawVertical * 100}%, transparent)` }} />
-    </AbsoluteFill>
-  );
-};
 
 const TitleSequence = () => {
   const frame = useCurrentFrame();
@@ -135,13 +121,10 @@ const TitleSequence = () => {
 export const LuminaComposition: React.FC = () => {
   return (
     <AbsoluteFill style={{ 
-      background: '#f8fafc',
+      background: '#ffffff',
       overflow: 'hidden' 
     }}>
       <ParticleLayer />
-      <Sequence from={0}>
-        <ConnectingLines />
-      </Sequence>
       <Sequence from={15}>
         <TitleSequence />
       </Sequence>
@@ -169,7 +152,7 @@ export default function RemotionHero() {
         loop
       />
       {/* Sleek bottom gradient to blend seamlessly into content */}
-      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 160, background: 'linear-gradient(to top, #ffffff, transparent)', zIndex: 20 }} />
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 200, background: 'linear-gradient(to top, #ffffff, transparent)', zIndex: 20 }} />
     </div>
   );
 }
