@@ -58,14 +58,18 @@ export default function Navbar() {
             <div style={{
               width: 38, height: 38, borderRadius: '10px',
               background: 'linear-gradient(135deg, #0284c7, #38bdf8)',
-              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.3)',
+              boxShadow: scrolled ? '0 4px 14px rgba(2, 132, 199, 0.3)' : '0 4px 14px rgba(2, 132, 199, 0.5)',
               display: 'flex', alignItems: 'center', justifyContent: 'center'
             }}>
               <span style={{ color: '#fff', fontWeight: 900, fontSize: 15 }}>Y&K</span>
             </div>
             <div>
-              <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', color: '#0f172a' }}>
-                (주)<span style={{ color: '#0284c7' }}>와이앤케이</span>
+              <span style={{ 
+                fontSize: 20, fontWeight: 800, letterSpacing: '-0.03em', 
+                color: scrolled ? '#0f172a' : '#ffffff',
+                transition: 'color 0.3s'
+              }}>
+                (주)<span style={{ color: scrolled ? '#0284c7' : '#38bdf8' }}>와이앤케이</span>
               </span>
             </div>
           </Link>
@@ -73,12 +77,20 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <div style={{ display: 'flex', gap: 4, flex: 1, alignItems: 'center' }} className="desktop-nav">
             <Link href="/about" style={{
-              fontSize: 15, fontWeight: 600, color: '#334155', textDecoration: 'none',
+              fontSize: 15, fontWeight: 600, 
+              color: scrolled ? '#334155' : 'rgba(255,255,255,0.9)', 
+              textDecoration: 'none',
               padding: '8px 14px', borderRadius: 8,
-              transition: 'all 0.2s',
+              transition: 'all 0.3s',
             }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLAnchorElement).style.color = '#0284c7'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = '#334155'; }}
+              onMouseEnter={e => { 
+                (e.currentTarget as HTMLAnchorElement).style.background = scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)'; 
+                (e.currentTarget as HTMLAnchorElement).style.color = scrolled ? '#0284c7' : '#ffffff'; 
+              }}
+              onMouseLeave={e => { 
+                (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; 
+                (e.currentTarget as HTMLAnchorElement).style.color = scrolled ? '#334155' : 'rgba(255,255,255,0.9)'; 
+              }}
             >회사안내</Link>
 
             {/* 제품소개 드롭다운 */}
@@ -86,15 +98,22 @@ export default function Navbar() {
               <button
                 onClick={() => setProductMenuOpen(v => !v)}
                 style={{
-                  background: productMenuOpen ? '#f1f5f9' : 'transparent',
+                  background: productMenuOpen ? (scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)') : 'transparent',
                   border: 'none', cursor: 'pointer',
-                  fontSize: 15, fontWeight: 600, color: productMenuOpen ? '#0284c7' : '#334155',
+                  fontSize: 15, fontWeight: 600, 
+                  color: productMenuOpen ? (scrolled ? '#0284c7' : '#ffffff') : (scrolled ? '#334155' : 'rgba(255,255,255,0.9)'),
                   padding: '8px 14px', borderRadius: 8,
                   display: 'flex', alignItems: 'center', gap: 4,
-                  transition: 'all 0.2s',
+                  transition: 'all 0.3s',
                 }}
-                onMouseEnter={e => { if (!productMenuOpen) { (e.currentTarget as HTMLButtonElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLButtonElement).style.color = '#0284c7'; } }}
-                onMouseLeave={e => { if (!productMenuOpen) { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = '#334155'; } }}
+                onMouseEnter={e => { if (!productMenuOpen) { 
+                  (e.currentTarget as HTMLButtonElement).style.background = scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)'; 
+                  (e.currentTarget as HTMLButtonElement).style.color = scrolled ? '#0284c7' : '#ffffff'; 
+                } }}
+                onMouseLeave={e => { if (!productMenuOpen) { 
+                  (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; 
+                  (e.currentTarget as HTMLButtonElement).style.color = scrolled ? '#334155' : 'rgba(255,255,255,0.9)'; 
+                } }}
               >
                 제품소개
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
@@ -144,19 +163,35 @@ export default function Navbar() {
             </div>
 
             <Link href="/trade-info" style={{
-              fontSize: 15, fontWeight: 600, color: '#334155', textDecoration: 'none',
-              padding: '8px 14px', borderRadius: 8, transition: 'all 0.2s',
+              fontSize: 15, fontWeight: 600, 
+              color: scrolled ? '#334155' : 'rgba(255,255,255,0.9)', 
+              textDecoration: 'none',
+              padding: '8px 14px', borderRadius: 8, transition: 'all 0.3s',
             }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLAnchorElement).style.color = '#0284c7'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = '#334155'; }}
+              onMouseEnter={e => { 
+                (e.currentTarget as HTMLAnchorElement).style.background = scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)'; 
+                (e.currentTarget as HTMLAnchorElement).style.color = scrolled ? '#0284c7' : '#ffffff'; 
+              }}
+              onMouseLeave={e => { 
+                (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; 
+                (e.currentTarget as HTMLAnchorElement).style.color = scrolled ? '#334155' : 'rgba(255,255,255,0.9)'; 
+              }}
             >무역/인증 안내</Link>
 
             <Link href="/tracking" style={{
-              fontSize: 15, fontWeight: 600, color: '#334155', textDecoration: 'none',
-              padding: '8px 14px', borderRadius: 8, transition: 'all 0.2s',
+              fontSize: 15, fontWeight: 600, 
+              color: scrolled ? '#334155' : 'rgba(255,255,255,0.9)', 
+              textDecoration: 'none',
+              padding: '8px 14px', borderRadius: 8, transition: 'all 0.3s',
             }}
-              onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#f1f5f9'; (e.currentTarget as HTMLAnchorElement).style.color = '#0284c7'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; (e.currentTarget as HTMLAnchorElement).style.color = '#334155'; }}
+              onMouseEnter={e => { 
+                (e.currentTarget as HTMLAnchorElement).style.background = scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)'; 
+                (e.currentTarget as HTMLAnchorElement).style.color = scrolled ? '#0284c7' : '#ffffff'; 
+              }}
+              onMouseLeave={e => { 
+                (e.currentTarget as HTMLAnchorElement).style.background = 'transparent'; 
+                (e.currentTarget as HTMLAnchorElement).style.color = scrolled ? '#334155' : 'rgba(255,255,255,0.9)'; 
+              }}
             >물류조회</Link>
           </div>
 
@@ -169,8 +204,12 @@ export default function Navbar() {
             )}
             
             {/* B2B 견적 문의함 */}
-            <button onClick={() => setCartOpen(true)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#334155', position: 'relative', display: 'flex', alignItems: 'center', padding: 8, borderRadius: 8, transition: 'all 0.2s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f1f5f9'; }}
+            <button onClick={() => setCartOpen(true)} style={{ 
+              background: 'none', border: 'none', cursor: 'pointer', 
+              color: scrolled ? '#334155' : '#ffffff', 
+              position: 'relative', display: 'flex', alignItems: 'center', padding: 8, borderRadius: 8, transition: 'all 0.3s' 
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -181,8 +220,12 @@ export default function Navbar() {
 
             {/* B2B 견적 문의 CTA */}
             <Link href="/admin/login" style={{ textDecoration: 'none' }}>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#334155', display: 'flex', alignItems: 'center', padding: 8, borderRadius: 8, transition: 'all 0.2s' }}
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = '#f1f5f9'; }}
+              <button style={{ 
+                background: 'none', border: 'none', cursor: 'pointer', 
+                color: scrolled ? '#334155' : '#ffffff', 
+                display: 'flex', alignItems: 'center', padding: 8, borderRadius: 8, transition: 'all 0.3s' 
+              }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = scrolled ? '#f1f5f9' : 'rgba(255,255,255,0.1)'; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
               >
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
