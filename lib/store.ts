@@ -58,7 +58,10 @@ export const useAdminStore = create<AdminState>()(
       isLoggedIn: false,
       products: DEMO_PRODUCTS,
       login: (id, pw) => {
-        if (id === 'YNK' && pw === 'aa565577##') { 
+        const adminId = process.env.NEXT_PUBLIC_ADMIN_ID || 'YNK';
+        const adminPw = process.env.NEXT_PUBLIC_ADMIN_PW || 'aa565577##';
+        
+        if (id.trim() === adminId && pw === adminPw) { 
           set({ isLoggedIn: true }); 
           return true; 
         }
