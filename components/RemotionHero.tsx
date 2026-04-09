@@ -55,8 +55,10 @@ const TitleSequence = () => {
         </div>
 
         <h1 style={{
-          fontSize: 'clamp(44px, 6.5vw, 96px)', fontWeight: 900,
-          color: '#0f172a', letterSpacing: '-0.03em', lineHeight: 1.15,
+          fontSize: 'clamp(46px, 6.8vw, 100px)', fontWeight: 900,
+          color: '#000000', letterSpacing: '-0.04em', lineHeight: 1.15,
+          // 선명한 영상 위에서도 검정 글씨가 보이도록 화이트 글로우 추가 (날카로운 가독성)
+          textShadow: '0 0 20px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,1)',
           opacity: phase2, 
           transform: `translateY(${translateY(phase2)}px) scale(${scale2}) translateZ(0)`,
           marginBottom: 0,
@@ -64,14 +66,15 @@ const TitleSequence = () => {
         }}>
           검증된 제품,<br />
           <span style={{
-            color: '#0284c7', // 밝은 배경에서 선명하게 보이는 Deep Blue
+            color: '#003366', // 더욱 진하고 선명한 딥 블루
           }}>신뢰할 수 있는 공급</span>
         </h1>
 
         {/* 서브카피 */}
         <p style={{
-          fontSize: 'clamp(17px, 1.6vw, 22px)', color: '#475569', fontWeight: 500,
-          maxWidth: 760, margin: '40px auto 0', lineHeight: 1.8,
+          fontSize: 'clamp(18px, 1.7vw, 23px)', color: '#000000', fontWeight: 800,
+          maxWidth: 780, margin: '44px auto 0', lineHeight: 1.8,
+          textShadow: '0 0 15px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,1)',
           opacity: phase3, 
           transform: `translateY(${translateY(phase3)}px) scale(${scale3}) translateZ(0)`,
           WebkitFontSmoothing: 'antialiased',
@@ -118,10 +121,11 @@ function BackgroundVideo() {
       <div style={{
         position: 'absolute',
         inset: 0,
-        opacity: fadeout ? 0 : 0.5, // 영상 선명도 복구
+        opacity: fadeout ? 0 : 1.0, // 영상 선명도 100% (완전 복구)
         transition: 'opacity 1.5s ease-in-out',
         zIndex: 1,
-        filter: 'contrast(1.1) saturate(1.2)', // 본연의 색감을 살림
+        // 어떠한 화이트닝 필터도 제거하여 원본 블랙 대비 유지
+        filter: 'contrast(1.2) saturate(1.1)', 
       }}>
         {useLocal ? (
           <video
@@ -156,10 +160,10 @@ function BackgroundVideo() {
         )}
       </div>
 
-      {/* 배경 오버레이 (영상이 잘 보이면서도 텍스트 가독성을 잃지 않도록 조정) */}
+      {/* "하얗게 보이는" 원인이었던 화이트 그라데이션 오버레이를 완전히 제거 */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.85) 100%)',
+        background: 'transparent',
         zIndex: 2,
       }} />
     </div>
