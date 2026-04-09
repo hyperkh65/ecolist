@@ -35,13 +35,8 @@ export default function Home() {
           <RemotionHero />
         </div>
         
-        {/* Overlay Content */}
-        <div style={{ position: 'relative', zIndex: 10, height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none' }}>
-          <div style={{ marginBottom: 100, pointerEvents: 'auto', display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', animation: 'fadeInUp 1s ease 1.5s forwards', opacity: 0 }}>
-            <Link href="/shop" style={{ padding: '16px 36px', fontSize: 16, fontWeight: 700, background: 'linear-gradient(135deg, #0284c7, #38bdf8)', color: '#fff', border: 'none', borderRadius: 50, boxShadow: '0 10px 30px rgba(2, 132, 199, 0.4)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.2s' }}>제품 및 인증서 보기 →</Link>
-            <Link href="/trade-info" style={{ padding: '16px 36px', fontSize: 16, fontWeight: 700, background: 'rgba(255,255,255,0.1)', color: '#f8fafc', border: '1px solid rgba(255,255,255,0.25)', borderRadius: 50, backdropFilter: 'blur(12px)', boxShadow: '0 10px 30px rgba(0,0,0,0.2)', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'all 0.2s' }}>무역 절차 안내</Link>
-          </div>
-        </div>
+        {/* Overlay Content removed as it is now integrated into RemotionHero */}
+
 
         {/* Scroll indicator */}
         <div style={{ position: 'absolute', bottom: 36, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, zIndex: 10 }}>
