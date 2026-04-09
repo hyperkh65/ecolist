@@ -117,7 +117,7 @@ function BackgroundVideo() {
   const [isFading, setIsFading] = useState(false);
   const currentRef = useRef<HTMLVideoElement>(null);
   const nextRef = useRef<HTMLVideoElement>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 20초마다 다음 클립으로 크로스페이드 전환
   useEffect(() => {
