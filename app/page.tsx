@@ -12,8 +12,10 @@ import { supabase } from '@/lib/supabase';
 const CATEGORIES = [
   { id: 'smart', labelKey: 'smart', icon: '☁️', descKey: 'desc_smart' },
   { id: 'indoor', labelKey: 'indoor', icon: '🏢', descKey: 'desc_indoor' },
+  { id: 'home_lighting', labelKey: 'home_lighting', icon: '🏠', descKey: 'desc_home' },
   { id: 'commercial', labelKey: 'commercial', icon: '🏪', descKey: 'desc_commercial' },
   { id: 'outdoor', labelKey: 'outdoor', icon: '🏭', descKey: 'desc_outdoor' },
+  { id: 'industrial', labelKey: 'industrial', icon: '🏗️', descKey: 'desc_industrial' },
   { id: 'landscape', labelKey: 'landscape', icon: '🌉', descKey: 'desc_landscape' },
   { id: 'special', labelKey: 'special', icon: '🔬', descKey: 'desc_special' },
 ];
