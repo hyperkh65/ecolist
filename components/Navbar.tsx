@@ -126,8 +126,9 @@ export default function Navbar() {
               {productMenuOpen && (
                 <div style={{
                   position: 'absolute', top: 'calc(100% + 16px)', left: '50%', transform: 'translateX(-50%)',
-                  background: 'var(--bg-card)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 30px 90px rgba(0,0,0,0.6)', padding: '24px', width: 620, zIndex: 2000,
+                  background: 'rgba(12, 12, 18, 0.97)', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.12)',
+                  boxShadow: '0 30px 90px rgba(0,0,0,0.8)', padding: '24px', width: 620, zIndex: 2000,
+                  backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
                 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                     {PRODUCT_CATEGORIES.map((cat) => (
