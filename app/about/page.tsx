@@ -66,7 +66,7 @@ export default function AboutPage() {
                   {/* Google Maps Embed */}
                   <div style={{ marginTop: 24, width: '100%', borderRadius: 16, overflow: 'hidden', border: '1px solid #d1d5db', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
                     <iframe
-                      src="https://maps.google.com/maps?q=인천광역시+미추홀구+경인로+112,+와이앤케이&t=&z=17&ie=UTF8&iwloc=&output=embed"
+                      src="https://maps.google.com/maps?q=인천광역시+미추홀구+경인로112&t=&z=17&ie=UTF8&iwloc=&output=embed"
                       width="100%"
                       height="300"
                       style={{ border: 0, display: 'block' }}
