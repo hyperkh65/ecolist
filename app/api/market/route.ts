@@ -9,21 +9,14 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+// stooq.com 심볼 + 단위 변환 계수
+// al.f: USD/MT (×1), hg/ni/zn.f: cents/lb → USD/MT (×22.04623)
 const METAL_DEFS = [
-  { symbol: 'ALI=F', key: 'aluminum', name: '알루미늄', unit: 'USD/MT' },
-  { symbol: 'HG=F',  key: 'copper',   name: '구리',    unit: 'USD/lb' },
-  { symbol: 'NI=F',  key: 'nickel',   name: '니켈',    unit: 'USD/MT' },
-  { symbol: 'ZNC=F', key: 'zinc',     name: '아연',    unit: 'USD/MT' },
-  { symbol: 'PB=F',  key: 'lead',     name: '납',      unit: 'USD/MT' },
+  { sym: 'al.f', key: 'aluminum', name: '알루미늄', factor: 1 },
+  { sym: 'hg.f', key: 'copper',   name: '구리',    factor: 22.04623 },
+  { sym: 'ni.f', key: 'nickel',   name: '니켈',    factor: 22.04623 },
+  { sym: 'zn.f', key: 'zinc',     name: '아연',    factor: 22.04623 },
 ];
-
-const YF_HEADERS = {
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-  'Accept': 'application/json, text/plain, */*',
-  'Accept-Language': 'en-US,en;q=0.9',
-  'Referer': 'https://finance.yahoo.com/',
-  'Origin': 'https://finance.yahoo.com',
-};
 
 async function fetchRates() {
   const res = await fetch(
@@ -35,47 +28,40 @@ async function fetchRates() {
   return { usd: find('USD'), cny: find('CNY'), jpy: find('JPY') };
 }
 
-// Yahoo Finance v8 chart API - 심볼별 개별 조회 (v7 batch보다 안정적)
-async function fetchSingleMetal(sym: string) {
-  const encoded = encodeURIComponent(sym);
+// stooq CSV: Symbol,Date,Time,Open,High,Low,Close,Volume
+async function fetchStooqMetal(sym: string, factor: number) {
+  const res = await fetch(
+    `https://stooq.com/q/l/?s=${sym}&f=sd2t2ohlcv&h&e=csv`,
+    { headers: { 'User-Agent': 'Mozilla/5.0' }, cache: 'no-store' }
+  );
+  const text = await res.text();
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return null;
 
-  // query1 먼저 시도, 실패 시 query2
-  for (const host of ['query1', 'query2']) {
-    try {
-      const url = `https://${host}.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1d&range=5d`;
-      const res = await fetch(url, { headers: YF_HEADERS, cache: 'no-store' });
-      if (!res.ok) continue;
-      const json = await res.json();
-      const result = json?.chart?.result?.[0];
-      if (!result) continue;
+  const cols = lines[1].split(',');
+  const open  = parseFloat(cols[3]);
+  const close = parseFloat(cols[6]);
+  if (isNaN(close) || close === 0 || cols[1] === 'N/D') return null;
 
-      const meta = result.meta;
-      const price: number = meta.regularMarketPrice ?? 0;
-      const prev: number = meta.previousClose ?? meta.chartPreviousClose ?? 0;
-      const change = price - prev;
-      const changePct = prev ? (change / prev) * 100 : 0;
-      const currency: string = meta.currency ?? 'USD';
-      const name: string = meta.shortName ?? sym;
+  const price    = Math.round(close * factor);
+  const prev     = Math.round(open  * factor);
+  const change   = price - prev;
+  const changePct = prev ? (change / prev) * 100 : 0;
 
-      return { price, prev, change, changePct, currency, name };
-    } catch {
-      // try next host
-    }
-  }
-  return null;
+  return { price, prev, change, changePct, currency: 'USD', unit: 'USD/MT' };
 }
 
 async function fetchMetals() {
   const results = await Promise.allSettled(
-    METAL_DEFS.map(async (def) => {
-      const data = await fetchSingleMetal(def.symbol);
-      return { key: def.key, data };
-    })
+    METAL_DEFS.map(async ({ sym, key, factor }) => ({
+      key,
+      data: await fetchStooqMetal(sym, factor),
+    }))
   );
 
-  const metals: Record<string, { price: number; prev: number; change: number; changePct: number; currency: string; name: string } | null> = {};
+  const metals: Record<string, ReturnType<typeof fetchStooqMetal> extends Promise<infer T> ? T : never> = {};
   for (const r of results) {
-    if (r.status === 'fulfilled') {
+    if (r.status === 'fulfilled' && r.value.data) {
       metals[r.value.key] = r.value.data;
     }
   }
@@ -96,10 +82,10 @@ async function saveTodaySnapshot(
     cny: rates.cny,
     jpy: rates.jpy,
     aluminum: metals.aluminum?.price ?? null,
-    copper: metals.copper?.price ?? null,
-    nickel: metals.nickel?.price ?? null,
-    zinc: metals.zinc?.price ?? null,
-    lead: metals.lead?.price ?? null,
+    copper:   metals.copper?.price ?? null,
+    nickel:   metals.nickel?.price ?? null,
+    zinc:     metals.zinc?.price ?? null,
+    lead:     null,
   });
 }
 
