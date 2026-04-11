@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useShopStore, useAdminStore } from '@/lib/store';
 import { useSiteSettings } from '@/lib/useSiteSettings';
@@ -18,6 +19,8 @@ const PRODUCT_CATEGORIES = [
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHome = pathname === '/';
   const [menuOpen, setMenuOpen] = useState(false);
   const [productMenuOpen, setProductMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -76,10 +79,10 @@ export default function Navbar() {
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
         padding: scrolled ? '12px 0' : '20px 0',
-        background: scrolled ? 'rgba(10, 10, 11, 0.95)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
-        boxShadow: scrolled ? '0 10px 40px rgba(0,0,0,0.5)' : 'none',
+        background: (scrolled || !isHome) ? 'rgba(10, 10, 11, 0.95)' : 'transparent',
+        backdropFilter: (scrolled || !isHome) ? 'blur(20px)' : 'none',
+        borderBottom: (scrolled || !isHome) ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
+        boxShadow: (scrolled || !isHome) ? '0 10px 40px rgba(0,0,0,0.5)' : 'none',
       }}>
         <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           
