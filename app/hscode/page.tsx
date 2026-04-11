@@ -488,14 +488,14 @@ export default function HsCodePage() {
             </div>
             <div style={{ padding: '16px 20px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 10 }}>
               {[
-                { hs: '8541400000', nm: '발광다이오드 (LED)' },
-                { hs: '8539500000', nm: 'LED 램프' },
-                { hs: '9405109090', nm: '천장/벽 조명기구' },
-                { hs: '9405409000', nm: 'LED 조명기구 (기타)' },
-                { hs: '9405999000', nm: '조명기구 부품 (기타)' },
+                { hs: '8539510000', nm: 'LED 모듈 (엘이디 모듈)' },
+                { hs: '8539520000', nm: 'LED 램프 (엘이디 램프)' },
+                { hs: '9405110000', nm: 'LED 천장/벽 조명기구' },
+                { hs: '9405210000', nm: 'LED 스탠드/데스크 조명' },
+                { hs: '9405420000', nm: 'LED 기타 조명기구' },
+                { hs: '9405492000', nm: '투광형 조명기구' },
+                { hs: '9405493000', nm: '가로등 조명기구' },
                 { hs: '8544421000', nm: '전기 도체 (전선류)' },
-                { hs: '7606120000', nm: '알루미늄 합금판' },
-                { hs: '7403110000', nm: '정제동 (양극)' },
               ].map(item => (
                 <button key={item.hs} onClick={() => selectHs(item.hs)}
                   style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px', background: '#f8fafc', border: '1px solid #e2e8f0',
