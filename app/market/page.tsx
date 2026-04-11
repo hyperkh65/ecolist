@@ -416,7 +416,7 @@ export default function MarketPage() {
                           style={{ padding: '5px 12px', borderRadius: 20, border: `1.5px solid ${chartKey === m.key ? m.color : '#e2e8f0'}`,
                             background: chartKey === m.key ? m.color + '18' : 'transparent',
                             color: chartKey === m.key ? m.color : '#64748b', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
-                          {'label' in m ? m.label.split(' ')[0] : m.key}
+                          {m.label.split(' ')[0]}
                         </button>
                       ))}
                     </div>
