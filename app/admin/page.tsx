@@ -395,8 +395,8 @@ export default function AdminPage() {
                     {prod.manufacturer && <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>🇨🇳 {prod.manufacturer}</div>}
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
                       {Object.entries(prod.specs || {}).slice(0, 3).map(([k, v]) => (
-                        v && v !== 'N/A' && v !== 'TBD' && v !== '' ? (
-                          <span key={k} style={{ fontSize: 10, padding: '2px 7px', background: 'rgba(255,255,255,0.06)', borderRadius: 4, color: 'rgba(255,255,255,0.5)' }}>{v}</span>
+                        v && String(v) !== 'N/A' && String(v) !== 'TBD' && String(v) !== '' ? (
+                          <span key={k} style={{ fontSize: 10, padding: '2px 7px', background: 'rgba(255,255,255,0.06)', borderRadius: 4, color: 'rgba(255,255,255,0.5)' }}>{String(v)}</span>
                         ) : null
                       ))}
                       {prod.documents?.length > 0 && <span style={{ fontSize: 10, padding: '2px 7px', background: 'rgba(16,185,129,0.1)', borderRadius: 4, color: '#10b981' }}>📄 {prod.documents.length}개 자료</span>}
