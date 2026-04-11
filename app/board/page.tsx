@@ -5,7 +5,7 @@ import Footer from '@/components/Footer';
 import { supabase } from '@/lib/supabase';
 
 interface Post {
-  id: string; title: string; content: string; author: string;
+  id: string; title: string; content?: string; author: string;
   created_at: string; attachments: { name: string; url: string }[];
   is_locked: boolean; password?: string; cover_image?: string;
 }
