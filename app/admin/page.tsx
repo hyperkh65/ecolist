@@ -120,6 +120,8 @@ export default function AdminPage() {
   const [editProduct, setEditProduct] = useState<EditableProduct | null>(null);
   const [settings, setSettings] = useState<SiteSettings | null>(null);
   const [brochureUrl, setBrochureUrl] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [apiKeyCopied, setApiKeyCopied] = useState(false);
   const [prodSearch, setProdSearch] = useState('');
   const [prodCatFilter, setProdCatFilter] = useState('all');
 
@@ -143,8 +145,16 @@ export default function AdminPage() {
       const menus   = data.find(d => d.category === 'menu')?.config;
       const brochure = data.find(d => d.category === 'brochure')?.config;
       const site    = data.find(d => d.category === 'site')?.config || { site_name: '(주)와이앤케이 YNK', logo_url: '', description: '' };
+      const apikeyConfig = data.find(d => d.category === 'apikey')?.config;
       setSettings({ company, menus, site });
       if (brochure?.url) setBrochureUrl(brochure.url);
+      if (apikeyConfig?.key) setApiKey(apikeyConfig.key);
+      else {
+        // 최초 진입 시 키 자동 생성
+        const newKey = 'ynk_' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2,'0')).join('');
+        setApiKey(newKey);
+        await supabase.from('site_settings').upsert([{ category: 'apikey', config: { key: newKey } }], { onConflict: 'category' });
+      }
     }
   }
 
@@ -758,6 +768,44 @@ export default function AdminPage() {
                 <CloudinaryUpload label="PDF 업로드" folder="led-brochure" onSuccess={url => setBrochureUrl(url)} />
               </div>
               {brochureUrl && <div style={{ marginTop: 10, fontSize: 11, color: '#60a5fa', wordBreak: 'break-all' }}>✅ {brochureUrl}</div>}
+            </div>
+
+            {/* AI 제품 등록 API 키 */}
+            <div style={sectionCard}>
+              <h3 style={{ fontSize: 13, fontWeight: 800, color: '#34d399', marginBottom: 6, textTransform: 'uppercase' }}>🤖 AI 제품 등록 API</h3>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 16 }}>Claude 등 AI에게 이 키를 전달하면 제품을 자동 등록할 수 있습니다</p>
+              <div style={{ padding: '16px 18px', background: 'rgba(52,211,153,0.06)', borderRadius: 10, border: '1px solid rgba(52,211,153,0.2)', marginBottom: 14 }}>
+                <div style={{ fontSize: 11, color: '#34d399', fontWeight: 700, marginBottom: 8 }}>🔑 API 키</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <code style={{ flex: 1, fontSize: 14, color: '#e2e8f0', fontFamily: 'monospace', wordBreak: 'break-all' }}>{apiKey}</code>
+                  <button onClick={() => { navigator.clipboard.writeText(apiKey); setApiKeyCopied(true); setTimeout(() => setApiKeyCopied(false), 2000); }}
+                    style={{ padding: '6px 14px', background: apiKeyCopied ? '#34d399' : 'rgba(255,255,255,0.1)', border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    {apiKeyCopied ? '✅ 복사됨' : '📋 복사'}
+                  </button>
+                  <button onClick={async () => {
+                    if (!confirm('API 키를 재발급하면 기존 키는 즉시 만료됩니다. 계속하시겠습니까?')) return;
+                    const newKey = 'ynk_' + Array.from(crypto.getRandomValues(new Uint8Array(20))).map(b => b.toString(16).padStart(2,'0')).join('');
+                    setApiKey(newKey);
+                    await supabase.from('site_settings').upsert([{ category: 'apikey', config: { key: newKey } }], { onConflict: 'category' });
+                    alert('새 API 키가 발급되었습니다.');
+                  }} style={{ padding: '6px 14px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, color: '#fca5a5', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                    🔄 재발급
+                  </button>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <a href="/ai-guide" target="_blank" rel="noopener noreferrer"
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: 'rgba(52,211,153,0.15)', border: '1px solid rgba(52,211,153,0.3)', borderRadius: 8, color: '#34d399', fontSize: 13, fontWeight: 700, textDecoration: 'none' }}>
+                  📖 AI 가이드 페이지 열기
+                </a>
+                <button onClick={() => { const url = window.location.origin + '/ai-guide'; navigator.clipboard.writeText(url); alert('가이드 URL이 복사되었습니다:\n' + url); }}
+                  style={{ padding: '9px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                  🔗 가이드 URL 복사
+                </button>
+              </div>
+              <div style={{ marginTop: 14, padding: '12px 16px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.7 }}>
+                💡 <strong style={{ color: 'rgba(255,255,255,0.5)' }}>사용법:</strong> Claude에게 가이드 URL + API 키를 전달하고, 제품 사진/데이터시트를 첨부하면 자동 등록됩니다.
+              </div>
             </div>
 
             <div style={sectionCard}>
