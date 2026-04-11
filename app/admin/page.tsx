@@ -14,6 +14,7 @@ interface Post {
 interface SiteSettings {
   company: { name: string; address: string; tel: string; fax: string; email: string; business_id: string; about_text: string };
   menus: { label: string; href: string }[];
+  site: { site_name: string; logo_url: string; description: string };
 }
 interface DocFile { name: string; url: string; type: 'datasheet' | 'manual' | 'cert' | 'drawing' | 'other' }
 interface EditableProduct {
@@ -141,7 +142,8 @@ export default function AdminPage() {
       const company = data.find(d => d.category === 'company')?.config;
       const menus   = data.find(d => d.category === 'menu')?.config;
       const brochure = data.find(d => d.category === 'brochure')?.config;
-      setSettings({ company, menus });
+      const site    = data.find(d => d.category === 'site')?.config || { site_name: '(주)와이앤케이 YNK', logo_url: '', description: '' };
+      setSettings({ company, menus, site });
       if (brochure?.url) setBrochureUrl(brochure.url);
     }
   }
@@ -213,9 +215,10 @@ export default function AdminPage() {
     if (!settings) return;
     setLoading(true);
     await supabase.from('site_settings').upsert([
-      { category: 'company', config: settings.company },
-      { category: 'menu', config: settings.menus },
+      { category: 'company',  config: settings.company },
+      { category: 'menu',     config: settings.menus },
       { category: 'brochure', config: { url: brochureUrl } },
+      { category: 'site',     config: settings.site },
     ], { onConflict: 'category' });
     alert('저장되었습니다.');
     setLoading(false);
@@ -683,6 +686,38 @@ export default function AdminPage() {
                 style={{ padding: '11px 24px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
                 {loading ? '저장 중...' : '💾 설정 저장'}
               </button>
+            </div>
+
+            {/* 사이트 기본 정보 */}
+            <div style={sectionCard}>
+              <h3 style={{ fontSize: 13, fontWeight: 800, color: '#a78bfa', marginBottom: 6, textTransform: 'uppercase' }}>🌐 사이트 기본 정보</h3>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 18 }}>브라우저 탭 제목과 파비콘(아이콘)을 설정합니다</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>사이트 이름 (브라우저 탭 제목)</label>
+                  <input value={settings.site?.site_name || ''} onChange={e => setSettings({ ...settings, site: { ...settings.site, site_name: e.target.value } })} placeholder="(주)와이앤케이 YNK" style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>사이트 설명 (SEO)</label>
+                  <input value={settings.site?.description || ''} onChange={e => setSettings({ ...settings, site: { ...settings.site, description: e.target.value } })} placeholder="YNK LED 조명 전문기업" style={inputStyle} />
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={labelStyle}>로고 이미지 URL (파비콘 / 탭 아이콘)</label>
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <input value={settings.site?.logo_url || ''} onChange={e => setSettings({ ...settings, site: { ...settings.site, logo_url: e.target.value } })} placeholder="https://... (PNG, SVG, ICO 권장)" style={{ ...inputStyle, flex: 1 }} />
+                    <CloudinaryUpload label="로고 업로드" folder="ynk-logo" onSuccess={url => setSettings({ ...settings, site: { ...settings.site, logo_url: url } })} />
+                  </div>
+                  {settings.site?.logo_url && (
+                    <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <img src={settings.site.logo_url} alt="logo preview" style={{ width: 40, height: 40, objectFit: 'contain', background: '#fff', borderRadius: 6, padding: 4 }} />
+                      <span style={{ fontSize: 11, color: '#60a5fa', wordBreak: 'break-all' }}>✅ {settings.site.logo_url}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div style={{ marginTop: 16, padding: '12px 16px', background: 'rgba(167,139,250,0.08)', borderRadius: 8, border: '1px solid rgba(167,139,250,0.2)', fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>
+                💡 저장 후 페이지 새로고침 시 브라우저 탭에 반영됩니다. 로고는 정사각형 이미지(PNG/SVG)를 권장합니다.
+              </div>
             </div>
 
             <div style={sectionCard}>
