@@ -9,6 +9,7 @@ import ProductCard from '@/components/ProductCard';
 import { AnimatedCounter, ScrollReveal } from '@/components/LuminaAnimation';
 import RemotionHero from '@/components/RemotionHero';
 import { supabase } from '@/lib/supabase';
+import ToolDock from '@/components/ToolDock';
 
 const CATEGORIES = [
   { id: 'smart', labelKey: 'smart', icon: '☁️', descKey: 'desc_smart' },
@@ -243,6 +244,7 @@ export default function Home() {
       </section>
 
       <Footer />
+      <ToolDock />
     </main>
   );
 }
