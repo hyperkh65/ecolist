@@ -98,7 +98,7 @@ const STATIC_RATES: Record<string, StaticRate> = {
     basic: '8', wto: '8',
     fta: [
       { ftaCd: 'US', rate: '0' }, { ftaCd: 'EU', rate: '0' },
-      { ftaCd: 'CN', rate: '4.8', note: '2024년 기준' },
+      { ftaCd: 'CN', rate: '4.8', note: '2026년 기준' },
       { ftaCd: 'A',  rate: '0' }, { ftaCd: 'RC', rate: '5.6', note: '단계적 인하' },
       { ftaCd: 'VN', rate: '0' }, { ftaCd: 'AU', rate: '0' },
     ],
@@ -108,7 +108,7 @@ const STATIC_RATES: Record<string, StaticRate> = {
     basic: '8', wto: '8',
     fta: [
       { ftaCd: 'US', rate: '0' }, { ftaCd: 'EU', rate: '0' },
-      { ftaCd: 'CN', rate: '4.8', note: '2024년 기준' },
+      { ftaCd: 'CN', rate: '4.8', note: '2026년 기준' },
       { ftaCd: 'A',  rate: '0' }, { ftaCd: 'RC', rate: '5.6', note: '단계적 인하' },
     ],
   },
@@ -117,7 +117,7 @@ const STATIC_RATES: Record<string, StaticRate> = {
     basic: '8', wto: '8',
     fta: [
       { ftaCd: 'US', rate: '0' }, { ftaCd: 'EU', rate: '0' },
-      { ftaCd: 'CN', rate: '4.8', note: '2024년 기준' },
+      { ftaCd: 'CN', rate: '4.8', note: '2026년 기준' },
       { ftaCd: 'A',  rate: '0' },
     ],
   },
@@ -126,7 +126,7 @@ const STATIC_RATES: Record<string, StaticRate> = {
     basic: '8', wto: '8',
     fta: [
       { ftaCd: 'US', rate: '0' }, { ftaCd: 'EU', rate: '0' },
-      { ftaCd: 'CN', rate: '4.8', note: '2024년 기준' },
+      { ftaCd: 'CN', rate: '4.8', note: '2026년 기준' },
       { ftaCd: 'A',  rate: '0' }, { ftaCd: 'RC', rate: '5.6', note: '단계적 인하' },
     ],
   },
