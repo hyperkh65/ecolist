@@ -51,6 +51,8 @@ export default function AdminPage() {
 
   // States for Settings
   const [settings, setSettings] = useState<SiteSettings | null>(null);
+  const [brochureUrl, setBrochureUrl] = useState('');
+  const [brochureUploading, setBrochureUploading] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn) router.push('/admin/login');
@@ -389,6 +391,32 @@ export default function AdminPage() {
                                  className="input-dark" rows={5} />
                     </div>
                  </div>
+              </section>
+
+              <section style={{ marginBottom: 48 }}>
+                 <h2 style={{ fontSize: 18, marginBottom: 20, color: '#3b82f6' }}>📥 회사소개서 관리</h2>
+                 <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)', marginBottom: 16 }}>PDF 또는 파일 URL을 입력하거나 Cloudinary로 업로드하세요. 회사소개 페이지에 다운로드 버튼으로 표시됩니다.</p>
+                 <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                   <input
+                     type="url"
+                     value={brochureUrl}
+                     onChange={(e) => setBrochureUrl(e.target.value)}
+                     placeholder="회사소개서 URL (예: https://...)"
+                     className="input-dark"
+                     style={{ flex: 1, minWidth: 300 }}
+                   />
+                   <CloudinaryUpload
+                     label={brochureUploading ? '업로드 중...' : '파일 업로드'}
+                     folder="led-brochure"
+                     onSuccess={(url) => { setBrochureUrl(url); setBrochureUploading(false); }}
+                   />
+                 </div>
+                 {brochureUrl && (
+                   <div style={{ marginTop: 12, padding: '12px 16px', background: 'rgba(59,130,246,0.08)', borderRadius: 10, border: '1px solid rgba(59,130,246,0.2)' }}>
+                     <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>현재 등록된 파일: </span>
+                     <a href={brochureUrl} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#60a5fa', wordBreak: 'break-all' }}>{brochureUrl}</a>
+                   </div>
+                 )}
               </section>
 
               <section>
