@@ -85,7 +85,7 @@ export default function AboutPage() {
                   우리는 단순한 제품 공급을 넘어, 공간의 가치를 높이는 빛을 전달합니다. 수년 간의 글로벌 소싱 경험과 국제 무역 및 인증 노하우를 바탕으로 가장 혁신적이고 안정적인 LED 조명 솔루션을 제안합니다. 스마트 조명부터 산업용 특수 조명까지, (주)와이앤케이가 귀사의 든든한 무역 파트너가 되겠습니다.
                 </p>
                 {/* 회사소개서 다운로드 버튼 */}
-                {brochureUrl && (
+                {brochureUrl ? (
                   <a
                     href={brochureUrl}
                     target="_blank"
@@ -104,6 +104,15 @@ export default function AboutPage() {
                   >
                     📥 최신 회사소개서 다운받기
                   </a>
+                ) : (
+                  <div style={{
+                    display: 'inline-flex', alignItems: 'center', gap: 8,
+                    marginTop: 28, padding: '14px 24px', borderRadius: 12,
+                    background: '#e5e7eb', color: '#9ca3af',
+                    fontWeight: 700, fontSize: 15, cursor: 'not-allowed',
+                  }}>
+                    📥 회사소개서 준비 중
+                  </div>
                 )}
               </div>
             </ScrollReveal>
