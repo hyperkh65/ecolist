@@ -75,7 +75,7 @@ export default function MarketPage() {
   const hist = data?.history ?? [];
   const chartMeta = [...RATE_META, ...METAL_META.slice(0, 3)];
   const activeChart = chartMeta.find(m => m.key === chartKey)!;
-  const chartData = hist.map(h => Number((h as Record<string, number>)[chartKey] ?? 0)).filter(v => v > 0);
+  const chartData = hist.map(h => Number((h as unknown as Record<string, number>)[chartKey] ?? 0)).filter(v => v > 0);
 
   return (
     <main style={{ minHeight: '100vh', background: '#f8fafc' }}>
