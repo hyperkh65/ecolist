@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import Link from 'next/link';
@@ -19,6 +20,42 @@ const CATEGORIES = [
   { id: 'landscape', labelKey: 'landscape', icon: '🌉', descKey: 'desc_landscape' },
   { id: 'special', labelKey: 'special', icon: '🔬', descKey: 'desc_special' },
 ];
+
+
+// 홈페이지용 시장현황 미니 위젯
+function MarketPreview() {
+  const [d, setD] = React.useState<{rates?:{usd:number;cny:number;jpy:number};metals?:Record<string,{price:number;changePct:number}>} | null>(null);
+  React.useEffect(() => {
+    fetch('/api/market').then(r=>r.json()).then(setD).catch(()=>{});
+  }, []);
+  if (!d?.rates) return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
+      {[...Array(6)].map((_,i) => <div key={i} style={{ height: 90, background: 'rgba(255,255,255,0.05)', borderRadius: 12, animation: 'pulse 1.5s ease-in-out infinite' }} />)}
+    </div>
+  );
+  const items = [
+    { label: '🇺🇸 USD/KRW', value: d.rates.usd.toFixed(2), unit: '원', chg: 0, color: '#3b82f6' },
+    { label: '🇨🇳 CNY/KRW', value: d.rates.cny.toFixed(2), unit: '원', chg: 0, color: '#ef4444' },
+    { label: '🇯🇵 JPY/100', value: (d.rates.jpy * 100).toFixed(2), unit: '원', chg: 0, color: '#f59e0b' },
+    { label: '⚙️ 알루미늄', value: '$' + (d.metals?.aluminum?.price ?? 0).toFixed(0), unit: 'USD/ton', chg: d.metals?.aluminum?.changePct ?? 0, color: '#6366f1' },
+    { label: '🔶 구리', value: '$' + (d.metals?.copper?.price ?? 0).toFixed(0), unit: 'USD/ton', chg: d.metals?.copper?.changePct ?? 0, color: '#f97316' },
+    { label: '🪨 니켈', value: '$' + (d.metals?.nickel?.price ?? 0).toFixed(0), unit: 'USD/ton', chg: d.metals?.nickel?.changePct ?? 0, color: '#22c55e' },
+  ];
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
+      {items.map(item => (
+        <div key={item.label} style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 14, padding: '18px 20px', border: '1px solid rgba(255,255,255,0.08)', backdropFilter: 'blur(10px)' }}>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8, fontWeight: 600 }}>{item.label}</div>
+          <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', marginBottom: 4 }}>{item.value}</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{item.unit}</span>
+            {item.chg !== 0 && <span style={{ fontSize: 12, fontWeight: 700, color: item.chg >= 0 ? '#4ade80' : '#f87171' }}>{item.chg >= 0 ? '+' : ''}{item.chg.toFixed(2)}%</span>}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
@@ -80,6 +117,25 @@ export default function Home() {
               </div>
             </ScrollReveal>
           ))}
+        </div>
+      </section>
+
+
+      {/* MARKET PREVIEW SECTION */}
+      <section id="market" style={{ padding: '80px 24px', background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', color: 'white' }}>
+        <div className="container">
+          <ScrollReveal>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
+              <div>
+                <p className="section-label" style={{ marginBottom: 12, color: '#7dd3fc' }}>LIVE MARKET DATA</p>
+                <h2 className="section-title" style={{ color: '#fff' }}>시장 현황 · 원자재 시세</h2>
+              </div>
+              <Link href="/market" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '10px 20px', background: 'rgba(14,165,233,0.2)', borderRadius: 10, color: '#7dd3fc', textDecoration: 'none', fontSize: 14, fontWeight: 700, border: '1px solid rgba(14,165,233,0.3)' }}>
+                전체 보기 →
+              </Link>
+            </div>
+          </ScrollReveal>
+          <MarketPreview />
         </div>
       </section>
 
