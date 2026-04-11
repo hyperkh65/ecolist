@@ -9,8 +9,21 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
-// Yahoo Finance 심볼 (LME 연동 선물)
-const METAL_SYMBOLS = 'ALI%3DF,HG%3DF,NI%3DF,ZNC%3DF,PB%3DF';
+const METAL_DEFS = [
+  { symbol: 'ALI=F', key: 'aluminum', name: '알루미늄', unit: 'USD/MT' },
+  { symbol: 'HG=F',  key: 'copper',   name: '구리',    unit: 'USD/lb' },
+  { symbol: 'NI=F',  key: 'nickel',   name: '니켈',    unit: 'USD/MT' },
+  { symbol: 'ZNC=F', key: 'zinc',     name: '아연',    unit: 'USD/MT' },
+  { symbol: 'PB=F',  key: 'lead',     name: '납',      unit: 'USD/MT' },
+];
+
+const YF_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Accept': 'application/json, text/plain, */*',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Referer': 'https://finance.yahoo.com/',
+  'Origin': 'https://finance.yahoo.com',
+};
 
 async function fetchRates() {
   const res = await fetch(
@@ -22,42 +35,60 @@ async function fetchRates() {
   return { usd: find('USD'), cny: find('CNY'), jpy: find('JPY') };
 }
 
-async function fetchMetals() {
-  try {
-    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${METAL_SYMBOLS}&fields=regularMarketPrice,regularMarketPreviousClose,regularMarketChange,regularMarketChangePercent,currency,shortName`;
-    const res = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-      cache: 'no-store',
-    });
-    const json = await res.json();
-    const quotes = json?.quoteResponse?.result ?? [];
+// Yahoo Finance v8 chart API - 심볼별 개별 조회 (v7 batch보다 안정적)
+async function fetchSingleMetal(sym: string) {
+  const encoded = encodeURIComponent(sym);
 
-    const map: Record<string, string> = {
-      'ALI=F': 'aluminum', 'HG=F': 'copper', 'NI=F': 'nickel',
-      'ZNC=F': 'zinc', 'PB=F': 'lead',
-    };
-    const metals: Record<string, { price: number; prev: number; change: number; changePct: number; currency: string; name: string }> = {};
-    for (const q of quotes) {
-      const key = map[q.symbol];
-      if (key) metals[key] = {
-        price: q.regularMarketPrice ?? 0,
-        prev: q.regularMarketPreviousClose ?? 0,
-        change: q.regularMarketChange ?? 0,
-        changePct: q.regularMarketChangePercent ?? 0,
-        currency: q.currency ?? 'USD',
-        name: q.shortName ?? key,
-      };
+  // query1 먼저 시도, 실패 시 query2
+  for (const host of ['query1', 'query2']) {
+    try {
+      const url = `https://${host}.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1d&range=5d`;
+      const res = await fetch(url, { headers: YF_HEADERS, cache: 'no-store' });
+      if (!res.ok) continue;
+      const json = await res.json();
+      const result = json?.chart?.result?.[0];
+      if (!result) continue;
+
+      const meta = result.meta;
+      const price: number = meta.regularMarketPrice ?? 0;
+      const prev: number = meta.previousClose ?? meta.chartPreviousClose ?? 0;
+      const change = price - prev;
+      const changePct = prev ? (change / prev) * 100 : 0;
+      const currency: string = meta.currency ?? 'USD';
+      const name: string = meta.shortName ?? sym;
+
+      return { price, prev, change, changePct, currency, name };
+    } catch {
+      // try next host
     }
-    return metals;
-  } catch {
-    return {};
   }
+  return null;
 }
 
-async function saveTodaySnapshot(rates: { usd: number; cny: number; jpy: number }, metals: Record<string, { price: number }>) {
+async function fetchMetals() {
+  const results = await Promise.allSettled(
+    METAL_DEFS.map(async (def) => {
+      const data = await fetchSingleMetal(def.symbol);
+      return { key: def.key, data };
+    })
+  );
+
+  const metals: Record<string, { price: number; prev: number; change: number; changePct: number; currency: string; name: string } | null> = {};
+  for (const r of results) {
+    if (r.status === 'fulfilled') {
+      metals[r.value.key] = r.value.data;
+    }
+  }
+  return metals;
+}
+
+async function saveTodaySnapshot(
+  rates: { usd: number; cny: number; jpy: number },
+  metals: Record<string, { price: number } | null>
+) {
   const today = new Date().toISOString().slice(0, 10);
   const { data } = await supabase.from('market_history').select('date').eq('date', today).single();
-  if (data) return; // 오늘 이미 저장됨
+  if (data) return;
 
   await supabase.from('market_history').insert({
     date: today,
@@ -77,7 +108,6 @@ export async function GET() {
     const [rates, metals] = await Promise.all([fetchRates(), fetchMetals()]);
     saveTodaySnapshot(rates, metals).catch(console.error);
 
-    // 최근 30일 히스토리
     const { data: history } = await supabase
       .from('market_history')
       .select('*')
