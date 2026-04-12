@@ -18,6 +18,7 @@ const PRODUCT_CATEGORIES = [
 ];
 
 const SUPPORT_ITEMS = [
+  { href: '/catalog', label: '전자카탈로그', icon: '📚', desc: 'LED 제품 카탈로그 PDF 열람' },
   { href: '/support/faq', label: 'FAQ', icon: '❓', desc: '자주 묻는 질문 모음' },
   { href: '/support/contact', label: '고객문의', icon: '📧', desc: '제품 문의 및 견적 요청' },
   { href: '/support/install-guide', label: '설치가이드', icon: '🎬', desc: '제품 설치 영상 가이드' },
