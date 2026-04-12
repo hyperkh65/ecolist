@@ -3,7 +3,6 @@ import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
-import { supabase } from '@/lib/supabase';
 
 const inputBase: React.CSSProperties = {
   width: '100%', padding: '11px 14px', border: '2px solid #e2e8f0', borderRadius: 10,
@@ -25,12 +24,14 @@ export default function ContactPage() {
     e.preventDefault();
     if (!form.name || !form.content || !form.password) { alert('이름, 문의내용, 비밀번호는 필수입니다.'); return; }
     setSubmitting(true);
-    const { data, error } = await supabase.rpc('submit_inquiry', {
-      p_type: 'contact', p_name: form.name, p_email: form.email, p_phone: form.phone,
-      p_content: form.content, p_attachments: attachments, p_password: form.password,
+    const res = await fetch('/api/inquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'contact', name: form.name, email: form.email, phone: form.phone, content: form.content, attachments, password: form.password }),
     });
-    if (error) alert('제출 오류: ' + error.message);
-    else setSubmitted(data as string);
+    const json = await res.json();
+    if (!res.ok) alert('제출 오류: ' + json.error);
+    else setSubmitted(json.id);
     setSubmitting(false);
   };
 
@@ -165,4 +166,5 @@ export default function ContactPage() {
     </>
   );
 }
+
 
