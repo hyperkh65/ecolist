@@ -7,11 +7,11 @@ function sb() {
   return createClient(url, key);
 }
 
-export async function POST(_: NextRequest, { params }: { params: { id: string } }) {
-  await sb().rpc('increment_view', { catalog_id: params.id }).catch(() => {
-    sb().from('catalogs').select('view_count').eq('id', params.id).single().then(({ data }) => {
-      if (data) sb().from('catalogs').update({ view_count: (data.view_count || 0) + 1 }).eq('id', params.id);
-    });
-  });
+export async function POST(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const { data } = await sb().from('catalogs').select('view_count').eq('id', id).single();
+  if (data) {
+    await sb().from('catalogs').update({ view_count: (data.view_count || 0) + 1 }).eq('id', id);
+  }
   return NextResponse.json({ ok: true });
 }
