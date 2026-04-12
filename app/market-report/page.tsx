@@ -81,7 +81,7 @@ export default function BoardPage() {
             <div style={{ fontSize: 11, color: '#0ea5e9', fontWeight: 700, letterSpacing: 2.5, textTransform: 'uppercase', marginBottom: 12 }}>NOTICE & FILES</div>
             <h1 style={{ fontSize: 40, fontWeight: 900, color: '#0f172a', marginBottom: 14, letterSpacing: -0.5 }}>시장 보고서</h1>
             <p style={{ color: '#64748b', fontSize: 15, lineHeight: 1.7 }}>
-              공지사항 및 사진·파일 자료를 공유하는 게시판입니다.<br/>
+              환율 보고서 및 시장현황 보고서를 공유하는 게시판입니다.<br/>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginTop: 4 }}>
                 <span style={{ fontSize: 14 }}>🔒</span> 잠금 게시글은 담당자 확인 후 암호를 통해 열람하실 수 있습니다.
               </span>
@@ -241,3 +241,4 @@ export default function BoardPage() {
     </div>
   );
 }
+
