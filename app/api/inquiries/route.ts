@@ -1,50 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+function getSupabase() {
+  // 서버 전용 env 우선, 없으면 NEXT_PUBLIC_ 사용
+  const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+           || process.env.SUPABASE_ANON_KEY
+           || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-function getKey() {
-  return process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-}
-
-async function dbPost(table: string, body: object) {
-  const key = getKey();
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
-    method: 'POST',
-    headers: {
-      'apikey': key, 'Authorization': `Bearer ${key}`,
-      'Content-Type': 'application/json', 'Prefer': 'return=representation',
-    },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json();
-  if (!res.ok) return { data: null, error: data };
-  return { data: Array.isArray(data) ? data[0] : data, error: null };
-}
-
-async function dbPatch(table: string, id: string, body: object) {
-  const key = getKey();
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`, {
-    method: 'PATCH',
-    headers: {
-      'apikey': key, 'Authorization': `Bearer ${key}`,
-      'Content-Type': 'application/json', 'Prefer': 'return=representation',
-    },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json();
-  if (!res.ok) return { error: data };
-  return { error: null };
-}
-
-async function dbGet(table: string, filters: Record<string, string>) {
-  const key = getKey();
-  const params = Object.entries(filters).map(([k,v]) => `${k}=eq.${encodeURIComponent(v)}`).join('&');
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${params}&limit=1`, {
-    headers: { 'apikey': key, 'Authorization': `Bearer ${key}` },
-  });
-  const data = await res.json();
-  if (!res.ok) return { data: null, error: data };
-  return { data: Array.isArray(data) ? data[0] ?? null : data, error: null };
+  if (!url || !key) {
+    throw new Error(`환경변수 누락 — URL:${url ? 'OK' : 'MISSING'}, KEY:${key ? 'OK' : 'MISSING'}`);
+  }
+  return createClient(url, key);
 }
 
 export async function POST(req: NextRequest) {
@@ -53,12 +20,13 @@ export async function POST(req: NextRequest) {
     if (!name || !content || !password)
       return NextResponse.json({ error: '필수 항목을 입력하세요.' }, { status: 400 });
 
-    const { data, error } = await dbPost('inquiries', {
-      type, name, email, phone, content,
-      attachments: attachments || [], password, status: 'pending',
-    });
+    const sb = getSupabase();
+    const { data, error } = await sb.from('inquiries')
+      .insert({ type, name, email, phone, content, attachments: attachments || [], password, status: 'pending' })
+      .select('id')
+      .single();
 
-    if (error) return NextResponse.json({ error: JSON.stringify(error) }, { status: 500 });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ id: data.id });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
@@ -74,10 +42,11 @@ export async function GET(req: NextRequest) {
     if (!id || !password)
       return NextResponse.json({ error: '조회 정보 부족' }, { status: 400 });
 
-    const filters: Record<string, string> = { id, password };
-    if (type) filters.type = type;
+    const sb = getSupabase();
+    let q = sb.from('inquiries').select('*').eq('id', id).eq('password', password);
+    if (type) q = q.eq('type', type);
 
-    const { data, error } = await dbGet('inquiries', filters);
+    const { data, error } = await q.single();
     if (error || !data) return NextResponse.json({ error: '조회 결과 없음' }, { status: 404 });
     return NextResponse.json(data);
   } catch (err) {
@@ -91,8 +60,9 @@ export async function PATCH(req: NextRequest) {
     const update: Record<string, string> = { status: status || 'replied' };
     if (admin_reply) { update.admin_reply = admin_reply; update.replied_at = new Date().toISOString(); }
 
-    const { error } = await dbPatch('inquiries', id, update);
-    if (error) return NextResponse.json({ error: JSON.stringify(error) }, { status: 500 });
+    const sb = getSupabase();
+    const { error } = await sb.from('inquiries').update(update).eq('id', id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
