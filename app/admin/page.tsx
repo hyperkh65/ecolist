@@ -24,6 +24,7 @@ interface Inquiry {
   admin_reply?: string; replied_at?: string; status: 'pending' | 'replied' | 'closed'; created_at: string;
 }
 interface InstallGuide { id?: string; title: string; video_url: string; thumbnail: string; description: string; order_num: number; }
+interface CatalogItem { id?: string; title: string; description: string; pdf_url: string; thumbnail: string; category: string; password: string; is_public: boolean; page_count: number; order_num: number; view_count?: number; }
 interface EditableProduct {
   id?: string; name: string; category: string; manufacturer: string; badge: string;
   description: string; image: string; images: string[]; specs: Record<string, string>;
@@ -119,7 +120,7 @@ export default function AdminPage() {
   const isLoggedIn = useAdminStore(s => s.isLoggedIn);
   const logout     = useAdminStore(s => s.logout);
 
-  const [tab, setTab]   = useState<'dashboard' | 'products' | 'report' | 'board' | 'blog' | 'settings' | 'faq' | 'contact_mgr' | 'install' | 'as_mgr'>('dashboard');
+  const [tab, setTab]   = useState<'dashboard' | 'products' | 'report' | 'board' | 'blog' | 'settings' | 'faq' | 'contact_mgr' | 'install' | 'as_mgr' | 'catalog'>('dashboard');
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [editPost, setEditPost] = useState<Post | null>(null);
@@ -138,10 +139,12 @@ export default function AdminPage() {
   const [replyText, setReplyText] = useState('');
   const [installGuides, setInstallGuides] = useState<InstallGuide[]>([]);
   const [editGuide, setEditGuide] = useState<InstallGuide | null>(null);
+  const [catalogItems, setCatalogItems] = useState<CatalogItem[]>([]);
+  const [editCatalog, setEditCatalog] = useState<CatalogItem | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) router.push('/admin/login');
-    else { fetchPosts(); fetchSettings(); fetchProducts(); fetchFaq(); fetchInquiries(); fetchGuides(); }
+    else { fetchPosts(); fetchSettings(); fetchProducts(); fetchFaq(); fetchInquiries(); fetchGuides(); fetchCatalogs(); }
   }, [isLoggedIn]);
 
   async function fetchProducts() {
@@ -165,6 +168,12 @@ export default function AdminPage() {
   async function fetchGuides() {
     const { data } = await supabase.from('install_guides').select('*').order('order_num');
     if (data) setInstallGuides(data);
+  }
+  async function fetchCatalogs() {
+    try {
+      const res = await fetch('/api/catalogs/admin');
+      if (res.ok) { const data = await res.json(); setCatalogItems(data); }
+    } catch {}
   }
   async function fetchSettings() {
     const { data } = await supabase.from('site_settings').select('*');
@@ -310,6 +319,32 @@ export default function AdminPage() {
     if (selectedInquiry?.id === id) setSelectedInquiry(null);
   };
 
+  const handleSaveCatalog = async () => {
+    if (!editCatalog) return;
+    setLoading(true);
+    const payload = {
+      title: editCatalog.title, description: editCatalog.description,
+      pdf_url: editCatalog.pdf_url, thumbnail: editCatalog.thumbnail,
+      category: editCatalog.category, password: editCatalog.password,
+      is_public: editCatalog.is_public, page_count: editCatalog.page_count,
+      order_num: editCatalog.order_num,
+    };
+    let res;
+    if (editCatalog.id) {
+      res = await fetch(`/api/catalogs/${editCatalog.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    } else {
+      res = await fetch('/api/catalogs', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+    }
+    if (!res.ok) alert('저장 실패: ' + (await res.json()).error);
+    else { setEditCatalog(null); fetchCatalogs(); }
+    setLoading(false);
+  };
+  const handleDeleteCatalog = async (id: string) => {
+    if (!confirm('카탈로그를 삭제하시겠습니까?')) return;
+    await fetch(`/api/catalogs/${id}`, { method: 'DELETE' });
+    fetchCatalogs();
+  };
+
   const handleSaveSettings = async () => {
     if (!settings) return;
     setLoading(true);
@@ -335,6 +370,7 @@ export default function AdminPage() {
     { key: 'contact_mgr', label: '고객문의',  icon: '📧', badge: inquiries.filter(i=>i.type==='contact' && i.status==='pending').length },
     { key: 'install',    label: '설치가이드', icon: '🎬', badge: installGuides.length },
     { key: 'as_mgr',     label: 'A/S 관리',  icon: '🔧', badge: inquiries.filter(i=>i.type==='as' && i.status==='pending').length },
+    { key: 'catalog',    label: '전자카탈로그', icon: '📚', badge: catalogItems.length },
   ];
 
   const filteredProducts = dbProducts.filter(p => {
@@ -1121,6 +1157,132 @@ export default function AdminPage() {
               </div>
             </div>
 
+        {/* ─────── 전자카탈로그 관리 ─────── */}
+        {tab === 'catalog' && !editCatalog && (
+          <div style={{ padding: '40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+              <div>
+                <h1 style={{ fontSize: 26, fontWeight: 900, marginBottom: 4 }}>전자카탈로그 관리</h1>
+                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.35)' }}>총 {catalogItems.length}개 · 공개 {catalogItems.filter(c=>c.is_public).length}개 · 비공개 {catalogItems.filter(c=>!c.is_public).length}개</p>
+              </div>
+              <button onClick={() => setEditCatalog({ title: '', description: '', pdf_url: '', thumbnail: '', category: '일반', password: '', is_public: true, page_count: 1, order_num: catalogItems.length + 1 })}
+                style={{ padding: '11px 22px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>
+                + 카탈로그 등록
+              </button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
+              {catalogItems.map(cat => (
+                <div key={cat.id} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 16, border: '1px solid rgba(255,255,255,0.07)', overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', aspectRatio: '1/1.414', background: '#1e293b', overflow: 'hidden' }}>
+                    {cat.thumbnail
+                      ? <img src={cat.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 48 }}>📄</div>
+                    }
+                    <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 4 }}>
+                      <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5, background: cat.is_public ? '#10b98180' : '#f5900080', color: '#fff', fontWeight: 700 }}>
+                        {cat.is_public ? '공개' : '비공개'}
+                      </span>
+                      {cat.password && <span style={{ fontSize: 10, padding: '2px 7px', borderRadius: 5, background: 'rgba(0,0,0,0.5)', color: '#fbbf24', fontWeight: 700 }}>🔒</span>}
+                    </div>
+                    <div style={{ position: 'absolute', bottom: 8, right: 8, fontSize: 10, padding: '2px 7px', borderRadius: 5, background: 'rgba(0,0,0,0.6)', color: '#fff' }}>
+                      {cat.page_count}p · 👁 {cat.view_count || 0}
+                    </div>
+                  </div>
+                  <div style={{ padding: '14px' }}>
+                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cat.title}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>{cat.category}</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={() => setEditCatalog(cat)}
+                        style={{ flex: 1, padding: '7px', background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.3)', borderRadius: 8, color: '#60a5fa', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                        수정
+                      </button>
+                      <button onClick={() => handleDeleteCatalog(cat.id!)}
+                        style={{ padding: '7px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, color: '#f87171', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                        삭제
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {catalogItems.length === 0 && (
+                <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.2)' }}>
+                  <div style={{ fontSize: 40, marginBottom: 12 }}>📚</div>
+                  <div>등록된 카탈로그가 없습니다</div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {tab === 'catalog' && editCatalog && (
+          <div style={{ padding: '40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 32 }}>
+              <button onClick={() => setEditCatalog(null)} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 10, color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer' }}>← 목록</button>
+              <h1 style={{ fontSize: 22, fontWeight: 900 }}>{editCatalog.id ? '카탈로그 수정' : '새 카탈로그 등록'}</h1>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24 }}>
+              <div>
+                <div style={sectionCard}>
+                  <h3 style={{ fontSize: 13, fontWeight: 800, color: '#60a5fa', marginBottom: 20 }}>📋 기본 정보</h3>
+                  {Field('제목 *', <input value={editCatalog.title} onChange={e => setEditCatalog({ ...editCatalog, title: e.target.value })} placeholder="카탈로그 제목" style={inputStyle} />)}
+                  {Field('카테고리', <input value={editCatalog.category} onChange={e => setEditCatalog({ ...editCatalog, category: e.target.value })} placeholder="예: LED조명, 특수조명, 기술문서" style={inputStyle} />)}
+                  {Field('설명', <textarea value={editCatalog.description} onChange={e => setEditCatalog({ ...editCatalog, description: e.target.value })} rows={3} placeholder="카탈로그 설명 (선택)" style={{ ...inputStyle, resize: 'vertical' }} />)}
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    {Field('총 페이지 수', <input type="number" min={1} value={editCatalog.page_count} onChange={e => setEditCatalog({ ...editCatalog, page_count: Number(e.target.value) })} style={inputStyle} />)}
+                    {Field('정렬 순서', <input type="number" value={editCatalog.order_num} onChange={e => setEditCatalog({ ...editCatalog, order_num: Number(e.target.value) })} style={inputStyle} />)}
+                  </div>
+                </div>
+                <div style={sectionCard}>
+                  <h3 style={{ fontSize: 13, fontWeight: 800, color: '#a855f7', marginBottom: 20 }}>📄 PDF 파일</h3>
+                  {Field('PDF URL', <input value={editCatalog.pdf_url} onChange={e => setEditCatalog({ ...editCatalog, pdf_url: e.target.value })} placeholder="Cloudinary PDF URL" style={inputStyle} />)}
+                  <div style={{ marginTop: 8 }}>
+                    <CloudinaryUpload label="PDF 업로드" folder="catalogs" accept="application/pdf"
+                      onSuccess={url => setEditCatalog({ ...editCatalog, pdf_url: url })} />
+                  </div>
+                  {editCatalog.pdf_url && (
+                    <div style={{ marginTop: 10, padding: '10px 12px', background: 'rgba(168,85,247,0.08)', borderRadius: 8, fontSize: 12, color: '#c084fc', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      ✅ PDF 업로드됨
+                      <a href={editCatalog.pdf_url} target="_blank" rel="noopener noreferrer" style={{ color: '#a855f7', fontSize: 11, textDecoration: 'underline' }}>미리보기</a>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <div style={sectionCard}>
+                  <h3 style={{ fontSize: 13, fontWeight: 800, color: '#10b981', marginBottom: 20 }}>🖼️ 썸네일</h3>
+                  {editCatalog.thumbnail && (
+                    <div style={{ marginBottom: 12, aspectRatio: '1/1.414', background: '#1e293b', borderRadius: 10, overflow: 'hidden' }}>
+                      <img src={editCatalog.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                  )}
+                  {Field('이미지 URL', <input value={editCatalog.thumbnail} onChange={e => setEditCatalog({ ...editCatalog, thumbnail: e.target.value })} placeholder="썸네일 이미지 URL" style={inputStyle} />)}
+                  <CloudinaryUpload label="이미지 업로드" folder="catalog-thumbnails" accept="image/*"
+                    onSuccess={url => setEditCatalog({ ...editCatalog, thumbnail: url })} />
+                </div>
+                <div style={sectionCard}>
+                  <h3 style={{ fontSize: 13, fontWeight: 800, color: '#f59e0b', marginBottom: 20 }}>🔐 공개 설정</h3>
+                  <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                    {[{ v: true, l: '🌐 공개', c: '#10b981' }, { v: false, l: '🔒 비공개', c: '#64748b' }].map(o => (
+                      <button key={String(o.v)} onClick={() => setEditCatalog({ ...editCatalog, is_public: o.v })}
+                        style={{ flex: 1, padding: '9px', borderRadius: 8, border: `1px solid ${editCatalog.is_public === o.v ? o.c : 'rgba(255,255,255,0.1)'}`,
+                          background: editCatalog.is_public === o.v ? o.c + '20' : 'transparent',
+                          color: editCatalog.is_public === o.v ? o.c : 'rgba(255,255,255,0.4)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                        {o.l}
+                      </button>
+                    ))}
+                  </div>
+                  {Field('열람 비밀번호 (선택)', <input type="password" value={editCatalog.password} onChange={e => setEditCatalog({ ...editCatalog, password: e.target.value })} placeholder="비밀번호 없으면 공개" style={inputStyle} />)}
+                  <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)', marginTop: -8 }}>비밀번호 입력 시 열람 전 인증 필요</p>
+                </div>
+                <button onClick={handleSaveCatalog} disabled={loading || !editCatalog.title || !editCatalog.pdf_url}
+                  style={{ width: '100%', padding: '14px', background: '#3b82f6', color: '#fff', border: 'none', borderRadius: 12, fontWeight: 800, fontSize: 15, cursor: 'pointer', opacity: loading || !editCatalog.title || !editCatalog.pdf_url ? 0.5 : 1 }}>
+                  {loading ? '저장 중...' : '💾 저장하기'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
             <div style={sectionCard}>
               <h3 style={{ fontSize: 13, fontWeight: 800, color: '#f59e0b', marginBottom: 20, textTransform: 'uppercase' }}>🗺️ 메뉴 이름</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
@@ -1147,6 +1309,7 @@ export default function AdminPage() {
     </main>
   );
 }
+
 
 
 
