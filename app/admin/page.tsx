@@ -157,8 +157,10 @@ export default function AdminPage() {
     if (data) setFaqItems(data);
   }
   async function fetchInquiries() {
-    const { data } = await supabase.from('inquiries').select('*').order('created_at', { ascending: false });
-    if (data) setInquiries(data);
+    try {
+      const res = await fetch('/api/inquiries/list');
+      if (res.ok) { const data = await res.json(); setInquiries(data); }
+    } catch {}
   }
   async function fetchGuides() {
     const { data } = await supabase.from('install_guides').select('*').order('order_num');
@@ -289,15 +291,21 @@ export default function AdminPage() {
   const handleReply = async () => {
     if (!selectedInquiry || !replyText.trim()) return;
     setLoading(true);
-    const { error } = await supabase.from('inquiries').update({
-      admin_reply: replyText, replied_at: new Date().toISOString(), status: 'replied',
-    }).eq('id', selectedInquiry.id);
-    if (error) alert('오류: ' + error.message);
+    const res = await fetch('/api/inquiries', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: selectedInquiry.id, admin_reply: replyText, status: 'replied' }),
+    });
+    if (!res.ok) alert('오류: ' + (await res.json()).error);
     else { setSelectedInquiry(null); setReplyText(''); fetchInquiries(); }
     setLoading(false);
   };
   const handleCloseInquiry = async (id: string) => {
-    await supabase.from('inquiries').update({ status: 'closed' }).eq('id', id);
+    await fetch('/api/inquiries', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, status: 'closed' }),
+    });
     fetchInquiries();
     if (selectedInquiry?.id === id) setSelectedInquiry(null);
   };
@@ -1139,5 +1147,6 @@ export default function AdminPage() {
     </main>
   );
 }
+
 
 
