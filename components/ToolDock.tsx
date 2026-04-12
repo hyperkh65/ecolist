@@ -566,15 +566,18 @@ export default function ToolDock() {
   const [hovered, setHovered] = useState<Tool>(null);
   return (
     <>
-      <div style={{ position:'fixed', right:0, top:'50%', transform:'translateY(-50%)', zIndex:990, display:'flex', flexDirection:'column', gap:4 }}>
-        {TOOLS.map(tool => (
-          <button key={tool.id!} onClick={() => setActive(active === tool.id ? null : tool.id)}
-            onMouseEnter={() => setHovered(tool.id)} onMouseLeave={() => setHovered(null)}
-            style={{ display:'flex', alignItems:'center', gap:10, padding:'0 16px 0 0', height:52, background: active===tool.id ? tool.color : 'rgba(10,14,26,0.92)', border:`1px solid ${active===tool.id ? tool.color : 'rgba(255,255,255,0.1)'}`, borderRight:'none', borderRadius:'12px 0 0 12px', color: active===tool.id ? '#fff' : 'rgba(255,255,255,0.7)', cursor:'pointer', fontFamily:'inherit', backdropFilter:'blur(12px)', transition:'all 0.22s cubic-bezier(0.34,1.56,0.64,1)', transform: hovered===tool.id || active===tool.id ? 'translateX(0)' : 'translateX(8px)', boxShadow: active===tool.id ? `0 0 20px ${tool.color}40` : '0 4px 16px rgba(0,0,0,0.4)' }}>
-            <span style={{ width:36, display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, marginLeft:12 }}>{tool.icon}</span>
-            <span style={{ fontSize:11, fontWeight:700, letterSpacing:0.3, whiteSpace:'nowrap' }}>{tool.label}</span>
-          </button>
-        ))}
+      <div style={{ position:'fixed', right:0, top:'50%', transform:'translateY(-50%)', zIndex:990, display:'flex', flexDirection:'column', gap:6 }}>
+        {TOOLS.map(tool => {
+          const isOn = hovered === tool.id || active === tool.id;
+          return (
+            <button key={tool.id!} onClick={() => setActive(active === tool.id ? null : tool.id)}
+              onMouseEnter={() => setHovered(tool.id)} onMouseLeave={() => setHovered(null)}
+              style={{ display:'flex', alignItems:'center', height:52, background: active===tool.id ? tool.color : 'rgba(10,14,26,0.88)', border:`1px solid ${isOn ? tool.color : 'rgba(255,255,255,0.13)'}`, borderRight:'none', borderRadius:'12px 0 0 12px', color: isOn ? '#fff' : 'rgba(255,255,255,0.75)', cursor:'pointer', fontFamily:'inherit', backdropFilter:'blur(12px)', transition:'all 0.22s cubic-bezier(0.34,1.56,0.64,1)', boxShadow: isOn ? `0 0 20px ${tool.color}50` : '0 4px 16px rgba(0,0,0,0.35)', overflow:'hidden', maxWidth: isOn ? 160 : 52, padding: 0 }}>
+              <span style={{ width:52, flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center', fontSize:21 }}>{tool.icon}</span>
+              <span style={{ fontSize:11, fontWeight:700, letterSpacing:0.3, whiteSpace:'nowrap', paddingRight:14, opacity: isOn ? 1 : 0, transition:'opacity 0.15s', pointerEvents:'none' }}>{tool.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {active && (
