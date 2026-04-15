@@ -5,96 +5,101 @@ import { ShieldCheck, Zap, Sun, Award } from 'lucide-react';
 
 export default function SolarEducationalPage() {
   return (
-    <main className="min-h-screen bg-slate-50 dark:bg-[#020617] text-slate-900 dark:text-slate-50 font-sans selection:bg-sky-500/30">
+    <main style={{ minHeight: '100vh', background: 'var(--gray-50)' }}>
       <Navbar />
 
       {/* Hero Header Section */}
-      <section className="relative pt-32 pb-16 md:pt-48 md:pb-24 overflow-hidden border-b border-slate-200 dark:border-slate-800/50">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-100 via-transparent to-transparent dark:from-sky-900/20 dark:via-[#020617] dark:to-[#020617] opacity-60"></div>
-        <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 font-semibold text-sm mb-6 border border-sky-200 dark:border-sky-800">
-            <Sun className="w-4 h-4" />
+      <section style={{ padding: '160px 24px 80px', background: 'var(--white)', borderBottom: '1px solid var(--gray-200)', textAlign: 'center' }}>
+        <div className="container">
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'var(--gray-100)', borderRadius: 50, color: 'var(--gray-700)', fontWeight: 700, fontSize: 13, marginBottom: 24, border: '1px solid var(--gray-200)' }}>
+            <Sun size={16} color="var(--primary)" />
             <span>최첨단 태양광 솔루션 교육 자료</span>
           </div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-6 leading-[1.1]">
+          <h1 className="section-title" style={{ marginBottom: 24 }}>
             태양광 LED 가로등 <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-indigo-600">
-              작동 원리와 관리 매뉴얼
-            </span>
+            <span className="text-gradient">작동 원리와 관리 매뉴얼</span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto font-medium">
+          <p style={{ fontSize: 18, color: 'var(--gray-600)', maxWidth: 700, margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
             초기 설치부터 유지보수까지 완벽한 이해를 위해 기획된 인터랙티브 가이드입니다. 각 핵심 부품의 역할과 에너지 플로우를 직관적으로 확인하세요.
           </p>
         </div>
       </section>
 
       {/* Interactive Remotion Section */}
-      <section className="py-16 md:py-24 max-w-6xl mx-auto px-4 sm:px-6 relative z-20">
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold mb-4">인터랙티브 컴포넌트 시뮬레이션</h2>
-          <p className="text-slate-600 dark:text-slate-400">영상 내의 진행 바를 컨트롤하거나 자동으로 시청하시며 구조를 파악하실 수 있습니다.</p>
-        </div>
-        
-        {/* Remotion Component Wrapper */}
-        <div className="w-full">
-            <SolarManualRemotion />
+      <section style={{ padding: '100px 24px', background: 'var(--gray-900)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
+            <h2 className="section-title" style={{ color: 'var(--white)' }}>인터랙티브 컴포넌트 시뮬레이션</h2>
+            <p style={{ color: 'rgba(255,255,255,0.6)', marginTop: 16, fontSize: 16 }}>영상 내의 진행 바를 컨트롤하거나 자동으로 시청하시며 구조를 파악하실 수 있습니다.</p>
+          </div>
+          
+          <div style={{ width: '100%', maxWidth: 1280, margin: '0 auto', boxShadow: '0 30px 60px rgba(0,0,0,0.4)', borderRadius: 24 }}>
+              <SolarManualRemotion />
+          </div>
         </div>
       </section>
 
       {/* Detail Modules Section */}
-      <section className="py-16 md:py-24 bg-white dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-800">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold mb-4">주요 유지보수 체크포인트</h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">설치 후 정기적인 관리를 통해 태양광 가로등의 수명을 극대화할 수 있습니다. 다음 항목들을 정기적으로 점검해주세요.</p>
+      <section style={{ padding: '120px 24px', background: 'var(--white)' }}>
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: 64 }}>
+            <p className="section-label" style={{ marginBottom: 16 }}>MAINTENANCE GUIDE</p>
+            <h2 className="section-title">주요 유지보수 체크포인트</h2>
+            <p style={{ color: 'var(--gray-600)', marginTop: 16, maxWidth: 700, margin: '16px auto 0', lineHeight: 1.6 }}>설치 후 정기적인 관리를 통해 태양광 가로등의 수명을 극대화할 수 있습니다. 다음 항목들을 정기적으로 점검해주세요.</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 32 }}>
             {/* Card 1 */}
-            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300">
-              <div className="w-14 h-14 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl flex items-center justify-center mb-6">
-                <Sun className="w-7 h-7" />
+            <div className="glass-panel" style={{ padding: 40, border: '1px solid var(--gray-200)', cursor: 'default', background: 'var(--gray-50)', transition: 'transform 0.3s ease, box-shadow 0.3s ease' }} 
+                 onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-8px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 20px 40px rgba(0,0,0,0.06)'; }}
+                 onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'none'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
+              <div style={{ width: 64, height: 64, background: 'rgba(245, 158, 11, 0.1)', color: 'var(--warning)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+                <Sun size={32} />
               </div>
-              <h3 className="text-xl font-bold mb-3">패널 관리 (Solar Panel)</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16, color: 'var(--gray-900)' }}>패널 관리 (Solar Panel)</h3>
+              <p style={{ color: 'var(--gray-600)', lineHeight: 1.6, marginBottom: 24 }}>
                 태양광 패널에 먼지나 이물질(낙엽, 조류 분변 등)이 쌓이면 효율이 급감합니다. 분기별 1회 부드러운 천이나 물로 표면을 닦아주세요.
               </p>
-              <ul className="text-sm font-medium text-slate-500 dark:text-slate-400 space-y-2">
-                <li>• 그늘짐 여부 확인 (주변 나뭇가지 등)</li>
-                <li>• 표면 스크래치 점검</li>
-                <li>• 고정 브라켓 체결 상태 확인</li>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, color: 'var(--gray-500)', fontSize: 14, fontWeight: 500, padding: 0 }}>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> 그늘짐 여부 확인 (주변 나뭇가지 등)</li>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> 표면 스크래치 점검</li>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> 고정 브라켓 체결 상태 확인</li>
               </ul>
             </div>
 
             {/* Card 2 */}
-            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300">
-              <div className="w-14 h-14 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-6">
-                <Zap className="w-7 h-7" />
+            <div className="glass-panel" style={{ padding: 40, border: '1px solid var(--gray-200)', cursor: 'default', background: 'var(--gray-50)', transition: 'transform 0.3s ease, box-shadow 0.3s ease' }}
+                 onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-8px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 20px 40px rgba(0,0,0,0.06)'; }}
+                 onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'none'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
+              <div style={{ width: 64, height: 64, background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+                <Zap size={32} />
               </div>
-              <h3 className="text-xl font-bold mb-3">MPPT 제어기 (Controller)</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16, color: 'var(--gray-900)' }}>MPPT 제어기 (Controller)</h3>
+              <p style={{ color: 'var(--gray-600)', lineHeight: 1.6, marginBottom: 24 }}>
                 전체 전력을 분배하는 컨트롤러는 습기와 고열에 주의해야 합니다. LED 인디케이터를 통해 에러 상태가 아닌지 확인하세요.
               </p>
-              <ul className="text-sm font-medium text-slate-500 dark:text-slate-400 space-y-2">
-                <li>• LED 점등 상태 확인 (충전/방전 정상)</li>
-                <li>• 배선 단자대 스파크/느슨함 점검</li>
-                <li>• 케이싱 내부 침수 흔적 확인</li>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, color: 'var(--gray-500)', fontSize: 14, fontWeight: 500, padding: 0 }}>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> LED 점등 상태 확인 (충전/방전 정상)</li>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> 배선 단자대 스파크/느슨함 점검</li>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> 케이싱 내부 침수 흔적 확인</li>
               </ul>
             </div>
 
             {/* Card 3 */}
-            <div className="p-8 rounded-3xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300">
-              <div className="w-14 h-14 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mb-6">
-                <ShieldCheck className="w-7 h-7" />
+            <div className="glass-panel" style={{ padding: 40, border: '1px solid var(--gray-200)', cursor: 'default', background: 'var(--gray-50)', transition: 'transform 0.3s ease, box-shadow 0.3s ease' }}
+                 onMouseEnter={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-8px)'; (e.currentTarget as HTMLDivElement).style.boxShadow = '0 20px 40px rgba(0,0,0,0.06)'; }}
+                 onMouseLeave={(e) => { (e.currentTarget as HTMLDivElement).style.transform = 'none'; (e.currentTarget as HTMLDivElement).style.boxShadow = 'none'; }}>
+              <div style={{ width: 64, height: 64, background: 'rgba(14, 165, 233, 0.1)', color: 'var(--primary)', borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+                <ShieldCheck size={32} />
               </div>
-              <h3 className="text-xl font-bold mb-3">배터리 및 조명 (Battery & LED)</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+              <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 16, color: 'var(--gray-900)' }}>배터리 및 조명 (Battery & LED)</h3>
+              <p style={{ color: 'var(--gray-600)', lineHeight: 1.6, marginBottom: 24 }}>
                 리튬 인산철 배터리는 수명이 길지만 극한의 온도에서는 효율성이 떨어질 수 있습니다. LED는 방열판 관리가 중요합니다.
               </p>
-              <ul className="text-sm font-medium text-slate-500 dark:text-slate-400 space-y-2">
-                <li>• 배터리 외함 팽창 현상 점검</li>
-                <li>• LED 칩셋 점등 불량 (Dead spots) 확인</li>
-                <li>• 모션 센서 정상 작동 반경 테스트</li>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, color: 'var(--gray-500)', fontSize: 14, fontWeight: 500, padding: 0 }}>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> 배터리 외함 팽창 현상 점검</li>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> LED 칩셋 점등 불량 (Dead spots) 확인</li>
+                <li style={{ display: 'flex', gap: 8 }}><span style={{ color: 'var(--primary)' }}>•</span> 모션 센서 정상 작동 반경 테스트</li>
               </ul>
             </div>
           </div>
