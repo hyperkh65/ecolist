@@ -1,57 +1,51 @@
 'use client';
 import React from 'react';
-import MaterialManualInteractive from '@/components/MaterialManualInteractive';
-import ManualSidebar from '@/components/ManualSidebar';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ManualSidebar from '@/components/ManualSidebar';
+import ManualTabs from '@/components/ManualTabs';
+import MaterialManualInteractive from '@/components/MaterialManualInteractive';
+import { Layers, ShieldCheck, Zap, Activity } from 'lucide-react';
 
 export default function MaterialPage() {
   const pageUrl = "https://newhome2026.vercel.app/material1";
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${pageUrl}`;
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0f172a' }}>
+    <main style={{ minHeight: '100vh', background: 'var(--gray-50)' }}>
       <Navbar />
       <ManualSidebar />
-      
-      <div style={{ padding: '80px 20px' }}>
-        {/* Header with QR Code for Mobile Access */}
-        <div style={{ 
-          maxWidth: '1200px', 
-          margin: '0 auto 40px auto', 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          padding: '40px 20px',
-          background: 'linear-gradient(135deg, #3b0764 0%, #1e1b4b 100%)',
-          borderRadius: '24px',
-          border: '1px solid rgba(168, 85, 247, 0.2)'
-        }}>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>
-              실무 소재 사전: 플라스틱 & 비철금속
-            </h2>
-            <p style={{ color: '#c084fc', fontSize: '18px' }}>
-              PC, ABS, ASA 및 알루미늄 다이캐스팅의 특성과 옥외 내후성 가이드
-            </p>
-          </div>
-          
-          <div style={{ 
-            background: '#fff', 
-            padding: '16px', 
-            borderRadius: '16px', 
-            textAlign: 'center',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
-          }}>
-            <img src={qrUrl} alt="QR Code for Mobile Access" width={120} height={120} />
-            <p style={{ color: '#0f172a', fontSize: '12px', fontWeight: 700, marginTop: '8px' }}>모바일로 보기</p>
-          </div>
+      <ManualTabs />
+
+      {/* Hero Header Section */}
+      <section style={{ padding: '160px 24px 80px', background: 'var(--white)', borderBottom: '1px solid var(--gray-200)', textAlign: 'center', position: 'relative' }}>
+        <div style={{ position: 'absolute', right: '40px', top: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', background: 'var(--white)', padding: '16px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid var(--gray-200)' }}>
+           <img src={qrUrl} alt="Mobile QR Code" width="100" height="100" style={{ display: 'block', borderRadius: '8px' }} />
+           <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--gray-600)', whiteSpace: 'nowrap' }}>📷 모바일에서 보기 스캔</span>
         </div>
 
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <div className="container">
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'var(--gray-100)', borderRadius: 50, color: 'var(--gray-700)', fontWeight: 700, fontSize: 13, marginBottom: 24, border: '1px solid var(--gray-200)' }}>
+            <Layers size={16} color="var(--primary)" />
+            <span>고분자 합성 수지 및 비철금속 소재 공학</span>
+          </div>
+          <h1 className="section-title" style={{ marginBottom: 24 }}>
+            실무 소재 사전 및 <br />
+            <span className="text-gradient">물성 최적화 매뉴얼</span>
+          </h1>
+          <p style={{ fontSize: 18, color: 'var(--gray-600)', maxWidth: 800, margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
+             PC, ABS, ASA, 아크릴 등 합성수지부터 AL6063-T5 등 금속 소재까지, 실외 환경의 자외선과 온도 변화에 견디는 최적의 재질 선정을 위한 가이드입니다.
+          </p>
+        </div>
+      </section>
+
+      {/* Interactive Manual Section */}
+      <section style={{ padding: '100px 24px', background: '#020617' }}>
+        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto' }}>
           <MaterialManualInteractive />
         </div>
-      </div>
+      </section>
+
       <Footer />
     </main>
   );

@@ -1,17 +1,15 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Move, Settings, Zap, Eye, BarChart3, CloudRain } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Sun, Moon, Move, Settings, Zap, Eye, BarChart3, CloudRain, Cpu, Network, Radio, Bell, Activity, ShieldCheck, Thermometer, Clock, Gauge, Share2, Globe, Database, Smartphone } from 'lucide-react';
 
 export default function ControllerManualInteractive() {
   const [isMobile, setIsMobile] = useState(false);
-  const [panelVoltage, setPanelVoltage] = useState(20);
-  const [motionDetected, setMotionDetected] = useState(false);
-  const [isMppt, setIsMppt] = useState(true);
-  
-  // Logic
-  const isNight = panelVoltage < 5;
-  const lightBrightness = isNight ? (motionDetected ? 100 : 30) : 0;
-  const currentEfficiency = isMppt ? 98 : 75;
+  const [mode, setMode] = useState('MPPT');
+  const [loadStrategy, setLoadStrategy] = useState('Dynamic');
+  const [isNight, setIsNight] = useState(false);
+  const [commType, setCommType] = useState('LoRa');
+  const [mpptSearch, setMpptSearch] = useState(85); // Efficiency
+  const [soc, setSoc] = useState(75);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -20,191 +18,206 @@ export default function ControllerManualInteractive() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Professional Energy Transfer Model
+  const energyGain = mode === 'MPPT' ? 32 : 0;
+  const systemHealth = soc < 20 ? 'Critical' : soc < 40 ? 'Low' : 'Healthy';
+
   return (
     <div style={{
       width: '100%',
       background: '#020617',
-      borderRadius: isMobile ? '0' : '24px',
-      padding: isMobile ? '24px 16px' : '48px',
+      borderRadius: isMobile ? '0' : '48px',
+      padding: isMobile ? '24px 16px' : '80px',
       color: '#f8fafc',
       fontFamily: '"Pretendard", sans-serif',
       display: 'flex',
       flexDirection: 'column',
-      gap: isMobile ? '32px' : '64px',
-      boxShadow: '0 30px 60px rgba(0, 0, 0, 0.4)',
+      gap: '120px',
+      boxShadow: '0 80px 180px rgba(0, 0, 0, 0.9)',
     }}>
       
-      {/* Header */}
+      {/* Hero Header */}
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontSize: isMobile ? '28px' : '48px', fontWeight: 900, marginBottom: '24px', lineHeight: 1.2 }}>
-           🎛️ 스마트 지능형 컨트롤러 <br/>
-           <span style={{ color: '#fbbf24' }}>MPPT의 비밀과 센서 기술</span>
+        <h1 style={{ fontSize: isMobile ? '36px' : '84px', fontWeight: 900, marginBottom: '32px', lineHeight: 1, letterSpacing: '-0.05em' }}>
+           🧠 <span style={{ color: '#fbbf24' }}>지능형 전력 제어 유닛(CCU)</span> <br/>
+           <span style={{ color: '#38bdf8' }}>MPPT 알고리즘 & 스마트 관제 100% 실무</span>
         </h1>
-        <p style={{ fontSize: isMobile ? '16px' : '20px', color: '#94a3b8', maxWidth: '850px', margin: '0 auto', lineHeight: 1.6 }}>
-          전기를 얼마나 똑똑하게 관리하느냐가 가로등의 수명을 결정합니다. 
-          태양의 위치를 찾아내는 MPPT 기술과 사람이 다가올 때만 밝아지는 스마트 센서의 원리를 직접 체험해보세요.
+        <p style={{ fontSize: isMobile ? '16px' : '26px', color: '#94a3b8', maxWidth: '1100px', margin: '0 auto', lineHeight: 1.8 }}>
+           컨트롤러는 가로등의 '태양광 발전'과 '에너지 보존'을 매칭하는 핵심 오케스트레이터입니다. <br/>
+           기능을 넘어선 **알고리즘의 최적화**가 시스템의 수명을 10년 이상 보장합니다.
         </p>
       </div>
 
-      {/* MPPT vs PWM Comparison */}
-      <section style={{ 
-        background: 'rgba(255,255,255,0.02)', 
-        border: '1px solid rgba(255,255,255,0.1)', 
-        padding: isMobile ? '20px' : '40px', 
-        borderRadius: '24px' 
-      }}>
-        <h2 style={{ fontSize: isMobile ? '20px' : '30px', color: '#fbbf24', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <Zap size={32} /> 제 1장: MPPT vs PWM (누가 더 똑똑한가?)
-        </h2>
-        
-        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '40px', alignItems: 'center' }}>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontSize: '18px', color: '#cbd5e1', lineHeight: 1.8, marginBottom: '24px' }}>
-              <b>MPPT</b>는 태양광 패널이 가장 힘을 잘 쓰는 지점(Maximum Power Point)을 실시간으로 추적하는 기술이에요. 
-              마치 기어를 변속해서 최고 속도를 내는 자전거와 같죠! <br/><br/>
-              반면 <b>PWM</b>은 단순한 스위치라서 전력 손실이 큽니다. 비오는 날이나 겨울철에는 MPPT가 약 30% 더 많은 전기를 만들어냅니다.
-            </p>
-            <button 
-              onClick={() => setIsMppt(!isMppt)}
-              style={{
-                width: '100%',
-                padding: '16px',
-                borderRadius: '12px',
-                background: isMppt ? '#fbbf24' : '#475569',
-                color: isMppt ? '#000' : '#fff',
-                fontWeight: 900,
-                border: 'none',
-                cursor: 'pointer',
-                fontSize: '18px'
-              }}
-            >
-              모드 전환: {isMppt ? '🚀 지능형 MPPT 모드' : '🐢 일반 PWM 모드'}
-            </button>
-          </div>
-
-          <div style={{ 
-            flex: 1, 
-            background: '#0f172a', 
-            borderRadius: '20px', 
-            padding: '32px', 
-            border: '1px solid #1e293b',
-            textAlign: 'center' 
-          }}>
-            <div style={{ fontSize: '18px', color: '#94a3b8', marginBottom: '16px' }}>에너지 변환 효율</div>
-            <div style={{ position: 'relative', height: '150px', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: '20px' }}>
-               <div style={{ width: '80px', height: `${currentEfficiency}%`, background: '#fbbf24', borderRadius: '12px 12px 0 0', transition: 'all 0.5s', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ color: '#000', fontWeight: 'bold' }}>{currentEfficiency}%</span>
+      {/* Chapter 1: MPPT Search & Peak Tracking Science */}
+      <section style={{ background: 'rgba(251, 191, 36, 0.05)', border: '1px solid rgba(251, 191, 36, 0.2)', padding: isMobile ? '32px' : '80px', borderRadius: '64px' }}>
+         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.2fr 1fr', gap: '80px', alignItems: 'center' }}>
+            <div>
+               <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#fbbf24', marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                  <Cpu size={40} /> 지능형 MPPT 추직 로직
+               </h2>
+               <div style={{ display: 'flex', gap: '16px', marginBottom: '40px' }}>
+                  {['MPPT', 'PWM'].map(m => (
+                    <button key={m} onClick={()=>setMode(m)} style={{ flex: 1, padding: '24px', borderRadius: '20px', background: mode === m ? '#fbbf24' : '#1e1b4b', border: 'none', color: mode === m ? '#000' : '#fff', fontWeight: 900, cursor: 'pointer', transition: '0.3s' }}>{m} Architecture</button>
+                  ))}
                </div>
-               <div style={{ position: 'absolute', bottom: -30, color: '#94a3b8' }}>{isMppt ? 'MPPT 추적 중' : 'PWM 고정 방식'}</div>
+
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                  <div style={{ background: '#0f172a', padding: '40px', borderRadius: '40px', border: '1px solid #334155' }}>
+                     <h4 style={{ color: '#fff', fontSize: '20px', fontWeight: 800, marginBottom: '16px' }}>{mode} 발전 메커니즘 분석</h4>
+                     <p style={{ color: '#94a3b8', lineHeight: 2.0, fontSize: '16px' }}>
+                        {mode === 'MPPT' ? (
+                          'P&O (Perturb and Observe) 알고리즘을 탑재하여 패널의 출력 전압을 초당 수십 회 이상 미세 조정(Scanning)합니다. 특히 겨울철이나 저온 환경에서 패널의 높은 전압을 배터리 충전 전류로 증폭시켜 발전량을 30% 이상 향상시키는 전문가용 솔루션입니다.'
+                        ) : (
+                          '패널의 전압을 배터리 전압까지 강제로 클램핑(Clamping)하여 연결합니다. 전압 차이만큼의 파워는 컨트롤러 내부의 열로 소산되며, 직사광선이 강한 낮 시간대에는 전체 가용 에너지의 절반 가까이를 잃게 됩니다.'
+                        )}
+                     </p>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                     <div style={{ background: '#020617', padding: '32px', borderRadius: '32px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>발전 가용 에너지</div>
+                        <div style={{ fontSize: '32px', fontWeight: 900, color: '#10b981' }}>{mode === 'MPPT' ? '98%' : '65%'}</div>
+                     </div>
+                     <div style={{ background: '#020617', padding: '32px', borderRadius: '32px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>추가 에너지 이득</div>
+                        <div style={{ fontSize: '32px', fontWeight: 900, color: '#fbbf24' }}>+ {energyGain}%</div>
+                     </div>
+                  </div>
+               </div>
             </div>
-          </div>
-        </div>
+
+            <div style={{ background: '#020617', height: '500px', borderRadius: '56px', border: '8px solid #1e2937', position: 'relative', overflow: 'hidden', padding: '40px' }}>
+               <h4 style={{ textAlign: 'center', color: '#64748b', fontWeight: 800 }}>P-V Curve Max Search</h4>
+               <div style={{ position: 'relative', width: '100%', height: '80%', marginTop: '30px' }}>
+                  {/* Mockup Graph Chart */}
+                  <svg width="100%" height="100%" viewBox="0 0 400 300" style={{ overflow: 'visible' }}>
+                     <path d="M 0 280 Q 200 50 400 280" fill="none" stroke="#334155" strokeWidth="4" />
+                     {mode === 'MPPT' ? (
+                        <>
+                           <circle cx="200" cy="120" r="12" fill="#fbbf24" style={{ filter: 'blur(10px)', animation: 'pulse 2s infinite' }} />
+                           <circle cx="200" cy="120" r="6" fill="#fbbf24" />
+                           <line x1="200" y1="120" x2="200" y2="280" stroke="#fbbf2444" strokeDasharray="4 4" />
+                           <text x="215" y="110" fill="#fbbf24" fontSize="14" fontWeight="900">MAX POINT FOUND</text>
+                        </>
+                     ) : (
+                        <>
+                           <circle cx="300" cy="180" r="6" fill="#94a3b8" />
+                           <line x1="300" y1="180" x2="300" y2="280" stroke="#334155" strokeDasharray="4 4" />
+                           <text x="260" y="165" fill="#94a3b8" fontSize="12">FIXED POINT (PWM)</text>
+                        </>
+                     )}
+                     <line x1="0" y1="280" x2="400" y2="280" stroke="#1e293b" strokeWidth="2" />
+                     <line x1="0" y1="0" x2="0" y2="280" stroke="#1e293b" strokeWidth="2" />
+                  </svg>
+               </div>
+            </div>
+         </div>
       </section>
 
-      {/* Day/Night & Sensor Simulation */}
-      <section style={{ 
-        background: 'rgba(255,255,255,0.02)', 
-        border: '1px solid rgba(255,255,255,0.1)', 
-        padding: isMobile ? '20px' : '40px', 
-        borderRadius: '24px' 
-      }}>
-        <h2 style={{ fontSize: isMobile ? '20px' : '30px', color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-          <Eye size={32} /> 제 2장: 낮과 밤을 판단하는 로직
-        </h2>
-        <p style={{ color: '#cbd5e1', lineHeight: 1.8, marginBottom: '32px' }}>
-          따로 센서가 없어도 패널의 전압을 보고 컨트롤러는 시간을 압니다. 
-          패널에서 5V 이상의 전기가 들어오면 "아! 낮이구나!" 하고 불을 끕니다. 
-          반대로 전압이 뚝 떨어지면 "밤이네!" 하고 불을 켜죠.
-        </p>
+      {/* Chapter 2: Smart City & Global IoT Dashboard */}
+      <section style={{ background: 'linear-gradient(135deg, #1e1b4b 0%, #020617 100%)', padding: isMobile ? '40px' : '80px', borderRadius: '64px', border: '1px solid #312e81' }}>
+         <div style={{ textAlign: 'center', marginBottom: '80px' }}>
+           <h2 style={{ fontSize: '40px', fontWeight: 900, color: '#818cf8', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '20px' }}>
+             <Globe size={48} /> 국가급 스마트 시티 관제 노드
+           </h2>
+           <p style={{ color: '#94a3b8', fontSize: '20px' }}>각 가로등은 단순한 조명이 아닌 '데이터 수집 장치'로 동작합니다.</p>
+         </div>
 
-        <div style={{ 
-          background: isNight ? '#020617' : '#e0f2fe', 
-          padding: '40px', 
-          borderRadius: '24px', 
-          transition: 'all 1s',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '40px',
-          border: `2px solid ${isNight ? '#1e293b' : '#bae6fd'}`
-        }}>
-          {/* Sun/Moon Slider */}
-          <div style={{ width: '100%', textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '20px' }}>
-               {isNight ? <Moon size={40} color="#fbbf24" /> : <Sun size={40} color="#f59e0b" />}
-            </div>
-            <input 
-              type="range" min="0" max="40" value={panelVoltage} 
-              onChange={(e) => setPanelVoltage(Number(e.target.value))}
-              style={{ width: '80%', accentColor: isNight ? '#fbbf24' : '#0ea5e9', cursor: 'pointer' }}
-            />
-            <div style={{ marginTop: '10px', color: isNight ? '#fff' : '#0369a1', fontWeight: 'bold' }}>
-              패널 입력 전압: {panelVoltage}V ({isNight ? '밤' : '낮'})
-            </div>
-          </div>
+         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)', gap: '24px' }}>
+            {[
+              { id: 'LoRa', icon: <Radio />, title: 'LoRaWAN', desc: '중계기 하나로 10km 범위를 커버하는 비면허 대역 통신의 표준.' },
+              { id: 'Zigbee', icon: <Share2 />, title: 'Mesh Network', desc: '가로등 간 자율 그물망 통신으로 사각지대 없는 데이터 전달.' },
+              { id: 'NBIoT', icon: <Network />, title: 'NB-IoT', desc: '통신사 LTE 망을 이용하여 가장 높은 보안성과 신뢰성 제공.' },
+              { id: 'Server', icon: <Database />, title: 'Cloud CMS', desc: '전 세계 만 대 이상의 가로등을 실시간 Map 기반으로 관리.' }
+            ].map((item, idx) => (
+               <div key={idx} style={{ background: '#0f172a', padding: '40px', borderRadius: '32px', border: '1px solid #1e293b', transition: '0.3s' }}>
+                  <div style={{ color: '#818cf8', marginBottom: '24px' }}>{item.icon}</div>
+                  <h4 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '16px' }}>{item.title}</h4>
+                  <p style={{ color: '#64748b', fontSize: '15px', lineHeight: 1.7 }}>{item.desc}</p>
+               </div>
+            ))}
+         </div>
 
-          {/* Interactive Street Light */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-            <div 
-              onMouseEnter={() => setMotionDetected(true)}
-              onMouseLeave={() => setMotionDetected(false)}
-              style={{
-                width: '120px', height: '120px',
-                background: `rgba(251, 191, 36, ${lightBrightness / 100})`,
-                borderRadius: '50%',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: `0 0 ${lightBrightness}px rgba(251, 191, 36, ${lightBrightness / 100})`,
-                cursor: 'pointer',
-                transition: 'all 0.3s'
-              }}
-            >
-              <Zap size={60} color={lightBrightness > 0 ? '#000' : '#475569'} />
+         <div style={{ marginTop: '80px', background: '#020617', padding: '48px', borderRadius: '48px', border: '1px solid #334155' }}>
+            <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '40px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+               <Smartphone size={32} /> 원격 실시간 제어 인터페이스
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.5fr 1fr', gap: '80px' }}>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  <div style={{ padding: '24px', background: '#0f172a', borderRadius: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                     <div>
+                        <div style={{ color: '#94a3b8', fontSize: '14px' }}>배터리 잔량 (SOC)</div>
+                        <div style={{ fontSize: '32px', fontWeight: 900, color: systemHealth === 'Critical' ? '#f43f5e' : '#10b981' }}>{soc}%</div>
+                     </div>
+                     <div style={{ width: '150px' }}>
+                        <input type="range" value={soc} onChange={(e)=>setSoc(Number(e.target.value))} style={{ width: '100%', accentColor: '#10b981' }} />
+                     </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                     <div style={{ background: '#0f172a', padding: '24px', borderRadius: '24px' }}>
+                        <div style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '8px' }}>시스템 상태</div>
+                        <div style={{ color: '#10b981', fontWeight: 900 }}>ONLINE / STABLE</div>
+                     </div>
+                     <div style={{ background: '#0f172a', padding: '24px', borderRadius: '24px' }}>
+                        <div style={{ color: '#94a3b8', fontSize: '13px', marginBottom: '8px' }}>센서 노드</div>
+                        <div style={{ color: '#fbbf24', fontWeight: 900 }}>PIR ACTIVE</div>
+                     </div>
+                  </div>
+               </div>
+               <div style={{ background: '#1e1b4b', padding: '40px', borderRadius: '40px' }}>
+                  <h5 style={{ fontWeight: 800, marginBottom: '16px' }}>System Alert Log</h5>
+                  <div style={{ fontSize: '14px', color: '#94a3b8', display: 'flex', flexDirection: 'column', gap: '12px', fontFamily: 'monospace' }}>
+                     <p style={{ color: '#10b981' }}>[07:00] Charging Bulk Mode started</p>
+                     <p style={{ color: '#fbbf24' }}>[12:00] MPPT Peak Reached at 18.5V</p>
+                     <p>[18:30] Entering Night Mode - Load ON</p>
+                     {soc < 30 && <p style={{ color: '#f43f5e' }}>[WARN] Low Battery - Dimming 30%</p>}
+                  </div>
+               </div>
             </div>
-            <div style={{ color: isNight ? '#fff' : '#0369a1', textAlign: 'center' }}>
-               <div style={{ fontSize: '24px', fontWeight: 900 }}>밝기: {lightBrightness}%</div>
-               <div style={{ fontSize: '14px', marginTop: '4px' }}>{isNight ? (motionDetected ? '움직임 감지! (Full Bright)' : '야간 절전 모드 (30%)') : '주간 소등 상태'}</div>
-            </div>
-            {isNight && (
-              <div style={{ color: '#fbbf24', fontSize: '14px', animation: 'bounce 1s infinite' }}>
-                🖱️ 마우스를 가로등 위에 올려보세요 (움직임 시뮬레이션)
-              </div>
-            )}
-            <style>{`
-              @keyframes bounce {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-5px); }
-              }
-            `}</style>
-          </div>
-        </div>
+         </div>
       </section>
 
-      {/* Knowledge Base */}
-      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '32px' }}>
-        <div style={{ background: '#0f172a', padding: '32px', borderRadius: '24px', border: '1px solid #1e293b' }}>
-          <h3 style={{ fontSize: '22px', fontWeight: 700, color: '#fbbf24', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <BarChart3 size={24} /> MPPT의 원리 (IV 곡선)
-          </h3>
-          <p style={{ color: '#cbd5e1', fontSize: '15px', lineHeight: 1.8 }}>
-            태양광 패널은 전압(V)과 전류(I)를 곱한 것이 힘(W)이 됩니다. 그런데 구름이 끼거나 온도가 올라가면 이 힘이 나오는 '골든 포인트'가 계속 변해요. 
-            MPPT는 1초에 수백 번씩 이 포인트를 찾아내어 배터리로 가장 많은 전기를 보냅니다.
-          </p>
-        </div>
-        <div style={{ background: '#0f172a', padding: '32px', borderRadius: '24px', border: '1px solid #1e293b' }}>
-          <h3 style={{ fontSize: '22px', fontWeight: 700, color: '#fbbf24', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Move size={24} /> 마이크로웨이브 vs PIR 센서
-          </h3>
-          <p style={{ color: '#cbd5e1', fontSize: '15px', lineHeight: 1.8 }}>
-            <b>PIR</b>은 열(적외선)을 감지합니다. 작고 싸지만 거리가 짧죠. <br/>
-            <b>마이크로웨이브(Radar)</b>는 전파를 쏴서 튕겨 나오는 걸 감지합니다. 
-            유리나 플라스틱 통 안에서도 감지가 가능하고 거리가 멀어 고급 가로등에 필수적입니다.
-          </p>
-        </div>
-      </div>
+      {/* Chapter 3: Sensor Fusion & Dynamic Dimming Algorithm */}
+      <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '32px' }}>
+         <div style={{ background: '#0f172a', padding: '56px', borderRadius: '48px', border: '1px solid #1e293b' }}>
+            <div style={{ color: '#38bdf8', marginBottom: '24px' }}><Move size={48} /></div>
+            <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px' }}>센서 퓨전 (Motion)</h4>
+            <p style={{ fontSize: '16px', color: '#cbd5e1', lineHeight: 2.0 }}>
+               단순한 움직임 감지가 아닙니다. **마이크로웨이브 센서**와 PIR을 교차 검증하여 
+               나뭇가지의 흔들림이나 눈/비에 의한 오동작을 99% 차단하고, 
+               실제 보행자가 접근할 때만 0.5초 내에 부드럽게 밝기를 올립니다.
+            </p>
+         </div>
+         <div style={{ background: '#0f172a', padding: '56px', borderRadius: '48px', border: '1px solid #1e293b' }}>
+            <div style={{ color: '#10b981', marginBottom: '24px' }}><Clock size={48} /></div>
+            <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px' }}>가변 시간 디밍</h4>
+            <p style={{ fontSize: '16px', color: '#cbd5e1', lineHeight: 2.0 }}>
+               배터리 잔량에 따라 디밍 스케줄을 실시간 수정합니다. 
+               흐린 날이 지속되어 SOC가 30% 미만일 경우, 심야 시간대 기본 밝기를 10%로 낮춰 
+               가로등이 완전히 꺼지는 최악의 상황을 방지하는 상시 보존(Preservation) 로직입니다.
+            </p>
+         </div>
+         <div style={{ background: '#0f172a', padding: '56px', borderRadius: '48px', border: '1px solid #1e293b' }}>
+            <div style={{ color: '#a855f7', marginBottom: '24px' }}><Settings size={48} /></div>
+            <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '24px' }}>고정밀 RTC 회로</h4>
+            <p style={{ fontSize: '16px', color: '#cbd5e1', lineHeight: 2.0 }}>
+               인터넷 연결이 끊긴 극한 환경에서도 자체 **실시간 시계(RTC)**와 슈퍼 커패시터를 통해 
+               일몰/일출 시간을 1분 오차 내로 계산합니다. 위성 GPS 데이터를 수신하여 
+               현장 위치별 정확한 절기 데이터를 자동으로 업데이트합니다.
+            </p>
+         </div>
+      </section>
 
-      <footer style={{ textAlign: 'center', padding: '40px 0' }}>
-         <p style={{ fontSize: '20px', fontWeight: 700, color: '#fbbf24' }}>지능형 컨트롤러가 가로등의 지능을 바꿉니다! 🚀</p>
+      <footer style={{ textAlign: 'center', padding: '100px 0', borderTop: '1px solid #1e293b' }}>
+         <p style={{ fontSize: '32px', fontWeight: 900, color: '#fbbf24', marginBottom: '20px' }}>지능형 제어가 도시의 밤을 바꿉니다. 🎛️</p>
+         <p style={{ color: '#64748b', fontSize: '18px' }}>Global Intelligent Control Guide by Antigravity Systems</p>
       </footer>
+
+      <style jsx>{`
+        @keyframes pulse {
+          0%, 100% { opacity: 0.8; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(1.2); }
+        }
+      `}</style>
     </div>
   );
 }

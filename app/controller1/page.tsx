@@ -1,57 +1,51 @@
 'use client';
 import React from 'react';
-import ControllerManualInteractive from '@/components/ControllerManualInteractive';
-import ManualSidebar from '@/components/ManualSidebar';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import ManualSidebar from '@/components/ManualSidebar';
+import ManualTabs from '@/components/ManualTabs';
+import ControllerManualInteractive from '@/components/ControllerManualInteractive';
+import { Settings, Cpu, Zap, Activity } from 'lucide-react';
 
-export default function ControllerManualPage() {
+export default function ControllerPage() {
   const pageUrl = "https://newhome2026.vercel.app/controller1";
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${pageUrl}`;
 
   return (
-    <main style={{ minHeight: '100vh', background: '#0f172a' }}>
+    <main style={{ minHeight: '100vh', background: 'var(--gray-50)' }}>
       <Navbar />
       <ManualSidebar />
-      <div style={{ padding: '80px 20px' }}>
-      
-      {/* Header with QR Code for Mobile Access */}
-      <div style={{ 
-        maxWidth: '1200px', 
-        margin: '0 auto 40px auto', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        padding: '40px 20px',
-        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-        borderRadius: '24px',
-        border: '1px solid rgba(255,255,255,0.1)'
-      }}>
-        <div style={{ flex: 1 }}>
-          <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#fff', marginBottom: '12px' }}>
-            지능형 컨트롤러 기술 매뉴얼
-          </h2>
-          <p style={{ color: '#94a3b8', fontSize: '18px' }}>
-            MPPT 고효율 고출력 전력 제어 및 스마트 디밍 센서 프로토콜
+      <ManualTabs />
+
+      {/* Hero Header Section */}
+      <section style={{ padding: '160px 24px 80px', background: 'var(--white)', borderBottom: '1px solid var(--gray-200)', textAlign: 'center', position: 'relative' }}>
+        <div style={{ position: 'absolute', right: '40px', top: '120px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', background: 'var(--white)', padding: '16px', borderRadius: '16px', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', border: '1px solid var(--gray-200)' }}>
+           <img src={qrUrl} alt="Mobile QR Code" width="100" height="100" style={{ display: 'block', borderRadius: '8px' }} />
+           <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--gray-600)', whiteSpace: 'nowrap' }}>📷 모바일에서 보기 스캔</span>
+        </div>
+
+        <div className="container">
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: 'var(--gray-100)', borderRadius: 50, color: 'var(--gray-700)', fontWeight: 700, fontSize: 13, marginBottom: 24, border: '1px solid var(--gray-200)' }}>
+            <Settings size={16} color="var(--primary)" />
+            <span>지능형 MPPT 및 스마트 센싱 기술</span>
+          </div>
+          <h1 className="section-title" style={{ marginBottom: 24 }}>
+            컨트롤러 설정 및 <br />
+            <span className="text-gradient">실무 센싱 기술 매뉴얼</span>
+          </h1>
+          <p style={{ fontSize: 18, color: 'var(--gray-600)', maxWidth: 800, margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
+            태양광 패널의 물리적 생산 한계를 뛰어넘는 MPPT 알고리즘과 도심 환경에 최적화된 스마트 디밍 로직, 무선 IoT 관제 기술의 정수를 다룹니다.
           </p>
         </div>
-        
-        <div style={{ 
-          background: '#fff', 
-          padding: '16px', 
-          borderRadius: '16px', 
-          textAlign: 'center',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
-        }}>
-          <img src={qrUrl} alt="QR Code for Mobile Access" width={120} height={120} />
-          <p style={{ color: '#0f172a', fontSize: '12px', fontWeight: 700, marginTop: '8px' }}>모바일로 보기</p>
-        </div>
-      </div>
+      </section>
 
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <ControllerManualInteractive />
-      </div>
-      </div>
+      {/* Interactive Manual Section */}
+      <section style={{ padding: '100px 24px', background: '#020617' }}>
+        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <ControllerManualInteractive />
+        </div>
+      </section>
+
       <Footer />
     </main>
   );
