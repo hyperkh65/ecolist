@@ -4,8 +4,8 @@ import Link from 'next/link';
 
 const MANUALS = [
   { id: 'solar1', title: '1. 태양광 가로등 기초 및 유지보수', path: '/solar1' },
+  { id: 'smartsmps1', title: '2. 스마트 LED SMPS 및 초정밀 디밍 설계 가이드', path: '/smartsmps1' },
   // 확장 공간을 위해 주석 처리된 항목들
-  // { id: 'solar2', title: '2. 심화 컨트롤러 세팅 가이드', path: '/solar2' },
   // { id: 'solar3', title: '3. 배터리 셀 교체 메뉴얼', path: '/solar3' },
   // ... 최소 10개 이상 추가될 예정
 ];
