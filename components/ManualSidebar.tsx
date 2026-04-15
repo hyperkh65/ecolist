@@ -9,6 +9,8 @@ const MANUALS = [
   { id: 'controller1', title: '4. 지능형 컨트롤러(MPPT) 설정 및 센싱 기술', path: '/controller1' },
   { id: 'mold1', title: '5. 정밀 금형 설계 및 사출·압출 실무 공정', path: '/mold1' },
   { id: 'led-circuit1', title: '6. LED 모듈 직·병렬 설계 및 컨버터 매칭 실무', path: '/led-circuit1' },
+  { id: 'led-chip1', title: '7. LED 칩 사양서 완전 정복: CRI·배광·수명 데이터 읽기', path: '/led-chip1' },
+  { id: 'material1', title: '8. 실무 소재 사전: PC·ABS·ASA 및 비철금속 가공 가이드', path: '/material1' },
   // ... 최소 10개 이상 추가될 예정
 ];
 
