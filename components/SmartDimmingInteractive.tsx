@@ -394,7 +394,7 @@ export default function SmartDimmingInteractive() {
 
              <div style={{ textAlign: 'center' }}>
                {/* 0V still leeks in 0-10V system if not shut off */}
-               <Lightbulb size={80} color={relayOn ? '#1e293b' : '#34d399'} style={{ opacity: relayOn ? 0.1 : 0.4, transition: 'all 0.5s', dropShadow: relayOn ? 'none' : '0 0 20px #34d399' }} />
+               <Lightbulb size={80} color={relayOn ? '#1e293b' : '#34d399'} style={{ opacity: relayOn ? 0.1 : 0.4, transition: 'all 0.5s', filter: relayOn ? 'none' : 'drop-shadow(0 0 20px #34d399)' }} />
                <div style={{ marginTop: '10px', color: relayOn ? '#475569' : '#34d399', fontWeight: 'bold' }}>
                  {relayOn ? '빛 한줌 없음 (완벽!)' : '스멀스멀 새어나오는 유령등... (1%)'}
                </div>
