@@ -8,6 +8,7 @@ const MANUALS = [
   { id: 'solar3', title: '3. 배터리 용량 산출 및 셀 유지보수 실무', path: '/solar3' },
   { id: 'controller1', title: '4. 지능형 컨트롤러(MPPT) 설정 및 센싱 기술', path: '/controller1' },
   { id: 'mold1', title: '5. 정밀 금형 설계 및 사출·압출 실무 공정', path: '/mold1' },
+  { id: 'led-circuit1', title: '6. LED 모듈 직·병렬 설계 및 컨버터 매칭 실무', path: '/led-circuit1' },
   // ... 최소 10개 이상 추가될 예정
 ];
 
