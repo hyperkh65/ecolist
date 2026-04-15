@@ -4,7 +4,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import ManualSidebar from '@/components/ManualSidebar';
 import ManualTabs from '@/components/ManualTabs';
-import SolarManualRemotion from '@/components/SolarManualRemotion';
+import SolarPanelManualInteractive from '@/components/SolarPanelManualInteractive';
 import { Sun, ShieldCheck, Zap, Activity } from 'lucide-react';
 
 export default function Solar1Page() {
@@ -30,8 +30,8 @@ export default function Solar1Page() {
             <span>친환경 에너지 및 지능형 가로등 유지보수</span>
           </div>
           <h1 className="section-title" style={{ marginBottom: 24 }}>
-            태양광 가로등 기초 및 <br />
-            <span className="text-gradient">실무 유지보수 매뉴얼</span>
+            태양광 가로등 <br />
+            <span className="text-gradient">실무 매뉴얼</span>
           </h1>
           <p style={{ fontSize: 18, color: 'var(--gray-600)', maxWidth: 800, margin: '0 auto', lineHeight: 1.6, fontWeight: 500 }}>
              태양광 가로등의 구조부터 고장 진단, 유지보수 절차까지 현장 엔지니어를 위한 핵심 실무 지식을 동영상과 함께 제공합니다.
@@ -40,9 +40,9 @@ export default function Solar1Page() {
       </section>
 
       {/* Interactive Manual Section */}
-      <section style={{ padding: '100px 24px', background: '#f8fafc' }}>
-        <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <SolarManualRemotion />
+      <section style={{ padding: '100px 24px', background: '#020617' }}>
+        <div className="container" style={{ maxWidth: '1280px', margin: '0 auto' }}>
+          <SolarPanelManualInteractive />
         </div>
       </section>
 

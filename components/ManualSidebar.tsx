@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 
 const MANUALS = [
-  { id: 'solar1', title: '1. 태양광 가로등 기초 및 유지보수', path: '/solar1' },
+  { id: 'solar1', title: '1. 태양광 가로등 실무 매뉴얼', path: '/solar1' },
   { id: 'smartsmps1', title: '2. 스마트 LED SMPS 및 초정밀 디밍 설계 가이드', path: '/smartsmps1' },
   { id: 'solar3', title: '3. 배터리 용량 산출 및 셀 유지보수 실무', path: '/solar3' },
   { id: 'controller1', title: '4. 지능형 컨트롤러(MPPT) 설정 및 센싱 기술', path: '/controller1' },

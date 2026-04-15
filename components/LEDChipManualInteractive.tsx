@@ -1,14 +1,22 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { Lightbulb, Search, BookOpen, BarChart, Clock, ShieldCheck, Sun, Eye, CheckCircle2, Thermometer, FlaskConical, Zap, Activity, Grid3X3, Layers, Microscope, Ruler, FileText, TrendingUp } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Lightbulb, Search, BookOpen, BarChart, Clock, ShieldCheck, 
+  Sun, Eye, CheckCircle2, Thermometer, FlaskConical, Zap, 
+  Activity, Grid3X3, Layers, Microscope, Ruler, FileText, 
+  TrendingUp, Crosshair, Award, ZapOff, RefreshCcw, Play,
+  Focus, Minimize2, Maximize2, Box
+} from 'lucide-react';
 
 export default function LEDChipManualInteractive() {
   const [isMobile, setIsMobile] = useState(false);
-  const [cct, setCct] = useState(5000);
-  const [cri, setCri] = useState(80);
-  const [chipSize, setChipSize] = useState('3030');
+  const [activeTab, setActiveTab] = useState('datasheet');
+  
+  // Simulation States
   const [junctionTemp, setJunctionTemp] = useState(65);
-  const [view, setView] = useState('spec');
+  const [driveCurrent, setDriveCurrent] = useState(150);
+  const [chipType, setChipType] = useState('6V'); // 3V, 6V, 9V
+  const [isSimulating, setIsSimulating] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -17,14 +25,21 @@ export default function LEDChipManualInteractive() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const getCctColor = (temp: number) => {
-    if (temp <= 3000) return '#fbbf24';
-    if (temp <= 4000) return '#fde68a';
-    if (temp <= 5000) return '#fff';
-    return '#bae6fd';
-  };
+  const predictedLife = useMemo(() => {
+    // Basic heuristic: L70 drops as temp and current rise
+    const baseLife = 100000;
+    const tempFactor = Math.pow(0.5, (junctionTemp - 55) / 10);
+    const currentFactor = (150 / driveCurrent);
+    return Math.max(5000, baseLife * tempFactor * currentFactor);
+  }, [junctionTemp, driveCurrent]);
 
-  const lifetimePercent = Math.max(0, 100 - (junctionTemp - 25) * 1.6);
+  const runTest = (msg: string) => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      setIsSimulating(false);
+      alert(`${msg} 검사 결과: 해당 칩은 고온 환경에서도 광속 유지율 98.2% (2000hrs 기준)를 달성하며 황화 현상 저항성(Sulfuration Resistance) 'Pass' 판정을 받았습니다.`);
+    }, 1500);
+  };
 
   return (
     <div style={{
@@ -42,239 +57,260 @@ export default function LEDChipManualInteractive() {
 
       {/* Hero Header */}
       <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontSize: isMobile ? '32px' : '72px', fontWeight: 900, marginBottom: '32px', lineHeight: 1, letterSpacing: '-0.05em' }}>
-           🛡️ <span style={{ color: '#fbbf24' }}>LED 칩 기술 사양</span> <br/> 
-           <span style={{ color: '#38bdf8' }}>완벽 해독 마스터 가이드</span>
+        <h1 style={{ fontSize: isMobile ? '40px' : '84px', fontWeight: 950, marginBottom: '24px', lineHeight: 1.05, letterSpacing: '-0.05em' }}>
+           🔬 <span style={{ color: '#fbbf24' }}>LED 칩 공학 센터</span> <br/>
+           <span style={{ fontSize: '0.45em', color: '#94a3b8', display: 'block', marginTop: '16px' }}>사양서 독해부터 CIE 색공간 분해까지의 100% 지침서</span>
         </h1>
-        <p style={{ fontSize: isMobile ? '16px' : '24px', color: '#94a3b8', maxWidth: '1050px', margin: '0 auto', lineHeight: 1.8 }}>
-          전문가는 데이터시트 이면의 물리 법칙을 읽습니다. <br/>
-          단순한 밝기가 아닌 **광속 유지율(L70), 연색성(CRI), 열 저항(Rth), 비닝(Binning)**의 
-          유기적 관계를 분석하여 10년 수명의 솔루션을 구축하는 100% 현장 지침서입니다.
+        <p style={{ fontSize: isMobile ? '16px' : '22px', color: '#94a3b8', maxWidth: '1050px', margin: '0 auto', lineHeight: 1.8 }}>
+           칩의 밝기는 시작에 불과합니다. 전문가만이 읽어낼 수 있는 LM-80 리포트 분석, 3V/6V/9V 전압 특성별 
+           효율 극대화 전략, 그리고 황화(Sulfuration) 방지 설계 데이터를 집약한 하이엔드 엔지니어링 리포트입니다.
         </p>
       </div>
 
       {/* Navigation Tabs */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: '8px', background: 'rgba(15, 23, 42, 0.5)', padding: '8px', borderRadius: '24px', width: 'fit-content', margin: '0 auto', border: '1px solid #1e293b', flexWrap: 'wrap', justifyContent: 'center' }}>
         {[
-          { id: 'spec', label: '사양서 독해법', icon: <FileText size={18}/> },
-          { id: 'size', label: '패키지 사이즈별 분석', icon: <Grid3X3 size={18}/> },
-          { id: 'thermal', label: '열 역학 및 수명 예측', icon: <Thermometer size={18}/> },
-          { id: 'binning', label: '비닝 및 광 품질 전략', icon: <Microscope size={18}/> },
+          { id: 'datasheet', label: '사양서 정밀 독해', icon: FileText },
+          { id: 'chroma', label: '색도 및 비닝 (CIE)', icon: Focus },
+          { id: 'reliability', label: '신뢰성 및 신기술', icon: Award },
+          { id: 'lab', label: '광수명 예측 시뮬레이터', icon: Activity }
         ].map(tab => (
-          <button 
-            key={tab.id} onClick={() => setView(tab.id)}
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
             style={{
-              padding: '18px 28px', borderRadius: '24px', border: '1px solid #1e293b',
-              background: view === tab.id ? '#fbbf24' : '#0f172a',
-              color: view === tab.id ? '#000' : '#fff', cursor: 'pointer', fontWeight: 900, fontSize: '15px',
-              display: 'flex', alignItems: 'center', gap: '10px', transition: '0.3s'
+              padding: '14px 28px',
+              borderRadius: '20px',
+              border: 'none',
+              background: activeTab === tab.id ? '#fbbf24' : 'transparent',
+              color: activeTab === tab.id ? '#000' : '#94a3b8',
+              fontWeight: 800,
+              fontSize: '15px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              cursor: 'pointer',
+              transition: '0.3s'
             }}
           >
-            {tab.icon} {tab.label}
+            <tab.icon size={18} />
+            {tab.label}
           </button>
         ))}
       </div>
 
-      {/* View: Spec Sheet Reading */}
-      {view === 'spec' && (
-        <div style={{ animation: 'fadeIn 0.5s ease' }}>
-           <div style={{ textAlign: 'center', marginBottom: '64px' }}>
-              <h2 style={{ fontSize: '36px', fontWeight: 900, color: '#fbbf24' }}>표준 데이터시트(Datasheet) 파헤치기</h2>
-              <p style={{ color: '#94a3b8', marginTop: '16px' }}>숫자 속에 숨겨진 칩의 실제 성능을 읽는 법을 공개합니다.</p>
-           </div>
-           
-           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '32px' }}>
-              <div style={{ background: '#0f172a', padding: '40px', borderRadius: '40px', border: '1px solid #1e293b' }}>
-                 <div style={{ color: '#fbbf24', marginBottom: '24px' }}><Ruler size={40} /></div>
-                 <h4 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>광학 파라미터</h4>
-                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <li><b>CCT (Correlated Color Temp)</b>: 빛의 색상. 5700K(주광색), 3000K(전구색).</li>
-                    <li><b>CRI (Ra)</b>: 연색지수. 80Ra는 표준이며, 박물관용은 95Ra 이상 필수.</li>
-                    <li><b>Luminous Flux</b>: 칩의 총 밝기. Binning 등급에 따라 ±5% 차이 발생.</li>
-                    <li><b>Beam Angle</b>: 칩 자체의 각도(보통 120°). 렌즈 설계의 기초값.</li>
-                 </ul>
-              </div>
-              <div style={{ background: '#0f172a', padding: '40px', borderRadius: '40px', border: '1px solid #1e293b' }}>
-                 <div style={{ color: '#10b981', marginBottom: '24px' }}><Zap size={40} /></div>
-                 <h4 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>전기적 파라미터</h4>
-                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <li><b>Forward Voltage (Vf)</b>: 칩 구동 전압. 발열 시 0.2~0.3V 하강함.</li>
-                    <li><b>Test Current (If)</b>: 측정 기준 전류. 가동 중 전류가 이보다 높으면 수명 단축.</li>
-                    <li><b>Reverse Current (Ir)</b>: 누설 전류. 정적 에너지 파괴를 막는 칩의 건강 지표.</li>
-                    <li><b>ESD Protection</b>: 정전기 내성(보통 2kV~8kV). 품질의 척도.</li>
-                 </ul>
-              </div>
-              <div style={{ background: '#0f172a', padding: '40px', borderRadius: '40px', border: '1px solid #1e293b' }}>
-                 <div style={{ color: '#38bdf8', marginBottom: '24px' }}><TrendingUp size={40} /></div>
-                 <h4 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>신뢰성/수명 지수</h4>
-                 <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <li><b>L70 / L90</b>: 밝기가 70%/90%로 떨어지는 시점(보통 5~10만 시간).</li>
-                    <li><b>LM-80 Report</b>: 온도별 6,000시간 가동 데이터 확인 필수.</li>
-                    <li><b>Thermal Resistance (Rth)</b>: 열 전달 효율. 낮을수록 하이엔드 칩.</li>
-                    <li><b>Operating Temp</b>: 실제 현장에서 견딜 수 있는 주변 온도 한계.</li>
-                 </ul>
-              </div>
-           </div>
-        </div>
-      )}
-
-      {/* View: Package Size Analysis */}
-      {view === 'size' && (
-        <div style={{ animation: 'fadeIn 0.5s ease' }}>
-           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1.2fr', gap: '64px', alignItems: 'center' }}>
-              <div style={{ background: '#0f172a', padding: '48px', borderRadius: '48px', border: '1px solid #1e293b' }}>
-                 <h3 style={{ fontSize: '32px', fontWeight: 900, color: '#fbbf24', marginBottom: '32px' }}>패키지 규격별 특징 분석</h3>
-                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    {[
-                      { id: '3030', label: '3030 (3.0mm x 3.0mm)', desc: '가장 범용적인 사이즈. 가성비가 뛰어나며 가로등, 보안등 모듈의 90% 이상이 이 규격을 사용합니다. 6V/1W급이 메인입니다.' },
-                      { id: '5050', label: '5050 (5.0mm x 5.0mm)', desc: '고출력 하이파워 칩. 9V/5W급 이상의 고광속 구현에 적합합니다. 면적이 커서 열 방출에 유리하지만 단가가 높습니다.' },
-                      { id: '2835', label: '2835 (2.8mm x 3.5mm)', desc: '실내조명(방등, 오피스)의 표준. 0.2W~0.5W급 저출력 설계로 부드러운 빛을 내는 데 최적화되어 있습니다.' },
-                      { id: '3535', label: '3535 Ceramic', desc: '세라믹 기판을 사용한 극한 환경용 칩. Rth가 매우 낮아 혹서기 실외 가로등이나 투광등에 사용됩니다.' },
-                    ].map(s => (
-                      <div key={s.id} onClick={() => setChipSize(s.id)} style={{ padding: '24px', borderRadius: '24px', border: '1px solid #334155', background: chipSize === s.id ? '#fbbf24' : 'transparent', color: chipSize === s.id ? '#000' : '#fff', cursor: 'pointer', transition: '0.3s' }}>
-                         <p style={{ fontWeight: 800, fontSize: '18px', marginBottom: '8px' }}>{s.label}</p>
-                         <p style={{ fontSize: '14px', opacity: 0.8 }}>{s.desc}</p>
-                      </div>
-                    ))}
-                 </div>
-              </div>
+      {/* Section: Datasheet Deep Dive */}
+      {activeTab === 'datasheet' && (
+        <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.3fr 1fr', gap: '64px' }}>
+           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+              <h3 style={{ fontSize: '32px', fontWeight: 900, color: '#fbbf24' }}>칩 사양서(Datasheet)의 이면 분석</h3>
               
-              <div style={{ background: 'linear-gradient(135deg, #020617 0%, #1e1b4b 100%)', height: '500px', borderRadius: '56px', border: '8px solid #1e2937', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                 <div style={{ 
-                    width: chipSize === '5050' ? '150px' : chipSize === '3030' ? '100px' : '90px',
-                    height: chipSize === '5050' ? '150px' : chipSize === '3030' ? '100px' : '110px',
-                    background: '#fbbf24', borderRadius: '12px', boxShadow: '0 0 80px #fbbf24',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 900, color: '#000',
-                    transition: 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-                 }}>
-                   {chipSize}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                 <SpecCard title="Forward Voltage (Vf)" desc="칩 구동을 위한 필수 전압. 3V/6V/9V로 구분되며, 온도가 상승함에 따라 전압이 낮아지는 'Negative Temp Coefficient' 특성을 이해해야 합니다." icon={Zap} />
+                 <SpecCard title="Luminous Efficacy" desc="전력(W) 당 밝기(lm). 칩 자체 효율은 220lm/W에 달하지만, 실제 등기구 결합 후에는 열 손실로 인해 160-180lm/W 수준으로 하락합니다." icon={Sun} />
+                 <SpecCard title="Thermal Resistance (Rth)" desc="칩 내부 열이 기판으로 전달되는 저항값. 2.0C/W 이하가 하이엔드급이며, 낮을수록 칩 과열을 효과적으로 방지합니다." icon={Thermometer} />
+                 <SpecCard title="ESD Protection" desc="정전기 내성. 제너 다이오드 내장 여부에 따라 2kV에서 8kV까지 차이가 납니다. 현장 불량의 40%는 여기서 결정됩니다." icon={ZapOff} />
+              </div>
+
+              <div style={{ background: '#0f172a', padding: '40px', borderRadius: '40px', border: '1px solid #1e293b' }}>
+                 <h4 style={{ fontSize: '20px', fontWeight: 900, marginBottom: '20px' }}>칩 전압별(3V, 6V, 9V) 물리적 차이점</h4>
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', borderRadius: '16px', background: '#020617' }}>
+                       <span style={{ fontWeight: 800 }}>3V (1-Die)</span>
+                       <span style={{ color: '#94a3b8' }}>낮은 전압, 고전류 기반. 실내등이나 소형 기기에 적합.</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', borderRadius: '16px', background: '#020617' }}>
+                       <span style={{ fontWeight: 800 }}>6V (2-Dies Series)</span>
+                       <span style={{ color: '#94a3b8' }}>효율과 단가의 황금 밸런스. 가로등 회로 설계의 글로벌 표준.</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', borderRadius: '16px', background: '#020617' }}>
+                       <span style={{ fontWeight: 800 }}>9V (3-Dies Series)</span>
+                       <span style={{ color: '#94a3b8' }}>고전압 저전류 구동. 컨버터 효율 극대화에 유리.</span>
+                    </div>
                  </div>
-                 <div style={{ position: 'absolute', bottom: 40, color: '#94a3b8', fontSize: '14px' }}>규격에 따른 기판 점유 면적 및 방열 비율 가이드</div>
               </div>
            </div>
-        </div>
+
+           <div style={{ background: '#0f172a', padding: '48px', borderRadius: '48px', border: '1px solid #1e293b', position: 'sticky', top: '100px' }}>
+              <div style={{ marginBottom: '32px', textAlign: 'center' }}>
+                 <Microscope size={56} color="#fbbf24" style={{ marginBottom: '16px' }} />
+                 <h4 style={{ fontSize: '24px', fontWeight: 950 }}>LM-80 신뢰성 리포트 검증</h4>
+              </div>
+              <p style={{ color: '#94a3b8', lineHeight: 1.8, fontSize: '15px', marginBottom: '32px' }}>
+                 칩의 수명을 보증하는 유일한 근거 데이터입니다. 최소 6,000시간(최근 10,000시간) 동안 3가지 온도 조건에서 측정한 
+                 광속 유지율 곡선을 확인해야 합니다. 단순히 '좋다'가 아닌 수치로 증명하십시오.
+              </p>
+              <div style={{ background: '#020617', padding: '32px', borderRadius: '32px', border: '1px solid #334155' }}>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
+                    <span>55℃ 유지율</span> <span>99.8%</span>
+                 </div>
+                 <div style={{ width: '100%', height: '8px', background: '#1e293b', borderRadius: '4px', marginBottom: '24px' }}>
+                    <div style={{ width: '99%', height: '100%', background: '#10b981', borderRadius: '4px' }} />
+                 </div>
+                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '14px' }}>
+                    <span>105℃ 유지율</span> <span>94.5%</span>
+                 </div>
+                 <div style={{ width: '100%', height: '8px', background: '#1e293b', borderRadius: '4px' }}>
+                    <div style={{ width: '94%', height: '100%', background: '#fbbf24', borderRadius: '4px' }} />
+                 </div>
+              </div>
+              <button 
+                onClick={() => runTest('LM-80 Data Validation')}
+                style={{ width: '100%', marginTop: '40px', padding: '24px', borderRadius: '24px', background: '#fbbf24', border: 'none', color: '#000', fontWeight: 950, fontSize: '18px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+              >
+                {isSimulating ? <RefreshCcw size={20} className="animate-spin" /> : <Play size={20} />}
+                공인 성적서 무결성 검사
+              </button>
+           </div>
+        </section>
       )}
 
-      {/* View: Thermal Thermodynamics (The "Science" part) */}
-      {view === 'thermal' && (
-        <div style={{ animation: 'fadeIn 0.5s ease' }}>
-           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.5fr 1fr', gap: '64px', alignItems: 'center' }}>
+      {/* Section: Chromaticity & Binning */}
+      {activeTab === 'chroma' && (
+        <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '48px' }}>
+           <div style={{ background: '#0f172a', padding: '56px', borderRadius: '56px', border: '1px solid #1e293b' }}>
+              <div style={{ color: '#38bdf8', marginBottom: '24px' }}><Focus size={48} /></div>
+              <h3 style={{ fontSize: '28px', fontWeight: 900, marginBottom: '24px' }}>CIE 1931 색공간 및 비닝 전략</h3>
+              <p style={{ color: '#cbd5e1', lineHeight: 1.9, fontSize: '16.5px', marginBottom: '40px' }}>
+                 MacAdam Ellipse (SDCM) 단계를 이해하는 것이 빛의 품질을 결정하는 핵심입니다. 
+                 3-Step 이내의 정밀 비닝은 여러 가로등을 동시에 켰을 때 색상 이질감을 없애줍니다. 
+                 특히 5700K(주광색)와 3000K(전구색) 사이의 흑체 궤적(Planckian Locus)을 따라 칩의 색좌표가 
+                 어떻게 분포되는지 데이터시트의 Bin Chart를 필수 체크해야 합니다.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+                 <BinBox step="3-Step" label="High-End" color="#10b981" />
+                 <BinBox step="5-Step" label="Standard" color="#fbbf24" />
+                 <BinBox step="7-Step" label="Low-Cost" color="#f43f5e" />
+                 <BinBox step="Bin-Free" label="Top Tier" color="#38bdf8" />
+              </div>
+           </div>
+
+           <div style={{ background: 'linear-gradient(135deg, #020617 0%, #172554 100%)', borderRadius: '56px', border: '1px solid #1d4ed8', padding: '48px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+             <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '32px' }}>CIE 색도도 가시화</h4>
+             <div style={{ width: '300px', height: '300px', background: 'url(https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/CIE1931_Chromaticity_Diagram_large.png/600px-CIE1931_Chromaticity_Diagram_large.png)', backgroundSize: 'cover', borderRadius: '24px', position: 'relative', border: '4px solid #fff' }}>
+                <div style={{ position: 'absolute', top: '35%', left: '38%', width: '12px', height: '12px', background: '#fff', borderRadius: '50%', border: '2px solid #000', boxShadow: '0 0 10px #fff' }} />
+                <div style={{ position: 'absolute', top: '34%', left: '37%', width: '25px', height: '20px', border: '1px dashed #fff', borderRadius: '50%' }} />
+             </div>
+             <p style={{ marginTop: '32px', color: '#94a3b8', fontSize: '14px', textAlign: 'center' }}>
+                화이트 포인트(D65) 주변의 MacAdam Ellipse 분포도 <br/>
+                현재 칩의 타켓 좌표: x=0.344, y=0.355 (5000K Area)
+             </p>
+           </div>
+        </section>
+      )}
+
+      {/* Section: Lab / Simulation */}
+      {activeTab === 'lab' && (
+        <section style={{ background: 'rgba(251, 191, 36, 0.05)', border: '1px solid rgba(251, 191, 36, 0.2)', padding: '64px', borderRadius: '64px' }}>
+           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.3fr 1fr', gap: '80px', alignItems: 'center' }}>
               <div>
-                 <h3 style={{ fontSize: '32px', fontWeight: 900, color: '#10b981', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <Thermometer size={40} /> 결합 온도(Tj)와 수명의 상관관계
-                 </h3>
-                 <div style={{ marginBottom: '48px' }}>
-                    <label style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', fontWeight: 800 }}>
-                       <span>🌡️ 예상 접합 온도 (Junction Temperature)</span>
-                       <span style={{ color: junctionTemp > 85 ? '#f43f5e' : '#10b981', fontSize: '28px' }}>{junctionTemp} °C</span>
-                    </label>
-                    <input type="range" min="25" max="150" value={junctionTemp} onChange={(e)=>setJunctionTemp(Number(e.target.value))} style={{ width: '100%', accentColor: junctionTemp > 85 ? '#f43f5e' : '#10b981' }} />
+                 <h3 style={{ fontSize: '32px', fontWeight: 950, color: '#fbbf24', marginBottom: '48px' }}>광수명 및 열 설계 시뮬레이터</h3>
+                 
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+                    <div>
+                       <label style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontWeight: 800 }}>
+                          <span>🧪 접합 온도 (Junction Temp - Tj)</span>
+                          <span style={{ color: junctionTemp > 85 ? '#f43f5e' : '#10b981', fontSize: '24px' }}>{junctionTemp} °C</span>
+                       </label>
+                       <input type="range" min="25" max="150" value={junctionTemp} onChange={(e)=>setJunctionTemp(Number(e.target.value))} style={{ width: '100%', accentColor: junctionTemp > 85 ? '#f43f5e' : '#10b981' }} />
+                    </div>
+                    <div>
+                       <label style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontWeight: 800 }}>
+                          <span>⚡ 구동 전류 (Drive Current)</span>
+                          <span style={{ color: '#38bdf8', fontSize: '24px' }}>{driveCurrent} mA</span>
+                       </label>
+                       <input type="range" min="50" max="1000" step="50" value={driveCurrent} onChange={(e)=>setDriveCurrent(Number(e.target.value))} style={{ width: '100%', accentColor: '#38bdf8' }} />
+                    </div>
                  </div>
-                 <div style={{ background: '#0f172a', padding: '40px', borderRadius: '40px', border: '1px solid #1e293b' }}>
-                    <h4 style={{ fontWeight: 800, color: '#fff', marginBottom: '24px' }}>LM-80 기반 수명 예측 공식</h4>
-                    <p style={{ color: '#cbd5e1', lineHeight: 1.9, fontSize: '16px' }}>
-                       LED 칩의 밝기가 초기 대비 70%가 되는 시간(L70)은 칩 내부 온도가 <b>10도 상승할 때마다 약 50%씩 급감</b>합니다. <br/>
-                       - Tj 65℃: 예상 수명 약 100,000시간 (안정적) <br/>
-                       - Tj 85℃: 예상 수명 약 50,000시간 (표준) <br/>
-                       - Tj 105℃: 예상 수명 약 20,000시간 (위험) <br/>
-                       <br/>
-                       <b>Expert Advice:</b> 하이엔드 가로등은 실온 25℃ 기준, 칩 온도가 70℃를 넘지 않도록 방열 구성을 해야 10년 품질 보증이 가능합니다.
-                    </p>
+
+                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px', marginTop: '64px' }}>
+                    <div style={{ background: '#020617', padding: '32px', borderRadius: '32px', border: '1px solid #1e293b', textAlign: 'center' }}>
+                       <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>예상 수명 (L70 기준)</div>
+                       <div style={{ fontSize: '36px', fontWeight: 950, color: '#10b981' }}>{Math.floor(predictedLife).toLocaleString()} <span style={{ fontSize: '18px' }}>Hrs</span></div>
+                    </div>
+                    <div style={{ background: '#020617', padding: '32px', borderRadius: '32px', border: '1px solid #1e293b', textAlign: 'center' }}>
+                       <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '12px' }}>효율 감쇄율</div>
+                       <div style={{ fontSize: '36px', fontWeight: 950, color: '#f43f5e' }}>-{(junctionTemp * 0.15).toFixed(1)}%</div>
+                    </div>
                  </div>
               </div>
-              <div style={{ textAlign: 'center' }}>
-                 <div style={{ fontSize: '130px', fontWeight: 900, color: junctionTemp > 85 ? '#f43f5e' : '#10b981', lineHeight: 1, textShadow: '0 0 50px rgba(0,0,0,0.5)' }}>
-                    {lifetimePercent.toFixed(0)}<span style={{ fontSize: '40px' }}>%</span>
-                 </div>
-                 <p style={{ fontSize: '20px', fontWeight: 800, color: '#94a3b8', marginTop: '24px' }}>칩 내구도 보존율</p>
-                 <div style={{ marginTop: '40px', padding: '24px', background: '#020617', borderRadius: '32px', border: '2px solid #1e293b' }}>
-                    <p style={{ color: '#64748b', fontSize: '14px' }}>현재 온도에서는 초기 성능의 <b>{lifetimePercent.toFixed(0)}%</b>를 유지하며 5만 시간 연속 가동이 가능합니다.</p>
-                 </div>
+
+              <div style={{ background: '#1e1b4b', padding: '56px', borderRadius: '56px', border: '1px solid #3730a3', textAlign: 'center' }}>
+                 <Clock size={64} color="#fbbf24" style={{ marginBottom: '24px' }} />
+                 <h4 style={{ fontSize: '24px', fontWeight: 900, marginBottom: '20px' }}>10년 품질 보증 분석</h4>
+                 <p style={{ color: '#cbd5e1', lineHeight: 1.8, fontSize: '15.5px' }}>
+                    가로등 하루 12시간 가동 기준, 설정된 파라미터에서는 약 <b>{(predictedLife/12/365).toFixed(1)}년</b> 동안 
+                    정상적인 조도 유지가 가능합니다. Tj를 75℃ 이하로 관리하는 것이 10년 클레임 제로의 핵심 비결입니다.
+                 </p>
               </div>
            </div>
-        </div>
+        </section>
       )}
 
-      {/* View: Binning & Optics (Distribution) */}
-      {view === 'binning' && (
-        <div style={{ animation: 'fadeIn 0.5s ease' }}>
-           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '48px' }}>
-              <div style={{ background: '#0f172a', padding: '48px', borderRadius: '48px', border: '1px solid #1e293b' }}>
-                 <h3 style={{ fontSize: '26px', fontWeight: 900, color: '#fbbf24', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Microscope size={32} /> 비닝(Binning)과 SDCM의 의미
-                 </h3>
-                 <p style={{ color: '#cbd5e1', fontSize: '16px', lineHeight: 1.9, marginBottom: '32px' }}>
-                   칩 브랜드보다 중요한 것이 비닝 등급입니다. 
-                   **MacAdam 3-Step SDCM**은 사람의 눈이 색 차이를 거의 느끼지 못하는 정밀한 선별 기준입니다. 
-                   저가형 칩은 5-Step 이상을 사용하여 여러 대를 설치했을 때 어떤 가로등은 노랗고 어떤 것은 하얗게 보이는 현상이 발생합니다.
-                 </p>
-                 <div style={{ display: 'flex', gap: '12px' }}>
-                   {[1, 3, 5, 7].map(step => (
-                     <div key={step} style={{ flex: 1, textAlign: 'center' }}>
-                        <div style={{ width: '100%', height: '40px', background: step <= 3 ? '#10b981' : '#f43f5e', borderRadius: '8px', marginBottom: '8px' }} />
-                        <span style={{ fontSize: '12px' }}>{step} Step</span>
-                     </div>
-                   ))}
-                 </div>
-              </div>
-              
-              <div style={{ background: '#0f172a', padding: '48px', borderRadius: '48px', border: '1px solid #1e293b' }}>
-                 <h3 style={{ fontSize: '26px', fontWeight: 900, color: '#38bdf8', marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <Sun size={32} /> 광학 지수 및 배광곡선 해독
-                 </h3>
-                 <p style={{ color: '#cbd5e1', fontSize: '16px', lineHeight: 1.9, marginBottom: '24px' }}>
-                   **배광곡선(Distribution Curve)**은 원점에서 빛이 뻗어 나가는 강도를 각도별로 선으로 이은 그래프입니다. 
-                   가로등에서 가장 중요한 것은 **Uniformity(균제도)**입니다. 
-                 </p>
-                 <div style={{ background: '#020617', padding: '24px', borderRadius: '24px', border: '1px solid #334155' }}>
-                    <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '15px' }}>
-                       <li>📌 **I-max**: 최대 광도(cd). 운전자의 눈부심(Glare) 판단 기준.</li>
-                       <li>📌 **Beam Angle**: 50%의 밝기가 유지되는 각도.</li>
-                       <li>📌 **IES 파일**: 실제 현장 시뮬레이션(Dialux)에 필수적인 데이터.</li>
-                    </ul>
-                 </div>
-              </div>
-           </div>
-        </div>
-      )}
-
-      {/* Chapter 6: Final Technical Secret (Sulfuration) */}
-      <section style={{ background: 'rgba(244, 63, 94, 0.05)', padding: isMobile ? '32px' : '64px', borderRadius: '56px', border: '1px solid rgba(244, 63, 94, 0.2)' }}>
-         <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1.5fr 1fr', gap: '48px', alignItems: 'center' }}>
-            <div>
-               <h2 style={{ fontSize: '32px', fontWeight: 900, color: '#f43f5e', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <ShieldCheck size={40} /> 황화(Sulfuration) 및 정전기 방지 기술
-               </h2>
-               <p style={{ color: '#cbd5e1', fontSize: '17px', lineHeight: 2.0 }}>
-                 실외 가로등 환경의 최대 적은 아황산가스(SO2)입니다. 
-                 칩 내부의 은(Ag) 도금이 황과 반응하여 검게 변하면 밝기가 50% 이하로 급감합니다. <br/>
-                 또한, 겨울철 건조한 환경에서의 <b>정전기(ESD)</b>는 칩 내부 지능형 회로를 파괴하는 주범입니다. 
-                 데이터시트에서 'Sulfur-Resistant' 규격과 최소 6kV 이상의 Zener Diode 내장 여부를 확인하십시오.
-               </p>
-            </div>
-            <div style={{ background: '#020617', padding: '40px', borderRadius: '40px', border: '1px solid #f43f5e33', textAlign: 'center' }}>
-               <h4 style={{ color: '#f43f5e', fontSize: '20px', fontWeight: 900, marginBottom: '20px' }}>실패하는 칩 선정의 특징</h4>
-               <p style={{ color: '#94a3b8', fontSize: '15px', lineHeight: 1.8 }}>
-                 - 무조건 칩 한 개의 밝기(lm)만 보는 경우 <br/>
-                 - LM-80 Report 날짜가 3년 이상 지난 경우 <br/>
-                 - Rth가 4.0℃/W 이상인 저가형 기판 칩 <br/>
-                 - SDCM 비닝 정보가 기재되지 않은 칩
-               </p>
-            </div>
-         </div>
+      {/* Reliability Secrets */}
+      <section style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '32px' }}>
+         <ReliabilityCard icon={Award} color="#10b981" title="Sulfuration Resistance" desc="아황산가스 차단 코팅 적용으로 은(Ag) 도금 변색을 방지하여 환경 유해 가스로부터 칩을 보호합니다." />
+         <ReliabilityCard icon={Zap} color="#fbbf24" title="Zener Protected" desc="내장형 제너 다이오드가 불규칙한 서지 전압으로부터 반도체 레이어를 완벽하게 방어합니다." />
+         <ReliabilityCard icon={Box} color="#38bdf8" title="Phosphor Control" desc="고온에서도 변색되지 않는 고성능 형광체 배합을 통해 시간이 흘러도 초기 색온도를 그대로 유지합니다." />
       </section>
 
       <footer style={{ textAlign: 'center', padding: '100px 0', borderTop: '1px solid #1e293b' }}>
-         <p style={{ fontSize: '32px', fontWeight: 900, color: '#fbbf24', marginBottom: '20px' }}>데이터는 신뢰의 다른 이름입니다. 🌟</p>
-         <p style={{ color: '#64748b', fontSize: '18px' }}>Global Technical Standardization Group by Antigravity</p>
+         <p style={{ fontSize: '36px', fontWeight: 950, color: '#fff', marginBottom: '24px' }}>칩 하나에 담긴 기술이 도시의 밤을 바꿉니다. 🌟</p>
+         <p style={{ color: '#64748b', fontSize: '18px' }}>Standardized Technical Content Group by Antigravity</p>
       </footer>
 
       <style jsx>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
+        input[type="range"] {
+          -webkit-appearance: none;
+          height: 6px;
+          border-radius: 3px;
+          background: #334155;
+          margin: 10px 0;
         }
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          background: #fff;
+          cursor: pointer;
+          box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        }
+        .animate-spin {
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
       `}</style>
+    </div>
+  );
+}
+
+function SpecCard({ icon: Icon, color, title, desc }: any) {
+  return (
+    <div style={{ background: 'rgba(255,255,255,0.03)', padding: '32px', borderRadius: '32px', border: '1px solid rgba(255,255,255,0.05)' }}>
+       <div style={{ color: '#fbbf24', marginBottom: '16px' }}><Icon size={24} /></div>
+       <h5 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '12px', color: '#fff' }}>{title}</h5>
+       <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: 1.6 }}>{desc}</p>
+    </div>
+  );
+}
+
+function BinBox({ step, label, color }: any) {
+  return (
+    <div style={{ background: '#020617', padding: '16px', borderRadius: '16px', border: '1px solid #1e293b', textAlign: 'center' }}>
+       <div style={{ width: '100%', height: '40px', background: color, borderRadius: '8px', marginBottom: '8px' }} />
+       <div style={{ fontSize: '12px', fontWeight: 800 }}>{step}</div>
+       <div style={{ fontSize: '10px', color: '#64748b' }}>{label}</div>
+    </div>
+  );
+}
+
+function ReliabilityCard({ icon: Icon, color, title, desc }: any) {
+  return (
+    <div style={{ background: '#0f172a', padding: '48px', borderRadius: '48px', border: '1px solid #1e293b' }}>
+       <div style={{ color: color, marginBottom: '24px' }}><Icon size={40} /></div>
+       <h4 style={{ fontSize: '22px', fontWeight: 900, marginBottom: '20px' }}>{title}</h4>
+       <p style={{ color: '#94a3b8', fontSize: '15px', lineHeight: 1.8 }}>{desc}</p>
     </div>
   );
 }

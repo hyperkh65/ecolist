@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
 
 const VALID_CATEGORIES = ['smart','indoor','home_lighting','commercial','industrial','outdoor','landscape','special'];
 const VALID_SPEC_KEYS  = ['power','luminous_flux','efficacy','color_temp','cri','beam_angle','ip_rating','input_voltage','power_factor','thd','lifespan','size','weight','operating_temp','warranty','driver'];

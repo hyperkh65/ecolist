@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 const MANUAL_TABS = [
-  { id: 'solar1', label: '기초 & 유지보수', path: '/solar1', icon: BookOpen },
+  { id: 'solar1', label: '실무 매뉴얼', path: '/solar1', icon: BookOpen },
   { id: 'smartsmps1', label: 'SMPS & 디밍', path: '/smartsmps1', icon: Zap },
   { id: 'solar3', label: '배터리 산출', path: '/solar3', icon: Battery },
   { id: 'controller1', label: '지능형 컨트롤', path: '/controller1', icon: Settings },

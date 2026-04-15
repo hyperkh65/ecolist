@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 const DEFAULT_TITLE = '(주)와이앤케이 YNK';
 const DEFAULT_DESC  = 'YNK LED 조명 전문기업 — 고품질 LED 조명 솔루션';
@@ -12,10 +12,6 @@ export async function generateMetadata(): Promise<Metadata> {
   let iconUrl = DEFAULT_ICON;
 
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    );
     const { data } = await supabase
       .from('site_settings')
       .select('config')

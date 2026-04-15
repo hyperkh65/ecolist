@@ -1,13 +1,12 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 const API_BASE = process.env.NEXT_PUBLIC_APP_URL || 'https://your-domain.vercel.app';
 
 async function getApiKey() {
   try {
-    const sb = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-    const { data } = await sb.from('site_settings').select('config').eq('category', 'apikey').maybeSingle();
+    const { data } = await supabase.from('site_settings').select('config').eq('category', 'apikey').maybeSingle();
     return data?.config?.key || null;
   } catch { return null; }
 }
