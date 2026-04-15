@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Lightbulb, Cpu, Wind, Activity, Key, Eye, ShieldCheck, PlayCircle, Zap } from 'lucide-react';
+import { Lightbulb, Cpu, Wind, Activity, Key, Eye, ShieldCheck, PlayCircle, Zap, AlertTriangle } from 'lucide-react';
 
 export default function SmartDimmingInteractive() {
   // States for interactive elements
