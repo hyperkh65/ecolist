@@ -170,7 +170,7 @@ export default function FactoryHighbayPromotion() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 100, marginTop: 100 }}>
             {/* 왼쪽: 고해상도 제품 디테일 (gallery_013.jpeg) */}
             <div>
-              <div style={{ sticky: 'top', top: 100 }}>
+              <div style={{ position: 'sticky', top: 100 }}>
                 <ProductNukki src="/promotion_assets/gallery/gallery_013.jpeg" size={600} glowColor="rgba(14, 165, 233, 0.1)" />
                 <div style={{ marginTop: 60, ...S.glass, padding: 40 }}>
                    <div style={{ fontSize: 24, fontWeight: 800, marginBottom: 20 }}>Engineering Summary</div>
