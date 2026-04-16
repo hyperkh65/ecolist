@@ -13,6 +13,10 @@ const MANUALS = [
   { id: 'material1', title: '8. 실무 소재 사전: PC·ABS·ASA 및 비철금속 가공 가이드', path: '/material1' },
 ];
 
+const PROMOTIONS = [
+  { id: 'factory-highbay', title: 'UFO-AM6 150W: 18m 센서 공장등', path: '/promotion/factory-highbay' },
+];
+
 export default function ManualSidebar() {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -49,14 +53,14 @@ export default function ManualSidebar() {
         width: '40px'
       }}>
         <span style={{ writingMode: 'vertical-rl', textOrientation: 'mixed', letterSpacing: '2px', fontWeight: 700, fontSize: '14px' }}>
-          매뉴얼
+          콘텐츠
         </span>
         <span style={{ transform: isHovered ? 'rotate(180deg)' : 'none', transition: '0.3s' }}>👉</span>
       </div>
 
       {/* 펼침 상태 시 보이는 메뉴 영역 */}
       <div style={{
-        width: isHovered ? '320px' : '0px',
+        width: isHovered ? '340px' : '0px',
         opacity: isHovered ? 1 : 0,
         overflow: 'hidden',
         background: '#ffffff',
@@ -65,7 +69,7 @@ export default function ManualSidebar() {
         boxShadow: '10px 0 30px rgba(0,0,0,0.15)',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         height: 'auto',
-        maxHeight: '70vh',
+        maxHeight: '85vh',
         display: 'flex',
         flexDirection: 'column',
         pointerEvents: isHovered ? 'auto' : 'none',
@@ -73,47 +77,84 @@ export default function ManualSidebar() {
         borderLeft: 'none'
       }}>
         <div style={{ padding: '24px', flex: 1, overflowY: 'auto' }}>
+          
+          {/* 매뉴얼 섹션 */}
           <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>📚 매뉴얼</h3>
-          <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '20px', wordBreak: 'keep-all' }}>
-            계속해서 추가될 예정입니다. 링크를 클릭하거나 우측 QR코드를 스캔하여 모바일에서 바로 확인해보세요.
+          <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px', wordBreak: 'keep-all' }}>
+            전문 기술 습득을 위한 엔지니어링 가이드
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {MANUALS.map((manual) => {
-              const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://newhome2026.vercel.app${manual.path}`;
-
-              return (
-                <Link key={manual.id} href={manual.path} style={{ textDecoration: 'none' }}>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '12px',
-                    borderRadius: '8px',
-                    background: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    transition: 'all 0.2s',
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#3b82f6';
-                    e.currentTarget.style.background = '#eff6ff';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#e2e8f0';
-                    e.currentTarget.style.background = '#f8fafc';
-                  }}
-                  >
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: '#334155', flex: 1, paddingRight: '12px', wordBreak: 'keep-all' }}>
-                      {manual.title}
-                    </span>
-                    <div style={{ padding: '4px', background: '#fff', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
-                      <img src={qrUrl} alt="QR Code" width={40} height={40} style={{ display: 'block' }} />
-                    </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
+            {MANUALS.map((manual) => (
+              <Link key={manual.id} href={manual.path} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  background: '#f8fafc',
+                  border: '1px solid #e2e8f0',
+                  transition: '0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#10b981';
+                  e.currentTarget.style.background = '#f0fdf4';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#e2e8f0';
+                  e.currentTarget.style.background = '#f8fafc';
+                }}
+                >
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#334155', flex: 1, wordBreak: 'keep-all' }}>
+                    {manual.title}
+                  </span>
+                  <div style={{ padding: '4px', background: '#fff', borderRadius: '4px', border: '1px solid #e2e8f0', marginLeft: 10 }}>
+                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https://newhome2026.vercel.app${manual.path}`} alt="QR" width={24} height={24} />
                   </div>
-                </Link>
-              );
-            })}
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* 프로모션 섹션 */}
+          <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', marginBottom: '8px', borderTop: '1px solid #f1f5f9', paddingTop: '16px' }}>🚀 프로모션</h3>
+          <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '16px', wordBreak: 'keep-all' }}>
+            최신 제품 홍보 및 인터랙티브 시연
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {PROMOTIONS.map((promo) => (
+              <Link key={promo.id} href={promo.path} style={{ textDecoration: 'none' }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  background: 'linear-gradient(to right, #0f172a, #1e293b)',
+                  border: '1px solid #334155',
+                  transition: '0.2s',
+                  color: '#fff'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.2)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
+                >
+                  <span style={{ fontSize: '13px', fontWeight: 700, flex: 1, wordBreak: 'keep-all' }}>
+                    {promo.title}
+                  </span>
+                  <div style={{ padding: '4px', background: '#fff', borderRadius: '4px', marginLeft: 10 }}>
+                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https://newhome2026.vercel.app${promo.path}`} alt="QR" width={24} height={24} />
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
