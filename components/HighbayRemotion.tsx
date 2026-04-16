@@ -1,6 +1,7 @@
 'use client';
 import { AbsoluteFill, useVideoConfig, useCurrentFrame, interpolate, Sequence, Series, Video } from 'remotion';
 import React from 'react';
+import { Player } from '@remotion/player';
 
 const S = {
   title: { fontSize: 70, fontWeight: 950, color: 'white', marginBottom: 10, textShadow: '0 0 30px rgba(14, 165, 233, 0.6)' },
@@ -177,3 +178,26 @@ export const HighbaySequence: React.FC = () => {
     </AbsoluteFill>
   );
 };
+
+// 메인 앱에서 비디오를 렌더링하기 위한 플레이어 래퍼
+const HighbayRemotion: React.FC = () => {
+  return (
+    <div style={{ width: '100%', aspectRatio: '16/9', background: '#000', position: 'relative' }}>
+      <Player
+        component={HighbaySequence}
+        durationInFrames={5400} // 총 180초 (30fps 기준)
+        compositionWidth={1920}
+        compositionHeight={1080}
+        fps={30}
+        controls
+        loop
+        style={{
+          width: '100%',
+          height: '100%',
+        }}
+      />
+    </div>
+  );
+};
+
+export default HighbayRemotion;

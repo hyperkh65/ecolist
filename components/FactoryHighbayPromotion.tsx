@@ -11,7 +11,7 @@ import {
   Maximize2,
   Database,
   Search,
-  Tool,
+  Settings,
   HardDrive,
   CheckCircle2
 } from 'lucide-react';
@@ -111,7 +111,7 @@ const ProductNukki = ({ src, size = 500, glowColor = 'rgba(14, 165, 233, 0.2)' }
         width: '80%', 
         height: 10, 
         background: 'radial-gradient(ellipse at center, rgba(14, 165, 233, 0.2) 0%, transparent 70%)',
-        blur: '10px'
+        filter: 'blur(10px)'
       }} 
     />
   </div>
