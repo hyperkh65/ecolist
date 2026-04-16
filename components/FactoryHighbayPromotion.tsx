@@ -145,7 +145,7 @@ export default function FactoryHighbayPromotion() {
                 </div>
               </div>
 
-              <div style={{ spaceY: 24 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 <div style={{ ...S.glass, padding: 32, borderRadius: 24, marginBottom: 20 }}>
                   <div style={{ fontSize: 14, color: '#64748b', marginBottom: 8 }}>설치 높이 설정 (Altitude)</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
@@ -207,7 +207,7 @@ export default function FactoryHighbayPromotion() {
                      <>
                        <h3 style={{ fontSize: 36, fontWeight: 900, marginBottom: 20 }}>K-MICROWAVE ENGINE</h3>
                        <p style={{ fontSize: 18, color: '#94a3b8', lineHeight: 1.6, marginBottom: 32 }}>수입산 저가형 센서와 차원이 다른 국산 기술력. 초고천장 전 전용 5.8GHz 마이크로웨이브 모듈을 탑재하여 온도와 습도 변화에도 변함없는 감지 속도를 유지합니다.</p>
-                       <ul style={{ listStyle: 'none', padding: 0, spaceY: 12 }}>
+                                               <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
                           {['최대 18~20m 설치 가능', '감도/대기시간/조도 딥스위치 제어', '필립스 드라이버와 1-10V 인터페이스 연동', 'KC 안전 인증 및 전자기적합성(EMC) 통과'].map(li => (
                             <li key={li} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, fontWeight: 600 }}>
                               <CheckCircle2 color="#0ea5e9" size={20} /> {li}
