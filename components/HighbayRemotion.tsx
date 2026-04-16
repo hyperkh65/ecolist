@@ -41,7 +41,7 @@ const SectionFrame: React.FC<{ title: string; subtitle: string; content: string[
        {/* Background Video Layer */}
        <AbsoluteFill>
           <Video 
-            src="/public/hero-bg-4.mp4" 
+            src="/promotion_assets/factory-video-main.mp4" 
             startFrom={videoStart} 
             style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }} 
             muted
@@ -79,7 +79,7 @@ export const HighbaySequence: React.FC = () => {
         {/* Intro (10s) */}
         <Series.Sequence durationInFrames={300}>
            <AbsoluteFill style={{ background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Video src="/public/hero-bg-3.mp4" muted style={{ position: 'absolute', inset: 0, objectFit: 'cover', opacity: 0.6 }} />
+              <Video src="/promotion_assets/factory-video-main.mp4" muted style={{ position: 'absolute', inset: 0, objectFit: 'cover', opacity: 0.6 }} />
               <div style={{ position: 'relative', zIndex: 20, textAlign: 'center' }}>
                 <div style={S.subset}>ENGINEERING MISSION CRITICAL</div>
                 <h1 style={{ fontSize: 120, fontWeight: 950, color: 'white', letterSpacing: '-0.05em' }}>
@@ -144,7 +144,7 @@ export const HighbaySequence: React.FC = () => {
         {/* Outro (40s) */}
         <Series.Sequence durationInFrames={1200}>
           <AbsoluteFill style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
-             <Video src="/public/hero-bg-4.mp4" muted style={{ position: 'absolute', inset: 0, objectFit: 'cover', opacity: 0.3 }} />
+             <Video src="/promotion_assets/factory-video-main.mp4" muted style={{ position: 'absolute', inset: 0, objectFit: 'cover', opacity: 0.3 }} />
              <div style={{ textAlign: 'center', position: 'relative', zIndex: 10 }}>
                 <h2 style={{ fontSize: 60, fontWeight: 900, marginBottom: 20 }}>GLOBAL QUALITY STANDARDS</h2>
                 <div style={{ display: 'flex', gap: 40, justifyContent: 'center' }}>

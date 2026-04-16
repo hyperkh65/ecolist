@@ -52,7 +52,7 @@ export default function FactoryHighbayPromotion() {
       {/* 2. DYNAMIC HERO: PRODUCT IN ACTION */}
       <section style={{ height: '90vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         <video autoPlay muted loop playsInline style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.5 }}>
-           <source src="/hero-bg-3.mp4" type="video/mp4" />
+           <source src="/promotion_assets/factory-video-main.mp4" type="video/mp4" />
         </video>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(2,6,23,0.7), rgba(2,6,23,0.95))' }} />
 
