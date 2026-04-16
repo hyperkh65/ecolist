@@ -1,81 +1,131 @@
 'use client';
-import { AbsoluteFill, useVideoConfig, useCurrentFrame, interpolate, spring } from 'remotion';
+import { AbsoluteFill, useVideoConfig, useCurrentFrame, interpolate, spring, Sequence, Series } from 'remotion';
 import React from 'react';
 
-export const HighbaySequence: React.FC = () => {
+const S = {
+  title: { fontSize: 80, fontWeight: 900, color: 'white', marginBottom: 20 },
+  subset: { fontSize: 32, color: '#0ea5e9', fontWeight: 700, letterSpacing: 2 },
+  docRef: { position: 'absolute' as const, bottom: 60, left: 60, fontSize: 18, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }
+};
+
+const SectionFrame: React.FC<{ title: string; subtitle: string; content: string[]; doc: string }> = ({ title, subtitle, content, doc }) => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
-
-  const opacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: 'clamp' });
-  const scale = spring({ frame, fps, config: { damping: 200 } });
-
-  const logoMove = interpolate(frame, [20, 40], [0, -100], { extrapolateRight: 'clamp' });
-  const textOpacity = interpolate(frame, [30, 50], [0, 1]);
+  const { fps } = useVideoConfig();
+  const opacity = interpolate(frame, [0, 15, 85, 100], [0, 1, 1, 0]);
+  const slide = spring({ frame, fps, config: { damping: 100 } });
 
   return (
-    <AbsoluteFill style={{ background: '#020617', color: 'white', fontFamily: 'Inter, sans-serif' }}>
-      {/* Background Glow */}
-      <AbsoluteFill style={{ 
-        background: 'radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.15) 0%, transparent 70%)',
-        opacity
-      }} />
+    <AbsoluteFill style={{ background: '#020617', padding: 100, opacity }}>
+       <div style={{ transform: `translateX(${interpolate(slide, [0, 1], [-50, 0])}px)` }}>
+         <div style={S.subset}>{subtitle}</div>
+         <h2 style={S.title}>{title}</h2>
+         <div style={{ width: 100, height: 8, background: '#0ea5e9', marginBottom: 40 }} />
+         
+         <div style={{ fontSize: 28, lineHeight: 1.8, color: '#cbd5e1' }}>
+           {content.map((line, i) => (
+             <div key={i} style={{ marginBottom: 15, display: 'flex', alignItems: 'center', gap: 15 }}>
+               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#0ea5e9' }} />
+               {line}
+             </div>
+           ))}
+         </div>
+       </div>
 
-      {/* Main Visual: UFO silhouette with light effect */}
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'column',
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100%',
-        transform: `scale(${scale}) translateY(${logoMove}px)`
-      }}>
-        <div style={{ position: 'relative' }}>
-          {/* Light Beam Effect */}
-          <div style={{ 
-            position: 'absolute', top: 40, left: '50%', transform: 'translateX(-50%)',
-            width: 0, height: 0, 
-            borderLeft: '150px solid transparent', borderRight: '150px solid transparent',
-            borderBottom: '400px solid rgba(14, 165, 233, 0.2)',
-            filter: 'blur(40px)',
-            opacity: interpolate(frame, [40, 60], [0, 1])
-          }} />
-          
-          <div style={{ 
-            width: 320, height: 60, background: '#1e293b', 
-            borderRadius: '160px 160px 10px 10px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.8)',
-            border: '1px solid rgba(255,255,255,0.1)'
-          }} />
-        </div>
-      </div>
+       <div style={S.docRef}>SOURCE: {doc}</div>
+    </AbsoluteFill>
+  );
+};
 
-      {/* Technical Labels */}
-      <div style={{ 
-        position: 'absolute', bottom: 150, width: '100%', textAlign: 'center',
-        opacity: textOpacity,
-        transform: `translateY(${interpolate(frame, [30, 50], [20, 0])}px)`
-      }}>
-        <h1 style={{ fontSize: 80, fontWeight: 900, marginBottom: 10, letterSpacing: '-0.05em' }}>
-          UFO-AM6 <span style={{ color: '#0ea5e9' }}>150W</span>
-        </h1>
-        <div style={{ fontSize: 24, fontWeight: 500, color: '#94a3b8' }}>
-          18M Sensor Engine • Philips Xitanium™ Inside
-        </div>
-      </div>
+export const HighbaySequence: React.FC = () => {
+  const { fps } = useVideoConfig();
+  
+  return (
+    <AbsoluteFill style={{ backgroundColor: 'black' }}>
+      <Series>
+        {/* 0-10s: Intro */}
+        <Series.Sequence durationInFrames={300}>
+           <AbsoluteFill style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <div style={S.subset}>OFFICIAL TECHNICAL BRIEFING</div>
+              <h1 style={{ fontSize: 100, fontWeight: 950, color: 'white' }}>UFO-AM6 <span style={{ color: '#0ea5e9' }}>150W</span></h1>
+              <p style={{ fontSize: 24, color: '#64748b', marginTop: 20 }}>High-Performance Industrial Lighting Solution</p>
+           </AbsoluteFill>
+        </Series.Sequence>
 
-      {/* Floating Specs */}
-      {frame > 60 && (
-        <div style={{ position: 'absolute', top: 100, left: 100, opacity: interpolate(frame, [60, 80], [0, 1]) }}>
-          <div style={{ fontSize: 14, color: '#0ea5e9', fontWeight: 900 }}>CHIPSET</div>
-          <div style={{ fontSize: 32, fontWeight: 800 }}>SSC 2835 9V</div>
-        </div>
-      )}
-      {frame > 75 && (
-        <div style={{ position: 'absolute', top: 100, right: 100, opacity: interpolate(frame, [75, 95], [0, 1]), textAlign: 'right' }}>
-          <div style={{ fontSize: 14, color: '#0ea5e9', fontWeight: 900 }}>EFFICACY</div>
-          <div style={{ fontSize: 32, fontWeight: 800 }}>151.2 lm/W</div>
-        </div>
-      )}
+        {/* 10-30s: Mechanical & Housing */}
+        <Series.Sequence durationInFrames={600}>
+           <SectionFrame 
+             subtitle="ENGINEERING PART 01"
+             title="Housing & Structure"
+             content={[
+               "ADC12 Grade Die-Cast Aluminum Housing",
+               "High-Efficiency Thermal Dissipation Fins",
+               "IP65 / IK08 Protection Ratings",
+               "Mechanical Stress Tested Design"
+             ]}
+             doc="Ref: Housing CAD.pdf"
+           />
+        </Series.Sequence>
+
+        {/* 30-60s: Optical Engine */}
+        <Series.Sequence durationInFrames={900}>
+           <SectionFrame 
+             subtitle="ENGINEERING PART 02"
+             title="Optical Technology"
+             content={[
+               "Seoul Semiconductor 2835 9V Premium Chips",
+               "System Efficacy: 130~150 lm/W Certified",
+               "LM-80 Quality & Reliability Report compliant",
+               "IESNA-2002 Standard Photometric Data"
+             ]}
+             doc="Ref: SZ2200910-55786E-10-10000 LM-80.pdf"
+           />
+        </Series.Sequence>
+
+        {/* 60-90s: Driver & Power */}
+        <Series.Sequence durationInFrames={900}>
+           <SectionFrame 
+             subtitle="ENGINEERING PART 03"
+             title="Power Reliability"
+             content={[
+               "Philips Xitanium™ 150W Driver Inside",
+               "1-10V Dimming & Aux Power (12V) Support",
+               "6kV/10kV Surge Protection for Industrial Safety",
+               "100,000 Hours Long-life Design"
+             ]}
+             doc="Ref: Xi_RHB_150W_0.52-0.84A_1-10V_WL_AUX.pdf"
+           />
+        </Series.Sequence>
+
+        {/* 90-130s: Sensor Intelligence */}
+        <Series.Sequence durationInFrames={1200}>
+           <SectionFrame 
+             subtitle="ENGINEERING PART 04"
+             title="K-Smart Sensor Logic"
+             content={[
+               "5.8GHz Microwave Motion Sensing Engine",
+               "Maximum Detection Height: 18~20 Meters",
+               "Dual-Mode Control: Step-Dimming & On/Off",
+               "Environmentally Optimized Sensitivity Algorithms"
+             ]}
+             doc="Ref: Sensor case CAD.pdf"
+           />
+        </Series.Sequence>
+
+        {/* 130-180s: Summary & Quality */}
+        <Series.Sequence durationInFrames={1500}>
+           <SectionFrame 
+             subtitle="FINAL VERIFICATION"
+             title="Certified Standards"
+             content={[
+               "Complete Component BOM Consistency",
+               "Thermal Stress Evaluation Pass",
+               "Electromagnetic Compatibility Verified",
+               "Manufacturer: (주)와이앤케이 / YNK CO., LTD."
+             ]}
+             doc="Ref: (부품리스트+회로도)요청 RQW2603-0224.docx"
+           />
+        </Series.Sequence>
+      </Series>
     </AbsoluteFill>
   );
 };
