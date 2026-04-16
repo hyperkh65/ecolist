@@ -10,7 +10,7 @@ import {
   ArrowRight,
   Database,
   Search,
-  Tool
+  Wrench
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Player } from '@remotion/player';
