@@ -1,129 +1,161 @@
 'use client';
-import { AbsoluteFill, useVideoConfig, useCurrentFrame, interpolate, spring, Sequence, Series } from 'remotion';
+import { AbsoluteFill, useVideoConfig, useCurrentFrame, interpolate, spring, Sequence, Series, Video, Audio } from 'remotion';
 import React from 'react';
 
 const S = {
-  title: { fontSize: 80, fontWeight: 900, color: 'white', marginBottom: 20 },
-  subset: { fontSize: 32, color: '#0ea5e9', fontWeight: 700, letterSpacing: 2 },
-  docRef: { position: 'absolute' as const, bottom: 60, left: 60, fontSize: 18, color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }
+  title: { fontSize: 70, fontWeight: 900, color: 'white', marginBottom: 10, textShadow: '0 0 20px rgba(14, 165, 233, 0.5)' },
+  subset: { fontSize: 24, color: '#0ea5e9', fontWeight: 800, letterSpacing: 4, marginBottom: 10 },
+  docRef: { position: 'absolute' as const, bottom: 40, right: 60, fontSize: 16, color: 'rgba(255,255,255,0.3)', fontFamily: 'monospace' },
+  scanner: { position: 'absolute' as const, width: '100%', height: 2, background: 'rgba(14, 165, 233, 0.5)', boxShadow: '0 0 15px #0ea5e9', zIndex: 10 }
 };
 
-const SectionFrame: React.FC<{ title: string; subtitle: string; content: string[]; doc: string }> = ({ title, subtitle, content, doc }) => {
+const TechOverlay: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { height } = useVideoConfig();
+  const scanPos = interpolate(frame % 100, [0, 100], [0, height]);
+  
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      {/* Scanning Line */}
+      <div style={{ ...S.scanner, top: scanPos }} />
+      
+      {/* Grid Effect */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(14, 165, 233, 0.05) 1px, transparent 1px)', backgroundSize: '40px 40px', opacity: 0.5 }} />
+      
+      {/* Moving Corners */}
+      <div style={{ position: 'absolute', top: 50, left: 50, width: 40, height: 40, borderLeft: '4px solid #0ea5e9', borderTop: '4px solid #0ea5e9' }} />
+      <div style={{ position: 'absolute', top: 50, right: 50, width: 40, height: 40, borderRight: '4px solid #0ea5e9', borderTop: '4px solid #0ea5e9' }} />
+      <div style={{ position: 'absolute', bottom: 50, left: 50, width: 40, height: 40, borderLeft: '4px solid #0ea5e9', borderBottom: '4px solid #0ea5e9' }} />
+      <div style={{ position: 'absolute', bottom: 50, right: 50, width: 40, height: 40, borderRight: '4px solid #0ea5e9', borderBottom: '4px solid #0ea5e9' }} />
+    </AbsoluteFill>
+  );
+};
+
+const SectionFrame: React.FC<{ title: string; subtitle: string; content: string[]; doc: string; videoStart?: number }> = ({ title, subtitle, content, doc, videoStart = 0 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const opacity = interpolate(frame, [0, 15, 85, 100], [0, 1, 1, 0]);
-  const slide = spring({ frame, fps, config: { damping: 100 } });
+  const opacity = interpolate(frame, [0, 20, 180, 200], [0, 1, 1, 0]);
 
   return (
-    <AbsoluteFill style={{ background: '#020617', padding: 100, opacity }}>
-       <div style={{ transform: `translateX(${interpolate(slide, [0, 1], [-50, 0])}px)` }}>
+    <AbsoluteFill style={{ opacity }}>
+       {/* Background Video Layer */}
+       <AbsoluteFill>
+          <Video 
+            src="/public/hero-bg-4.mp4" 
+            startFrom={videoStart} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }} 
+            muted
+          />
+       </AbsoluteFill>
+       
+       <TechOverlay />
+
+       <div style={{ position: 'absolute', top: '50%', left: 100, transform: 'translateY(-50%)', maxWidth: 800 }}>
          <div style={S.subset}>{subtitle}</div>
          <h2 style={S.title}>{title}</h2>
-         <div style={{ width: 100, height: 8, background: '#0ea5e9', marginBottom: 40 }} />
+         <div style={{ width: 120, height: 6, background: 'linear-gradient(90deg, #0ea5e9, transparent)', marginBottom: 40 }} />
          
-         <div style={{ fontSize: 28, lineHeight: 1.8, color: '#cbd5e1' }}>
+         <div style={{ fontSize: 24, lineHeight: 1.6, color: '#f1f5f9', fontWeight: 500 }}>
            {content.map((line, i) => (
-             <div key={i} style={{ marginBottom: 15, display: 'flex', alignItems: 'center', gap: 15 }}>
-               <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#0ea5e9' }} />
-               {line}
-             </div>
+             <motion.div key={i} style={{ marginBottom: 12, display: 'flex', alignItems: 'center', gap: 15 }}>
+               <span style={{ color: '#0ea5e9', fontWeight: 900 }}>[✓]</span> {line}
+             </motion.div>
            ))}
          </div>
        </div>
 
-       <div style={S.docRef}>SOURCE: {doc}</div>
+       <div style={S.docRef}>VERIFIED BY: {doc}</div>
     </AbsoluteFill>
   );
 };
 
 export const HighbaySequence: React.FC = () => {
-  const { fps } = useVideoConfig();
-  
   return (
-    <AbsoluteFill style={{ backgroundColor: 'black' }}>
+    <AbsoluteFill style={{ backgroundColor: '#020617' }}>
+      {/* Audio Placeholder - Connect actual mp3 here if available */}
+      {/* <Audio src="/public/audio/tech-ambient.mp3" volume={0.5} /> */}
+      
       <Series>
-        {/* 0-10s: Intro */}
+        {/* Intro (10s) */}
         <Series.Sequence durationInFrames={300}>
-           <AbsoluteFill style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-              <div style={S.subset}>OFFICIAL TECHNICAL BRIEFING</div>
-              <h1 style={{ fontSize: 100, fontWeight: 950, color: 'white' }}>UFO-AM6 <span style={{ color: '#0ea5e9' }}>150W</span></h1>
-              <p style={{ fontSize: 24, color: '#64748b', marginTop: 20 }}>High-Performance Industrial Lighting Solution</p>
+           <AbsoluteFill style={{ background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Video src="/public/hero-bg-3.mp4" muted style={{ position: 'absolute', inset: 0, objectFit: 'cover', opacity: 0.6 }} />
+              <div style={{ position: 'relative', zIndex: 20, textAlign: 'center' }}>
+                <div style={S.subset}>ENGINEERING MISSION CRITICAL</div>
+                <h1 style={{ fontSize: 120, fontWeight: 950, color: 'white', letterSpacing: '-0.05em' }}>
+                  UFO-AM6 <span style={{ color: '#0ea5e9' }}>MAX</span>
+                </h1>
+                <div style={{ fontSize: 20, color: 'rgba(255,255,255,0.5)', marginTop: 24, letterSpacing: 8, fontWeight: 700 }}>
+                  18M HIGH-ALTITUDE SENSOR ENGINE
+                </div>
+              </div>
+              <TechOverlay />
            </AbsoluteFill>
         </Series.Sequence>
 
-        {/* 10-30s: Mechanical & Housing */}
-        <Series.Sequence durationInFrames={600}>
+        {/* Part 1: Housing (30s) */}
+        <Series.Sequence durationInFrames={900}>
            <SectionFrame 
-             subtitle="ENGINEERING PART 01"
-             title="Housing & Structure"
+             subtitle="STRUCTURAL DESIGN"
+             title="ADC12 Heat Dispersion"
              content={[
-               "ADC12 Grade Die-Cast Aluminum Housing",
-               "High-Efficiency Thermal Dissipation Fins",
-               "IP65 / IK08 Protection Ratings",
-               "Mechanical Stress Tested Design"
+               "Advanced Die-Casting Aluminum (ADC12)",
+               "Passive Aerodynamic Cooling Fins",
+               "High-Durability Industrial Finish",
+               "Vibration & Heat Stress Tolerance"
              ]}
+             videoStart={300}
              doc="Ref: Housing CAD.pdf"
            />
         </Series.Sequence>
 
-        {/* 30-60s: Optical Engine */}
-        <Series.Sequence durationInFrames={900}>
+        {/* Part 2: Electronics (40s) */}
+        <Series.Sequence durationInFrames={1200}>
            <SectionFrame 
-             subtitle="ENGINEERING PART 02"
-             title="Optical Technology"
+             subtitle="POWER MANAGEMENT"
+             title="Philips Xitanium™ Inside"
              content={[
-               "Seoul Semiconductor 2835 9V Premium Chips",
-               "System Efficacy: 130~150 lm/W Certified",
-               "LM-80 Quality & Reliability Report compliant",
-               "IESNA-2002 Standard Photometric Data"
+               "Premium 150W Constant Current Driver",
+               "1-10V Smart Dimming Interface",
+               "Integrated 12V Auxiliary Output",
+               "100K Hours Continuous Operation"
              ]}
-             doc="Ref: SZ2200910-55786E-10-10000 LM-80.pdf"
-           />
-        </Series.Sequence>
-
-        {/* 60-90s: Driver & Power */}
-        <Series.Sequence durationInFrames={900}>
-           <SectionFrame 
-             subtitle="ENGINEERING PART 03"
-             title="Power Reliability"
-             content={[
-               "Philips Xitanium™ 150W Driver Inside",
-               "1-10V Dimming & Aux Power (12V) Support",
-               "6kV/10kV Surge Protection for Industrial Safety",
-               "100,000 Hours Long-life Design"
-             ]}
+             videoStart={1500}
              doc="Ref: Xi_RHB_150W_0.52-0.84A_1-10V_WL_AUX.pdf"
            />
         </Series.Sequence>
 
-        {/* 90-130s: Sensor Intelligence */}
-        <Series.Sequence durationInFrames={1200}>
+        {/* Part 3: Sensing (60s) */}
+        <Series.Sequence durationInFrames={1800}>
            <SectionFrame 
-             subtitle="ENGINEERING PART 04"
-             title="K-Smart Sensor Logic"
+             subtitle="INTELLIGENT LOGIC"
+             title="K-Microwave Sensor"
              content={[
-               "5.8GHz Microwave Motion Sensing Engine",
-               "Maximum Detection Height: 18~20 Meters",
-               "Dual-Mode Control: Step-Dimming & On/Off",
-               "Environmentally Optimized Sensitivity Algorithms"
+               "5.8GHz High-Sensitivity Detection",
+               "Engineered for 18-20M Altitudes",
+               "Korean Proprietary Sensing Algorithms",
+               "Dynamic Motion-to-Light Response"
              ]}
+             videoStart={3000}
              doc="Ref: Sensor case CAD.pdf"
            />
         </Series.Sequence>
 
-        {/* 130-180s: Summary & Quality */}
-        <Series.Sequence durationInFrames={1500}>
-           <SectionFrame 
-             subtitle="FINAL VERIFICATION"
-             title="Certified Standards"
-             content={[
-               "Complete Component BOM Consistency",
-               "Thermal Stress Evaluation Pass",
-               "Electromagnetic Compatibility Verified",
-               "Manufacturer: (주)와이앤케이 / YNK CO., LTD."
-             ]}
-             doc="Ref: (부품리스트+회로도)요청 RQW2603-0224.docx"
-           />
+        {/* Outro (40s) */}
+        <Series.Sequence durationInFrames={1200}>
+          <AbsoluteFill style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000' }}>
+             <Video src="/public/hero-bg-4.mp4" muted style={{ position: 'absolute', inset: 0, objectFit: 'cover', opacity: 0.3 }} />
+             <div style={{ textAlign: 'center', position: 'relative', zIndex: 10 }}>
+                <h2 style={{ fontSize: 60, fontWeight: 900, marginBottom: 20 }}>GLOBAL QUALITY STANDARDS</h2>
+                <div style={{ display: 'flex', gap: 40, justifyContent: 'center' }}>
+                   <div style={{ fontSize: 24, fontWeight: 800 }}>[ KC CERTIFIED ]</div>
+                   <div style={{ fontSize: 24, fontWeight: 800 }}>[ IEC 62471 ]</div>
+                   <div style={{ fontSize: 24, fontWeight: 800 }}>[ LM-80 PASS ]</div>
+                </div>
+                <div style={{ marginTop: 60, fontSize: 32, fontWeight: 900, color: '#0ea5e9' }}>YNK ENGINEERING</div>
+             </div>
+             <TechOverlay />
+          </AbsoluteFill>
         </Series.Sequence>
       </Series>
     </AbsoluteFill>
