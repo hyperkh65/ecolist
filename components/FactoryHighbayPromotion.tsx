@@ -46,11 +46,18 @@ const ProductNukki = ({ src, size = 600, glowColor = 'rgba(14, 165, 233, 0.15)',
         borderRadius: '50%', 
         overflow: 'hidden',
         position: 'relative',
-        maskImage: 'radial-gradient(circle, black 40%, transparent 85%)',
-        WebkitMaskImage: 'radial-gradient(circle, black 40%, transparent 85%)',
-        boxShadow: '0 0 100px rgba(0,0,0,1) inset'
+        // 정교한 누끼 효과를 위한 다중 마스킹
+        maskImage: 'radial-gradient(circle at center, black 45%, rgba(0,0,0,0.8) 65%, transparent 90%)',
+        WebkitMaskImage: 'radial-gradient(circle at center, black 45%, rgba(0,0,0,0.8) 65%, transparent 90%)',
+        // 암부 디테일을 살리는 인셋 섀도우
+        boxShadow: '0 0 80px rgba(0,0,0,0.8) inset, 0 0 120px rgba(14, 165, 233, 0.1)'
       }}>
-        <img src={src} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Product" />
+        <img src={src} style={{ 
+          width: '100%', 
+          height: '100%', 
+          objectFit: 'cover',
+          filter: 'contrast(1.05) brightness(1.02)' // 제품 선명도 향상
+        }} alt="Product" />
       </div>
       <motion.div 
         animate={{ y: [0, -20, 0] }}
