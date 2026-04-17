@@ -223,7 +223,13 @@ export default function AdminPage() {
       stock: editProduct.stock ?? 1, rating: editProduct.rating ?? 0, reviews: editProduct.reviews ?? 0,
     };
     if (editProduct.id) payload.id = editProduct.id;
-    const { error } = await supabase.from('products').upsert(payload);
+    const saveProduct = async (data: any) => supabase.from('products').upsert(data);
+    let { error } = await saveProduct(payload);
+    if (error?.message?.includes("documents")) {
+      const fallback = { ...payload };
+      delete fallback.documents;
+      ({ error } = await saveProduct(fallback));
+    }
     if (!error) { setEditProduct(null); fetchProducts(); }
     else alert('저장 실패: ' + error.message);
     setLoading(false);
@@ -1311,7 +1317,6 @@ export default function AdminPage() {
     </main>
   );
 }
-
 
 
 

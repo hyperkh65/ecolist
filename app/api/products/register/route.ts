@@ -87,7 +87,13 @@ export async function POST(req: NextRequest) {
     reviews:      body.reviews ?? null,
   };
 
-  const { data, error } = await supabase.from('products').insert(product).select().single();
+  const insertProduct = async (data: any) => supabase.from('products').insert(data).select().single();
+  let { data, error } = await insertProduct(product);
+  if (error?.message?.includes("documents")) {
+    const fallback = { ...product };
+    delete fallback.documents;
+    ({ data, error } = await insertProduct(fallback));
+  }
   if (error) {
     return NextResponse.json({ error: 'DB 저장 오류: ' + error.message }, { status: 500 });
   }
