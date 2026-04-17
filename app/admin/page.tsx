@@ -15,6 +15,7 @@ interface SiteSettings {
   company: { name: string; address: string; tel: string; fax: string; email: string; business_id: string; about_text: string };
   menus: { label: string; href: string }[];
   site: { site_name: string; logo_url: string; description: string };
+  payment: { bank_name: string; account_number: string; account_holder: string; notice: string };
 }
 interface DocFile { name: string; url: string; type: 'datasheet' | 'manual' | 'cert' | 'drawing' | 'other' }
 interface FaqItem { id?: string; question: string; answer: string; order_num: number; is_active: boolean; }
@@ -182,8 +183,14 @@ export default function AdminPage() {
       const menus   = data.find(d => d.category === 'menu')?.config;
       const brochure = data.find(d => d.category === 'brochure')?.config;
       const site    = data.find(d => d.category === 'site')?.config || { site_name: '(주)와이앤케이 YNK', logo_url: '', description: '' };
+      const payment = data.find(d => d.category === 'payment')?.config || {
+        bank_name: '',
+        account_number: '',
+        account_holder: '(주)와이앤케이',
+        notice: '카드/간편결제는 제공하지 않으며, 입금 확인 후 주문이 진행됩니다.',
+      };
       const apikeyConfig = data.find(d => d.category === 'apikey')?.config;
-      setSettings({ company, menus, site });
+      setSettings({ company, menus, site, payment });
       if (brochure?.url) setBrochureUrl(brochure.url);
       if (apikeyConfig?.key) setApiKey(apikeyConfig.key);
       else {
@@ -359,6 +366,7 @@ export default function AdminPage() {
       { category: 'menu',     config: settings.menus },
       { category: 'brochure', config: { url: brochureUrl } },
       { category: 'site',     config: settings.site },
+      { category: 'payment',  config: settings.payment },
     ], { onConflict: 'category' });
     alert('저장되었습니다.');
     setLoading(false);
@@ -1125,6 +1133,32 @@ export default function AdminPage() {
               {brochureUrl && <div style={{ marginTop: 10, fontSize: 11, color: '#60a5fa', wordBreak: 'break-all' }}>✅ {brochureUrl}</div>}
             </div>
 
+            <div style={sectionCard}>
+              <h3 style={{ fontSize: 13, fontWeight: 800, color: '#f59e0b', marginBottom: 6, textTransform: 'uppercase' }}>💳 계좌이체 결제 정보</h3>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.3)', marginBottom: 16 }}>카트 페이지와 주문문의 버튼에서 참조하는 입금 계좌 정보입니다</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={labelStyle}>은행명</label>
+                  <input value={settings.payment?.bank_name || ''} onChange={e => setSettings({ ...settings, payment: { ...settings.payment, bank_name: e.target.value } })} placeholder="예: 우리은행" style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>계좌번호</label>
+                  <input value={settings.payment?.account_number || ''} onChange={e => setSettings({ ...settings, payment: { ...settings.payment, account_number: e.target.value } })} placeholder="예: 123-456-789012" style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>예금주</label>
+                  <input value={settings.payment?.account_holder || ''} onChange={e => setSettings({ ...settings, payment: { ...settings.payment, account_holder: e.target.value } })} placeholder="예: (주)와이앤케이" style={inputStyle} />
+                </div>
+                <div>
+                  <label style={labelStyle}>안내 문구</label>
+                  <input value={settings.payment?.notice || ''} onChange={e => setSettings({ ...settings, payment: { ...settings.payment, notice: e.target.value } })} placeholder="카드/간편결제는 제공하지 않으며..." style={inputStyle} />
+                </div>
+              </div>
+              <div style={{ marginTop: 16, padding: '12px 16px', background: 'rgba(245,158,11,0.08)', borderRadius: 8, border: '1px solid rgba(245,158,11,0.2)', fontSize: 12, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>
+                💡 계좌 정보를 비워두면 카트 페이지는 안내용 문구만 보여줍니다. 실제 운영 계좌를 넣어두면 주문문의에서 자동으로 참조합니다.
+              </div>
+            </div>
+
             {/* AI 제품 등록 API 키 */}
             <div style={sectionCard}>
               <h3 style={{ fontSize: 13, fontWeight: 800, color: '#34d399', marginBottom: 6, textTransform: 'uppercase' }}>🤖 AI 제품 등록 API</h3>
@@ -1317,6 +1351,3 @@ export default function AdminPage() {
     </main>
   );
 }
-
-
-

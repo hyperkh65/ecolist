@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CloudinaryUpload from '@/components/CloudinaryUpload';
@@ -19,6 +19,20 @@ export default function ContactPage() {
   const [attachments, setAttachments] = useState<{ name: string; url: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name');
+    const phone = params.get('phone');
+    const content = params.get('content');
+
+    setForm((prev) => ({
+      ...prev,
+      name: name || prev.name,
+      phone: phone || prev.phone,
+      content: content || prev.content,
+    }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,5 +180,3 @@ export default function ContactPage() {
     </>
   );
 }
-
-
